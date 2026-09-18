@@ -9,13 +9,22 @@ promise as the website: no tracking, no ads, no algorithmic feed, no lock-in.
 
 ## Status
 
-Pre-development. The technology stack, the local development setup and the API it needs from
-MeetAgain are being researched and decided before any app code is written.
+Pre-development. The stack is decided; the project scaffold comes next.
+
+## Stack
+
+Kotlin with Jetpack Compose and Material 3, AndroidX only. The app runs without Google Play
+Services and ships no analytics, tracking or advertising code.
 
 ## Development
 
-Run `just` to list the available commands. The toolchain and the local setup are documented once
-they are decided.
+Needs a JDK 17, the Android SDK (with `ANDROID_HOME` set) and an emulator or a phone with USB
+debugging. The toolchain runs on the host.
+
+- `just` lists the available commands.
+- A local MeetAgain is reached from the emulator or a USB phone through
+  `adb reverse tcp:8000 tcp:80`, at `http://localhost:8000`. Release builds talk to
+  `https://meetagain.org` only.
 
 ## License
 
