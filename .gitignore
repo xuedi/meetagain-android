@@ -5,6 +5,7 @@ Thumbs.db
 .env.*
 !.env.dist
 .idea/
+*.iml
 /.vscode/
 /.zed/
 /tmp/
