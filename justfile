@@ -25,12 +25,12 @@ emulator:
 reverse:
     {{ adb }} reverse tcp:8000 tcp:80
 
-# Build and install the debug build
-install:
-    ./gradlew :app:installDebug
+# Build and install the debug build; another server with -Pmeetagain.baseUrl=https://...
+install *args:
+    ./gradlew :app:installDebug {{ args }}
 
 # Install and start the debug build, talking to the local MeetAgain
-run: reverse install
+run *args: reverse (install args)
     {{ adb }} shell am start -n {{ debug_id }}/org.meetagain.app.MainActivity
 
 # Follow the debug build's log

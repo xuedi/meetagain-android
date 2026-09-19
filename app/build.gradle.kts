@@ -5,6 +5,7 @@ plugins {
 }
 
 val appVersion = "0.1.0"
+val debugBaseUrl = providers.gradleProperty("meetagain.baseUrl").getOrElse("http://localhost:8000")
 
 android {
     namespace = "org.meetagain.app"
@@ -23,8 +24,10 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+            buildConfigField("String", "BASE_URL", "\"$debugBaseUrl\"")
         }
         release {
+            buildConfigField("String", "BASE_URL", "\"https://meetagain.org\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
@@ -33,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     dependenciesInfo {

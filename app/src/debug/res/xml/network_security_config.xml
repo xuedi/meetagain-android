@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug only: a local MeetAgain is reached over plain HTTP through `adb reverse`. -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>
