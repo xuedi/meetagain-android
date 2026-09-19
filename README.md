@@ -9,7 +9,9 @@ promise as the website: no tracking, no ads, no algorithmic feed, no lock-in.
 
 ## Status
 
-Pre-development. The stack is decided; the project scaffold comes next.
+Early development. The skeleton is in place: the build, the API client, the theme, all five
+languages (English, German, Chinese, French, Spanish), CI, and a start and an About screen. The
+member features come next.
 
 ## Stack
 
@@ -22,9 +24,16 @@ Needs a JDK 17, the Android SDK (with `ANDROID_HOME` set) and an emulator or a p
 debugging. The toolchain runs on the host.
 
 - `just` lists the available commands.
-- A local MeetAgain is reached from the emulator or a USB phone through
-  `adb reverse tcp:8000 tcp:80`, at `http://localhost:8000`. Release builds talk to
-  `https://meetagain.org` only.
+- `just run` installs and starts the debug build. It talks to a local MeetAgain at
+  `http://localhost:8000`, reached from the emulator or a USB phone through
+  `adb reverse tcp:8000 tcp:80`. `just run -Pmeetagain.baseUrl=https://meetagain.org` uses
+  production instead. Release builds talk to `https://meetagain.org` only.
+- `just check` runs everything CI runs: formatting, lint, the tests and screenshot tests, the
+  check for untranslated text, and a check that the release build contains no Google Play
+  Services, analytics or tracking code.
+- `just screenshots` re-records the reference screenshots after an intended UI change.
+- `just api-refresh` updates `api/openapi.json`, the copy of the server's API description that
+  the contract test checks the app against.
 
 ## License
 
