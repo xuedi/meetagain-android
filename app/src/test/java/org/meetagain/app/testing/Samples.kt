@@ -8,6 +8,8 @@ import org.meetagain.app.core.data.Group
 import org.meetagain.app.core.data.GroupDetails
 import org.meetagain.app.core.data.Location
 import org.meetagain.app.core.data.Upcoming
+import org.meetagain.app.core.network.ApiError
+import org.meetagain.app.core.ui.Stale
 
 /** Content for screenshots and UI tests, in the shape the server sends it, around 22 September 2026. */
 object Samples {
@@ -57,6 +59,9 @@ object Samples {
         location = Location("Travolta", "Wiener Strasse 14b", "10999", "Berlin"),
         photoUrls = listOf("https://meetagain.org/images/a_800x600.webp", "https://meetagain.org/images/b_800x600.webp")
     )
+
+    /** Stored this morning, before the connection went. */
+    val offlineSince = Stale(Instant.parse("2026-09-19T07:05:00Z"), ApiError.Offline)
 
     val dragons = Group("my-community", "Dragon Descendants", "https://meetagain.org/images/thumbnails/logo_h120.webp")
 

@@ -2,8 +2,11 @@ package org.meetagain.app.core.format
 
 import android.icu.text.DateFormat
 import android.icu.text.DateIntervalFormat
+import android.icu.text.DisplayContext
+import android.icu.text.RelativeDateTimeFormatter
 import android.icu.util.DateInterval
 import android.icu.util.TimeZone
+import android.icu.util.ULocale
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -12,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /**
@@ -32,6 +36,21 @@ class EventTime(private val locale: Locale, private val zone: ZoneId, is24Hour: 
     }
 
     fun time(instant: Instant): String = format(timeSkeleton, instant)
+
+    /** "today", "yesterday" or the [date], worded for the middle of a sentence. */
+    fun relativeDay(instant: Instant): String {
+        val formatter = RelativeDateTimeFormatter.getInstance(
+            ULocale.forLocale(locale),
+            null,
+            RelativeDateTimeFormatter.Style.LONG,
+            DisplayContext.CAPITALIZATION_FOR_MIDDLE_OF_SENTENCE
+        )
+        return when (ChronoUnit.DAYS.between(day(instant), today)) {
+            0L -> formatter.format(RelativeDateTimeFormatter.Direction.THIS, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
+            1L -> formatter.format(RelativeDateTimeFormatter.Direction.LAST, RelativeDateTimeFormatter.AbsoluteUnit.DAY)
+            else -> date(instant)
+        }
+    }
 
     /** "19:00 - 22:30" on one day; with both dates when the event runs past midnight. */
     fun timeRange(start: Instant, end: Instant?): String {

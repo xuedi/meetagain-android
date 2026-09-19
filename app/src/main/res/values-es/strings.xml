@@ -50,6 +50,8 @@
     <string name="calendar_subscribe_no_app">Este teléfono no tiene ninguna aplicación que se suscriba a calendarios. Una aplicación de suscripción a calendarios, o la web de tu calendario, puede añadir esta dirección.</string>
     <string name="calendar_copy_address">Copiar dirección</string>
     <string name="calendar_address_copied">Dirección copiada</string>
+    <string name="stale_updated">Última actualización: %1$s, %2$s.</string>
+    <string name="stale_notice">%1$s %2$s</string>
     <plurals name="event_going">
         <item quantity="one">%d asiste</item>
         <item quantity="many">%d asisten</item>

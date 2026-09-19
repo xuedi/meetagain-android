@@ -56,4 +56,12 @@ class EventTimeTest {
         val late = Instant.parse("2026-09-22T23:30:00Z")
         assertEquals("Tue, 22 Sept, 19:00 - Wed, 23 Sept, 01:30", time().timeRange(start, late).plain())
     }
+
+    @Test
+    fun `the last update reads today, yesterday or a date`() {
+        assertEquals("today", time().relativeDay(Instant.parse("2026-09-19T12:05:00Z")))
+        assertEquals("yesterday", time().relativeDay(Instant.parse("2026-09-18T21:00:00Z")))
+        assertEquals("heute", time(Locale.GERMAN).relativeDay(Instant.parse("2026-09-19T12:05:00Z")))
+        assertEquals("Wednesday 16 September", time().relativeDay(Instant.parse("2026-09-16T12:00:00Z")))
+    }
 }

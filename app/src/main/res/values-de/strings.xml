@@ -50,6 +50,8 @@
     <string name="calendar_subscribe_no_app">Auf diesem Handy ist keine App, die Kalender abonnieren kann. Eine App für Kalender-Abos oder die Website deines Kalenders kann diese Adresse hinzufügen.</string>
     <string name="calendar_copy_address">Adresse kopieren</string>
     <string name="calendar_address_copied">Adresse kopiert</string>
+    <string name="stale_updated">Zuletzt aktualisiert %1$s, %2$s.</string>
+    <string name="stale_notice">%1$s %2$s</string>
     <plurals name="event_going">
         <item quantity="one">%d nimmt teil</item>
         <item quantity="other">%d nehmen teil</item>

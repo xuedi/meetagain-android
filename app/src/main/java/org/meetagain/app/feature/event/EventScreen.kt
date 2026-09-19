@@ -54,6 +54,7 @@ import org.meetagain.app.core.format.rememberEventTime
 import org.meetagain.app.core.ui.ErrorState
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.LoadingState
+import org.meetagain.app.core.ui.StaleNotice
 import org.meetagain.app.core.ui.calendarInsertIntent
 import org.meetagain.app.core.ui.rememberOpenIntent
 import org.meetagain.app.core.ui.rememberOpenUrl
@@ -121,8 +122,13 @@ fun EventScreen(
             .padding(padding)
         when (state) {
             Loadable.Loading -> LoadingState(modifier)
+
             is Loadable.Failed -> ErrorState(state.error, onRetry, modifier)
-            is Loadable.Loaded -> EventContent(state.value, onOpenMap, onOpenWebsite, modifier)
+
+            is Loadable.Loaded -> Column(modifier) {
+                state.stale?.let { StaleNotice(it, onRetry = onRetry) }
+                EventContent(state.value, onOpenMap, onOpenWebsite, Modifier.weight(1f))
+            }
         }
     }
 }

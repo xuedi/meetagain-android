@@ -10,11 +10,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Loadable
+import org.meetagain.app.core.ui.Stale
 import org.meetagain.app.testing.MainDispatcherRule
+import org.meetagain.app.testing.MemoryAnswers
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
 import org.meetagain.app.testing.publicRepository
 import org.meetagain.app.testing.serve
+import org.meetagain.app.testing.testClock
 
 class EventViewModelTest {
     @get:Rule
@@ -52,6 +55,55 @@ class EventViewModelTest {
             viewModel.load()
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals(117, (awaitItem() as Loadable.Loaded).value.event.id)
+        }
+    }
+
+    @Test
+    fun `a stored event shows at once and the fresh one replaces it`() = runTest {
+        val answers = MemoryAnswers()
+        server.serve(
+            mapOf(
+                "/api/v1/events/117" to listOf(
+                    json(fixture("event-detail.json")),
+                    json(fixture("event-detail.json").replace("\"rsvpCount\": 1,", "\"rsvpCount\": 2,"))
+                )
+            )
+        )
+        publicRepository(server, answers).refreshEvent(117)
+
+        EventViewModel(publicRepository(server, answers), 117).state.test {
+            assertEquals(Loadable.Loading, awaitItem())
+            val stored = awaitItem() as Loadable.Loaded
+            assertEquals(1, stored.value.event.going)
+            assertEquals(null, stored.stale)
+            assertEquals(2, (awaitItem() as Loadable.Loaded).value.event.going)
+        }
+    }
+
+    @Test
+    fun `without a connection the stored event shows with its age`() = runTest {
+        val answers = MemoryAnswers()
+        server.serve(mapOf("/api/v1/events/117" to listOf(json(fixture("event-detail.json")))))
+        publicRepository(server, answers).refreshEvent(117)
+        val repository = publicRepository(server, answers)
+        server.close()
+
+        EventViewModel(repository, 117).state.test {
+            assertEquals(Loadable.Loading, awaitItem())
+            var state = awaitItem() as Loadable.Loaded
+            if (state.stale == null) state = awaitItem() as Loadable.Loaded
+            assertEquals(117, state.value.event.id)
+            assertEquals(Stale(testClock.instant(), ApiError.Offline), state.stale)
+        }
+    }
+
+    @Test
+    fun `without a connection and nothing stored the error shows`() = runTest {
+        val repository = publicRepository(server)
+        server.close()
+        EventViewModel(repository, 117).state.test {
+            assertEquals(Loadable.Loading, awaitItem())
+            assertEquals(Loadable.Failed(ApiError.Offline), awaitItem())
         }
     }
 }

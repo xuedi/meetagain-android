@@ -19,14 +19,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.meetagain.app.AppContainer
-import org.meetagain.app.AppInfo
 import org.meetagain.app.R
 import org.meetagain.app.core.ui.theme.MeetAgainTheme
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
 import org.meetagain.app.testing.onAllNodesWithTextExists
 import org.meetagain.app.testing.serve
+import org.meetagain.app.testing.testContainer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
@@ -54,7 +53,7 @@ class GroupSubscribeTest {
         )
         shadowOf(context).checkActivities(true)
         compose.enableAccessibilityChecks()
-        val container = AppContainer(AppInfo("0.1.0", testBuild = false, server.url("/").toString().trimEnd('/')))
+        val container = testContainer(context, server)
         compose.setContent {
             MeetAgainTheme { GroupRoute(container, "my-community", onBack = {}, onOpenEvent = {}) }
         }

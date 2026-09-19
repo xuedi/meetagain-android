@@ -51,6 +51,8 @@
     <string name="calendar_subscribe_no_app">This phone has no app that subscribes to calendars. A calendar subscription app, or the website of your calendar, can add this address.</string>
     <string name="calendar_copy_address">Copy address</string>
     <string name="calendar_address_copied">Address copied</string>
+    <string name="stale_updated">Last updated %1$s, %2$s.</string>
+    <string name="stale_notice">%1$s %2$s</string>
     <plurals name="event_going">
         <item quantity="one">%d going</item>
         <item quantity="other">%d going</item>

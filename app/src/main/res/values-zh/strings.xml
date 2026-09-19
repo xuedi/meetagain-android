@@ -50,6 +50,8 @@
     <string name="calendar_subscribe_no_app">这部手机上没有可以订阅日历的应用。日历订阅应用或你的日历网站可以添加这个地址。</string>
     <string name="calendar_copy_address">复制地址</string>
     <string name="calendar_address_copied">地址已复制</string>
+    <string name="stale_updated">最后更新于%1$s %2$s。</string>
+    <string name="stale_notice">%1$s%2$s</string>
     <plurals name="event_going">
         <item quantity="other">%d 人参加</item>
     </plurals>

@@ -59,6 +59,7 @@ import org.meetagain.app.core.ui.GroupLogo
 import org.meetagain.app.core.ui.ListEnd
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.LoadingState
+import org.meetagain.app.core.ui.StaleNotice
 import org.meetagain.app.core.ui.rememberOpenIntent
 import org.meetagain.app.core.ui.rememberOpenUrl
 import org.meetagain.app.core.ui.subscribeIntent
@@ -128,8 +129,13 @@ fun GroupScreen(
             .padding(padding)
         when (state) {
             Loadable.Loading -> LoadingState(modifier)
+
             is Loadable.Failed -> ErrorState(state.error, onRetry, modifier)
-            is Loadable.Loaded -> GroupContent(state.value, onOpenEvent, onOpenWebsite, onSubscribe, modifier)
+
+            is Loadable.Loaded -> Column(modifier) {
+                state.stale?.let { StaleNotice(it, onRetry = onRetry) }
+                GroupContent(state.value, onOpenEvent, onOpenWebsite, onSubscribe, Modifier.weight(1f))
+            }
         }
     }
     manualFeedUrl?.let { SubscribeSheet(it, onDismissManualFeed, onCopyFeedUrl) }

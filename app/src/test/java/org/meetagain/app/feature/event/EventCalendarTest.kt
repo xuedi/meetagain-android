@@ -14,14 +14,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.meetagain.app.AppContainer
-import org.meetagain.app.AppInfo
 import org.meetagain.app.R
 import org.meetagain.app.core.ui.theme.MeetAgainTheme
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
 import org.meetagain.app.testing.onAllNodesWithTextExists
 import org.meetagain.app.testing.serve
+import org.meetagain.app.testing.testContainer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
@@ -42,7 +41,7 @@ class EventCalendarTest {
         server.start()
         server.serve(mapOf("/api/v1/events/117" to listOf(json(fixture("event-detail.json")))))
         compose.enableAccessibilityChecks()
-        val container = AppContainer(AppInfo("0.1.0", testBuild = false, server.url("/").toString().trimEnd('/')))
+        val container = testContainer(context, server)
         compose.setContent { MeetAgainTheme { EventRoute(container, 117, onBack = {}) } }
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(context.getString(R.string.event_open_map)) }
     }

@@ -44,6 +44,7 @@ import org.meetagain.app.core.ui.GroupLogo
 import org.meetagain.app.core.ui.ListEnd
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.LoadingState
+import org.meetagain.app.core.ui.StaleNotice
 import org.meetagain.app.core.ui.rememberOpenUrl
 import org.meetagain.app.feature.event.eventItems
 
@@ -135,11 +136,14 @@ private fun <T> Content(loadable: Loadable<T>, onRefresh: () -> Unit, content: @
 
         is Loadable.Failed -> ErrorState(loadable.error, onRetry = onRefresh)
 
-        is Loadable.Loaded -> PullToRefreshBox(
-            isRefreshing = loadable.refreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize()
-        ) { content(loadable.value) }
+        is Loadable.Loaded -> Column(Modifier.fillMaxSize()) {
+            loadable.stale?.let { StaleNotice(it, onRetry = onRefresh) }
+            PullToRefreshBox(
+                isRefreshing = loadable.refreshing,
+                onRefresh = onRefresh,
+                modifier = Modifier.weight(1f)
+            ) { content(loadable.value) }
+        }
     }
 }
 

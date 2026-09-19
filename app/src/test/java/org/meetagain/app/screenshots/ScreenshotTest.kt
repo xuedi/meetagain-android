@@ -62,12 +62,29 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
     }
 
     @Test
+    fun exploreEventsStale() = capture("explore_events_stale") {
+        Explore(ExploreUiState(Loadable.Loaded(Samples.upcoming, stale = Samples.offlineSince)))
+    }
+
+    @Test
     fun exploreOffline() = capture("explore_offline") { Explore(ExploreUiState(Loadable.Failed(ApiError.Offline))) }
 
     @Test
     fun event() = capture("event") {
         EventScreen(
             Loadable.Loaded(Samples.eventDetails),
+            onBack = {},
+            onRetry = {},
+            onAddToCalendar = {},
+            onOpenMap = {},
+            onOpenWebsite = {}
+        )
+    }
+
+    @Test
+    fun eventStale() = capture("event_stale") {
+        EventScreen(
+            Loadable.Loaded(Samples.eventDetails, stale = Samples.offlineSince),
             onBack = {},
             onRetry = {},
             onAddToCalendar = {},
