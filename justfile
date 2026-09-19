@@ -48,8 +48,9 @@ screenshots:
 # Everything CI checks: format, lint, tests and screenshots, no literals in the UI, the release APK guard
 check:
     ./gradlew spotlessCheck :app:lintRelease :app:verifyRoborazziDebug :app:assembleRelease
-    scripts/check-literals.sh
-    scripts/check-dependencies.sh
+    scripts/timed.sh "literals check" scripts/check-literals.sh
+    scripts/timed.sh "dependency guard" scripts/check-dependencies.sh
+    @cat build/check-times.log
 
 # Format the Kotlin sources
 fix:
