@@ -5,6 +5,7 @@ ktlint = "1.8.0"
 lifecycle = "2.11.0"
 navigation3 = "1.1.7"
 coroutines = "1.11.0"
+okhttp = "5.5.0"
 
 [libraries]
 compose-bom = "androidx.compose:compose-bom:2026.09.00"
@@ -19,6 +20,11 @@ navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", ver
 navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+
+junit = "junit:junit:4.13.2"
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

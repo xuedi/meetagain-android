@@ -1,0 +1,3449 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MeetAgain API",
+    "description": "Programmatic access to public events, member-scoped actions (RSVP, comment, image upload), and platform content, monitoring and log sections. Personal Access Token (PAT) authentication is required for non-public endpoints.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current host"
+    }
+  ],
+  "paths": {
+    "/api/status": {
+      "get": {
+        "tags": [
+          "status"
+        ],
+        "summary": "Health check endpoint",
+        "operationId": "f170d38759cd4ef764f586422485a5ea",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cms/pages": {
+      "get": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "List every CMS page with its owning group and per-locale block counts",
+        "operationId": "b0f51657abd347e0e98cffac1f402460",
+        "responses": {
+          "200": {
+            "description": "All CMS pages, newest first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsPageSummaryList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cms/block-types": {
+      "get": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Catalogue of block types and the fields each one accepts",
+        "operationId": "69656b95aa91de60d20c61046ca74948",
+        "responses": {
+          "200": {
+            "description": "Field definitions the write endpoints validate against",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsBlockTypeCatalog"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cms/pages/{id}/blocks": {
+      "get": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Ordered blocks of one page in one locale",
+        "operationId": "50a4168bd4aa288ef7c990f1d4c1e1e4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Two-letter language code; defaults to the configured default locale",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blocks in priority order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsBlockList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Page not found"
+          },
+          "422": {
+            "description": "Unknown locale"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Append a block to a page in one locale",
+        "operationId": "84dba59441f9f56f2fb66d1489e8b298",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "locale",
+                  "type",
+                  "payload"
+                ],
+                "properties": {
+                  "locale": {
+                    "type": "string",
+                    "example": "en"
+                  },
+                  "type": {
+                    "description": "Block type name or numeric id from the block-types catalogue",
+                    "example": "Text"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored block, after hydration and sanitization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsBlockSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Page not found"
+          },
+          "422": {
+            "description": "Unknown locale, unusable block type, or a missing required field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cms/blocks/{blockId}": {
+      "delete": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Delete one block",
+        "operationId": "e63bc6355a1dd9433b8ff4bb6a57eeb1",
+        "parameters": [
+          {
+            "name": "blockId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Block deleted"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Block not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Overlay fields onto a stored block",
+        "description": "The payload is merged over the stored one, so a partial body only changes the fields it names.",
+        "operationId": "444ce9cfac42c6c991a5bf2034686511",
+        "parameters": [
+          {
+            "name": "blockId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "payload"
+                ],
+                "properties": {
+                  "type": {
+                    "description": "Block type name or numeric id; defaults to the stored type",
+                    "example": "Text"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored block, after hydration and sanitization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsBlockSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Block not found"
+          },
+          "422": {
+            "description": "Unusable block type or a missing required field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cms/blocks/{blockId}/move": {
+      "post": {
+        "tags": [
+          "cms"
+        ],
+        "summary": "Move a block one position up or down within its page and locale",
+        "operationId": "c6705f037e5bacb2ae7d97239ee66ffa",
+        "parameters": [
+          {
+            "name": "blockId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "direction"
+                ],
+                "properties": {
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "up",
+                      "down"
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The page blocks in their new order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsBlockList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Block not found"
+          },
+          "422": {
+            "description": "Direction other than up or down"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/images/missing-alt": {
+      "get": {
+        "tags": [
+          "images"
+        ],
+        "summary": "List images missing per-language alt text (keyset-paginated)",
+        "operationId": "b11e57359329fb4589c6d5ee4965870d",
+        "parameters": [
+          {
+            "name": "after_id",
+            "in": "query",
+            "description": "Keyset cursor: only scan images with a larger ID",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Candidates scanned per page (matching items may be fewer)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page of images still missing alt text in at least one required locale",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissingAltImageList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/images/{id}/content": {
+      "get": {
+        "tags": [
+          "images"
+        ],
+        "summary": "Stream a downscaled preview of the original image",
+        "operationId": "d930668b5d43bc00a907c90d022413c3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preview bytes (usually image/webp; the original media type when conversion fails)"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Image or its original file not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/images/{id}/alt": {
+      "put": {
+        "tags": [
+          "images"
+        ],
+        "summary": "Store alt text for one image, keyed by locale",
+        "operationId": "2bc4a8a9359442b288694d0e55eee79c",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "alt"
+                ],
+                "properties": {
+                  "alt": {
+                    "description": "Locale => alt text; empty string unsets",
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refreshed item with recomputed required/missing locales",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissingAltImageItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "Image not found"
+          },
+          "422": {
+            "description": "A locale outside the image's required set"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/security/incidents": {
+      "get": {
+        "tags": [
+          "security"
+        ],
+        "summary": "List recent security incidents",
+        "operationId": "9b7b4db1c99f8c2e42375f1e71bf185e",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "description": "ISO-8601 datetime lower bound on endedAt",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/security/incidents/{id}": {
+      "get": {
+        "tags": [
+          "security"
+        ],
+        "summary": "Get a single security incident with full provider reports",
+        "operationId": "1de8fe1ec2dd1212f93cdbce1173219e",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          },
+          "404": {
+            "description": "Incident not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/seo/status": {
+      "get": {
+        "tags": [
+          "seo"
+        ],
+        "summary": "SEO health for one property, with deltas since last pull",
+        "operationId": "f90298344e4d4d8d941263af19da8cd1",
+        "parameters": [
+          {
+            "name": "property",
+            "in": "query",
+            "description": "Property id; defaults to the first enabled one",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compact current state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeoStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "No monitored property"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/seo/issues": {
+      "get": {
+        "tags": [
+          "seo"
+        ],
+        "summary": "List detected SEO issues",
+        "operationId": "2e6144ba82b927cdd3facac000a0a10c",
+        "parameters": [
+          {
+            "name": "property",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "open",
+              "enum": [
+                "open",
+                "resolved",
+                "all"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Issue list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeoIssueList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "404": {
+            "description": "No monitored property"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/seo/actions": {
+      "get": {
+        "tags": [
+          "seo"
+        ],
+        "summary": "List recently logged SEO actions",
+        "operationId": "0ea487d3cab3ba839c14cc80bbb078dc",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeoActionList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "seo"
+        ],
+        "summary": "Log an SEO-relevant action for later attribution",
+        "operationId": "19fa40d8b006bcf80eac86d3d4a85e0b",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "kind",
+                  "title"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "deploy",
+                      "content",
+                      "canonical",
+                      "sitemap",
+                      "structured_data",
+                      "config",
+                      "other"
+                    ]
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "detail": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "git_sha": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "issue_id": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "occurred_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeoAction"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role or scope"
+          },
+          "422": {
+            "description": "Unknown action kind or unparseable timestamp"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/logs/cron": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "List recent cron run log entries",
+        "operationId": "a78177ced78ef1fd6ed77f6226d06138",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated cron log list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CronLogList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/logs/cron/{id}": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Get a single cron log entry",
+        "operationId": "71a45394f6a2dd093cdac0490cd15378",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cron log detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CronLogDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          },
+          "404": {
+            "description": "Cron log not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/logs/sendlog": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "List email send-log entries",
+        "operationId": "e0bda2f51796ed5416d9f282bafe962d",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated sendlog list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendlogList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/logs/sendlog/{id}": {
+      "get": {
+        "tags": [
+          "logs"
+        ],
+        "summary": "Get a single send-log entry",
+        "operationId": "615a2c87510e3d8640d731c29aae3c20",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sendlog detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendlogDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Insufficient role"
+          },
+          "404": {
+            "description": "Sendlog entry not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/groups/{groupSlug}/cms": {
+      "get": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "List a group's CMS pages",
+        "operationId": "eb6dd6468a8d72d76fddadd5f2729749",
+        "parameters": [
+          {
+            "name": "groupSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "weiqi-club"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Two-letter language code. If omitted, each item's first available language is used. If given but the page lacks that language, falls back to 'en' (or the first available).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of CMS pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsPageList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{groupSlug}/cms/{cmsSlug}": {
+      "get": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "Get a CMS page metadata by group and slug",
+        "operationId": "0f91371cb611ff327c59f146a7438cf0",
+        "parameters": [
+          {
+            "name": "groupSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "platform"
+            }
+          },
+          {
+            "name": "cmsSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "about"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CMS page metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CmsPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found, or page not found / not visible in this group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}/rsvp": {
+      "post": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "RSVP yes to an event",
+        "operationId": "df4effc912f06e62f5d59da98050bfaf",
+        "responses": {
+          "200": {
+            "description": "RSVP added (or already present)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RsvpResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed (group membership / blocked)"
+          },
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Event canceled or already started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Remove RSVP from an event",
+        "operationId": "6e371c84b405a3267204e75014f8592a",
+        "responses": {
+          "200": {
+            "description": "RSVP removed (or already absent)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RsvpResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed"
+          },
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Event canceled or already started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/comments": {
+      "post": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Post a comment on an event",
+        "operationId": "7850bf33d0c66a5bc68df70f9ab8a047",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty or over-long content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/comments/{commentId}": {
+      "delete": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Delete an event comment (own or admin)",
+        "operationId": "fce7fdfa8826ec1ab92c6882887fedc0",
+        "responses": {
+          "204": {
+            "description": "Comment deleted"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not your comment and not admin"
+          },
+          "404": {
+            "description": "Comment or event not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/images": {
+      "post": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Upload an image to an event",
+        "operationId": "687af32c249969810630cd7c5b598d14",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Image uploaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageUploaded"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No file or unsupported format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/images/{imageId}": {
+      "delete": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Delete an event image (own upload or admin)",
+        "operationId": "d6983599af553919c41b1da8cd1685bb",
+        "responses": {
+          "204": {
+            "description": "Image deleted"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not your image and not admin"
+          },
+          "404": {
+            "description": "Image or event not found"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "List public upcoming events",
+        "operationId": "10afd0c3fbf312e7c3fe0eac1c6f8da9",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "ISO-8601 lower bound (default: now)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "ISO-8601 upper bound",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated event list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Get a single event by ID",
+        "operationId": "c200af43cdb71c1f5e7217586b304cf4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found or not visible in current context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{groupSlug}/admin/members": {
+      "get": {
+        "tags": [
+          "group-admin"
+        ],
+        "summary": "List members of a group",
+        "operationId": "2f08a475133a2b3f98d79f7a9e50275c",
+        "parameters": [
+          {
+            "name": "groupSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupMemberList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Caller is not Owner/Organizer of this group"
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/groups/{groupSlug}/admin/settings": {
+      "get": {
+        "tags": [
+          "group-admin"
+        ],
+        "summary": "Read a group settings",
+        "operationId": "4732e209293b73fd934f20f5586fe36d",
+        "parameters": [
+          {
+            "name": "groupSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "weiqi-club"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "403": {
+            "description": "Caller is not Owner/Organizer of this group"
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/groups": {
+      "get": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "List active groups",
+        "operationId": "c5d09235178bab759fc7b499c77040da",
+        "responses": {
+          "200": {
+            "description": "Array of group summaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{groupSlug}": {
+      "get": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "Get a group by slug",
+        "operationId": "10666dcbe70cb94bc179c7b79b2d26e2",
+        "parameters": [
+          {
+            "name": "groupSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Group detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Get the authenticated user profile",
+        "operationId": "5a3cf67d64398ca3c89e028d86781fc3",
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/rsvps": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "List the authenticated user upcoming RSVPs",
+        "operationId": "f31de8be8245bcbece8c09402db5c580",
+        "responses": {
+          "200": {
+            "description": "Array of upcoming events the user has RSVPed to",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeRsvpList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CmsBlockFieldDefinition": {
+        "required": [
+          "name",
+          "type",
+          "required",
+          "richText"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "description": "string, text, boolean, color or imageList",
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "richText": {
+            "description": "Value passed through the cms.content sanitizer before storage",
+            "type": "boolean"
+          },
+          "default": {
+            "description": "Applied when the field is absent from the payload",
+            "oneOf": [
+              {
+                "type": [
+                  "boolean",
+                  "string"
+                ]
+              },
+              {
+                "type": "array",
+                "items": {}
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "CmsBlockList": {
+        "required": [
+          "pageId",
+          "locale",
+          "items",
+          "total"
+        ],
+        "properties": {
+          "pageId": {
+            "type": "integer"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CmsBlockSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CmsBlockSummary": {
+        "required": [
+          "id",
+          "pageId",
+          "locale",
+          "type",
+          "typeId",
+          "priority",
+          "payload"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "pageId": {
+            "type": "integer"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Block type name, as accepted by the write endpoints",
+            "type": "string"
+          },
+          "typeId": {
+            "description": "Numeric block type, as stored",
+            "type": "integer"
+          },
+          "priority": {
+            "type": "number",
+            "format": "float"
+          },
+          "imageId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "payload": {
+            "description": "Stored block payload, after hydration and sanitization",
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "type": "object"
+      },
+      "CmsBlockTypeCatalog": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CmsBlockTypeDefinition"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CmsBlockTypeDefinition": {
+        "required": [
+          "id",
+          "name",
+          "implemented",
+          "fields"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "implemented": {
+            "description": "False for types the core does not hydrate yet; writing one returns 422",
+            "type": "boolean"
+          },
+          "imageSupport": {
+            "description": "None, Optional or Required",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supportsImageRight": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "isGallery": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CmsBlockFieldDefinition"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "CmsPageSummary": {
+        "required": [
+          "id",
+          "slug",
+          "published",
+          "locked",
+          "languages",
+          "blockCounts"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "groupSlug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "groupName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blockCounts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "CmsPageSummaryList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CmsPageSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CronLogDetail": {
+        "required": [
+          "id",
+          "runAt",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "runAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "tasks": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "type": "object"
+      },
+      "CronLogList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CronLogSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CronLogSummary": {
+        "required": [
+          "id",
+          "runAt",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "runAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "GroupMember": {
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "blocked": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "GroupMemberList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupMember"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "GroupSettings": {
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "IncidentDetail": {
+        "required": [
+          "id",
+          "severity",
+          "startedAt",
+          "endedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "triggeredBy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "blockedUntil": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "countryCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sessionId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "userAgent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerReports": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "type": "object"
+      },
+      "IncidentList": {
+        "required": [
+          "items",
+          "total",
+          "limit"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IncidentSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "IncidentSummary": {
+        "required": [
+          "id",
+          "severity",
+          "startedAt",
+          "endedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "triggeredBy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "blockedUntil": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "countryCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "MissingAltImageItem": {
+        "required": [
+          "id",
+          "hash",
+          "type",
+          "requiredLocales",
+          "missingLocales",
+          "current",
+          "contentUrl"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "requiredLocales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missingLocales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "current": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "contentUrl": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MissingAltImageList": {
+        "required": [
+          "sourceLocale",
+          "items",
+          "nextAfterId"
+        ],
+        "properties": {
+          "sourceLocale": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MissingAltImageItem"
+            }
+          },
+          "nextAfterId": {
+            "description": "Keyset cursor for the next page; null when the scan reached the end",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SendlogDetail": {
+        "required": [
+          "id",
+          "recipient",
+          "subject",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "template": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sender": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lang": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerDispatchedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "errorMessage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SendlogList": {
+        "required": [
+          "items",
+          "total",
+          "limit"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SendlogSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SendlogSummary": {
+        "required": [
+          "id",
+          "recipient",
+          "subject",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "template": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SeoAction": {
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "occurredAt",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "gitSha": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "occurredAt": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "api"
+            ]
+          },
+          "issueId": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "author": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SeoActionList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeoAction"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SeoIssue": {
+        "required": [
+          "id",
+          "kind",
+          "severity",
+          "fingerprint"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "subject": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "firstSeen": {
+            "type": "string"
+          },
+          "lastSeen": {
+            "type": "string"
+          },
+          "resolvedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "SeoIssueList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeoIssue"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SeoStatus": {
+        "required": [
+          "property",
+          "health",
+          "openIssues"
+        ],
+        "properties": {
+          "property": {
+            "type": "string"
+          },
+          "health": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "ok",
+              "warning",
+              "critical"
+            ]
+          },
+          "lastPullAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "googleOk": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "bingOk": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "googleNote": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "bingNote": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "openIssues": {
+            "type": "integer"
+          },
+          "criticalIssues": {
+            "type": "integer"
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "deltas": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "CmsPage": {
+        "required": [
+          "slug",
+          "title",
+          "linkName",
+          "languages",
+          "webUrl"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "linkName": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
+      "CmsPageList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CmsPage"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "CommentCreated": {
+        "required": [
+          "id",
+          "content"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "content": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EventDetail": {
+        "required": [
+          "id",
+          "title",
+          "start",
+          "rsvpCount",
+          "detailUrl",
+          "webUrl",
+          "images"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "teaser": {
+            "description": "Plain text summary shown in listings.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stop": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "type": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "rsvpCount": {
+            "type": "integer"
+          },
+          "previewImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "detailUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "description": "Plain text. Formatting authored in the rich editor is flattened to newlines.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "location": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EventLocation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "EventList": {
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "EventLocation": {
+        "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "street": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "postcode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "EventSummary": {
+        "required": [
+          "id",
+          "title",
+          "start",
+          "rsvpCount",
+          "detailUrl",
+          "webUrl"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "teaser": {
+            "description": "Plain text summary shown in listings.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stop": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "type": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "rsvpCount": {
+            "type": "integer"
+          },
+          "previewImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "detailUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "webUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
+      "GroupDetail": {
+        "required": [
+          "slug",
+          "name",
+          "detailUrl",
+          "languages",
+          "memberCount"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "detailUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "previewImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "memberCount": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "GroupList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "GroupSummary": {
+        "required": [
+          "slug",
+          "name",
+          "detailUrl"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "detailUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
+      "HealthStatus": {
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          }
+        },
+        "type": "object"
+      },
+      "ImageUploaded": {
+        "required": [
+          "id",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
+      "MeProfile": {
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "status",
+          "locale"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "bio": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "MeRsvpList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RsvpResult": {
+        "required": [
+          "rsvp",
+          "rsvpCount"
+        ],
+        "properties": {
+          "rsvp": {
+            "type": "boolean"
+          },
+          "rsvpCount": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ValidationErrorResponse": {
+        "required": [
+          "error",
+          "errors"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "pat": {
+        "type": "http",
+        "description": "Personal Access Token. Issue at /profile/access-tokens, then send as `Authorization: Bearer mapat_...`. Carries the issuing user's identity.",
+        "bearerFormat": "mapat_...",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "cms",
+      "description": "CMS page and block authoring. Reserved for users with ROLE_ADMIN."
+    },
+    {
+      "name": "images",
+      "description": "Per-language image alt text. Reserved for users with ROLE_ADMIN."
+    },
+    {
+      "name": "security",
+      "description": "Security incident feed. Read-only, reserved for users with ROLE_ADMIN."
+    },
+    {
+      "name": "seo",
+      "description": "Search-engine monitoring status, issues and actions. Reserved for users with ROLE_ADMIN."
+    },
+    {
+      "name": "logs",
+      "description": "Cron and email send logs. Read-only, reserved for users with ROLE_ADMIN."
+    },
+    {
+      "name": "event-actions",
+      "description": "Authenticated user actions on events: RSVP, comments, image upload"
+    },
+    {
+      "name": "events",
+      "description": "Public event listings and detail"
+    },
+    {
+      "name": "group-admin",
+      "description": "Group-scoped admin actions. Requires Owner or Organizer role in the named group, or platform ROLE_ADMIN."
+    },
+    {
+      "name": "groups",
+      "description": "Tenant groups (multisite)"
+    },
+    {
+      "name": "me",
+      "description": "Authenticated user (token-scoped reads)"
+    },
+    {
+      "name": "status",
+      "description": "status"
+    }
+  ]
+}

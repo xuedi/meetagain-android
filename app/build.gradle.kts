@@ -5,6 +5,7 @@ plugins {
 }
 
 val appVersion = "0.1.0"
+val openApiSpec = rootProject.file("api/openapi.json").path
 val debugBaseUrl = providers.gradleProperty("meetagain.baseUrl").getOrElse("http://localhost:8000")
 
 android {
@@ -44,6 +45,10 @@ android {
         includeInBundle = false
     }
 
+    testOptions {
+        unitTests.all { it.systemProperty("openapi.spec", openApiSpec) }
+    }
+
     lint {
         warningsAsErrors = true
         abortOnError = true
@@ -68,6 +73,11 @@ dependencies {
     implementation(libs.navigation3.ui)
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
+    implementation(libs.okhttp)
 
     debugImplementation(libs.compose.ui.tooling)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockwebserver)
 }

@@ -53,3 +53,7 @@ fix:
 release:
     ./gradlew :app:assembleRelease
     @ls -l app/build/outputs/apk/release/*.apk
+
+# Fetch the server's API description, the copy the contract test checks against
+api-refresh:
+    curl -fsS https://meetagain.org/api/openapi.json | python3 -m json.tool --indent 2 > api/openapi.json
