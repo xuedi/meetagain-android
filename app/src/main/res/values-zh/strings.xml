@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="start_tagline">与朋友再次相聚的地方</string>
+    <string name="start_body">应用仍在开发中。在此之前，所有内容都在 meetagain.org 上。</string>
     <string name="about_title">关于</string>
+    <string name="about_version">版本</string>
+    <string name="about_version_test_build">%1$s，测试版</string>
+    <string name="about_server">服务器</string>
+    <string name="about_server_checking">正在检查连接</string>
+    <string name="about_server_reachable">已连接</string>
+    <string name="about_server_offline">没有网络连接。请检查你的网络。</string>
+    <string name="about_server_timeout">服务器没有及时响应。</string>
+    <string name="about_server_http_error">服务器返回了错误（%1$d）。</string>
+    <string name="about_server_malformed">服务器返回了应用无法识别的内容。</string>
+    <string name="retry">再试一次</string>
+    <string name="about_language">语言</string>
+    <string name="about_language_follows_device">跟随设备语言</string>
+    <string name="about_privacy">隐私</string>
+    <string name="about_imprint">版权页</string>
+    <string name="navigate_back">返回</string>
 </resources>

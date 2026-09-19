@@ -3,7 +3,10 @@ package org.meetagain.app.core.network
 import java.io.IOException
 import java.io.InterruptedIOException
 import kotlin.coroutines.resume
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -18,26 +21,28 @@ class ApiClient(
     baseUrl: String,
     private val http: OkHttpClient,
     private val json: Json,
-    private val languageTag: () -> String
+    private val languageTag: () -> String,
+    private val io: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val base = baseUrl.toHttpUrl()
 
     suspend fun status(): ApiResult<Status> = get("api/status", Status.serializer())
 
-    private suspend fun <T> get(path: String, deserializer: DeserializationStrategy<T>): ApiResult<T> {
-        val request = Request.Builder()
-            .url(base.newBuilder().addPathSegments(path).build())
-            .header("Accept", "application/json")
-            .header("Accept-Language", languageTag())
-            .build()
-        return try {
-            http.newCall(request).await().use { response -> response.toResult(deserializer) }
-        } catch (_: InterruptedIOException) {
-            ApiResult.Failure(ApiError.Timeout)
-        } catch (_: IOException) {
-            ApiResult.Failure(ApiError.Offline)
+    private suspend fun <T> get(path: String, deserializer: DeserializationStrategy<T>): ApiResult<T> =
+        withContext(io) {
+            val request = Request.Builder()
+                .url(base.newBuilder().addPathSegments(path).build())
+                .header("Accept", "application/json")
+                .header("Accept-Language", languageTag())
+                .build()
+            try {
+                http.newCall(request).await().use { response -> response.toResult(deserializer) }
+            } catch (_: InterruptedIOException) {
+                ApiResult.Failure(ApiError.Timeout)
+            } catch (_: IOException) {
+                ApiResult.Failure(ApiError.Offline)
+            }
         }
-    }
 
     private fun <T> Response.toResult(deserializer: DeserializationStrategy<T>): ApiResult<T> {
         val text = body.string()

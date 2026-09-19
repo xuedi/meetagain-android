@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="start_tagline">Wo sich alle wiedersehen</string>
+    <string name="start_body">Die App ist noch im Aufbau. Bis dahin findest du alles auf meetagain.org.</string>
     <string name="about_title">Über die App</string>
+    <string name="about_version">Version</string>
+    <string name="about_version_test_build">%1$s, Testversion</string>
+    <string name="about_server">Server</string>
+    <string name="about_server_checking">Verbindung wird geprüft</string>
+    <string name="about_server_reachable">Verbunden</string>
+    <string name="about_server_offline">Keine Verbindung. Prüfe deinen Internetzugang.</string>
+    <string name="about_server_timeout">Der Server hat nicht rechtzeitig geantwortet.</string>
+    <string name="about_server_http_error">Der Server hat mit einem Fehler geantwortet (%1$d).</string>
+    <string name="about_server_malformed">Der Server hat eine Antwort geschickt, die die App nicht versteht.</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="about_language">Sprache</string>
+    <string name="about_language_follows_device">Folgt der Gerätesprache</string>
+    <string name="about_privacy">Datenschutz</string>
+    <string name="about_imprint">Impressum</string>
+    <string name="navigate_back">Zurück</string>
 </resources>

@@ -8,6 +8,6 @@ class MeetAgainApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        container = AppContainer(baseUrl = BuildConfig.BASE_URL)
+        container = AppContainer(AppInfo(BuildConfig.VERSION_NAME, BuildConfig.DEBUG, BuildConfig.BASE_URL))
     }
 }
