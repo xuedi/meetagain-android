@@ -6,5 +6,6 @@
     <issue id="AndroidGradlePluginVersion" severity="ignore" />
     <!-- targetSdk follows Google Play's requirement, compileSdk follows the Compose BOM. -->
     <issue id="OldTargetApi" severity="ignore" />
-    <issue id="MissingApplicationIcon" severity="ignore" />
+    <!-- A themed icon flattens the mark's gradient: a new brand variant that waits for the brand owner. -->
+    <issue id="MonochromeLauncherIcon" severity="ignore" />
 </lint>
