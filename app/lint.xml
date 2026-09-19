@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Renovate owns version updates; lint must not fail a build because a newer release exists. -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <!-- targetSdk follows Google Play's requirement, compileSdk follows the Compose BOM. -->
+    <issue id="OldTargetApi" severity="ignore" />
+    <issue id="MissingApplicationIcon" severity="ignore" />
+</lint>

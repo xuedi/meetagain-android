@@ -9,3 +9,8 @@ Thumbs.db
 /.vscode/
 /.zed/
 /tmp/
+.gradle/
+.kotlin/
+build/
+local.properties
+captures/
