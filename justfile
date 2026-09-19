@@ -41,10 +41,15 @@ logcat:
 test:
     ./gradlew :app:testDebugUnitTest
 
-# Everything CI checks: format, lint, tests, the release build, no literals in the UI
+# Record the reference screenshots after an intended UI change
+screenshots:
+    ./gradlew :app:recordRoborazziDebug
+
+# Everything CI checks: format, lint, tests and screenshots, no literals in the UI, the release APK guard
 check:
-    ./gradlew spotlessCheck :app:lintRelease :app:testDebugUnitTest :app:assembleRelease
+    ./gradlew spotlessCheck :app:lintRelease :app:verifyRoborazziDebug :app:assembleRelease
     scripts/check-literals.sh
+    scripts/check-dependencies.sh
 
 # Format the Kotlin sources
 fix:
