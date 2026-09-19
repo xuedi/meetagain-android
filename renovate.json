@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    {
+      "groupName": "AndroidX and Compose",
+      "matchPackageNames": ["androidx.**", "com.android.application"]
+    },
+    {
+      "groupName": "Kotlin",
+      "matchPackageNames": ["org.jetbrains.kotlin**", "org.jetbrains.kotlinx**"]
+    },
+    {
+      "groupName": "Test and build tools",
+      "matchPackageNames": [
+        "junit:junit",
+        "app.cash.turbine:**",
+        "org.robolectric:**",
+        "io.github.takahirom.roborazzi**",
+        "com.diffplug.spotless**",
+        "com.squareup.okhttp3:mockwebserver3"
+      ]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"]
+    }
+  ]
+}
