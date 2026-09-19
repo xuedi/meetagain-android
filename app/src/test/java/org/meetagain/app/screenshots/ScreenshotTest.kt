@@ -10,11 +10,20 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.meetagain.app.AppInfo
+import org.meetagain.app.core.network.ApiError
+import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.feature.about.AboutScreen
 import org.meetagain.app.feature.about.AboutUiState
 import org.meetagain.app.feature.about.ServerCheck
+import org.meetagain.app.feature.event.EventScreen
+import org.meetagain.app.feature.explore.ExploreScreen
+import org.meetagain.app.feature.explore.ExploreTab
+import org.meetagain.app.feature.explore.ExploreUiState
+import org.meetagain.app.feature.group.GroupPage
+import org.meetagain.app.feature.group.GroupScreen
 import org.meetagain.app.feature.start.StartScreen
 import org.meetagain.app.testing.DeviceSettings
+import org.meetagain.app.testing.Samples
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -36,7 +45,52 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
     }
 
     @Test
-    fun start() = capture("start") { StartScreen(onOpenAbout = {}) }
+    fun start() = capture("start") { StartScreen(onLookAround = {}, onOpenAbout = {}) }
+
+    @Test
+    fun exploreEvents() = capture("explore_events") { Explore(ExploreUiState(Loadable.Loaded(Samples.upcoming))) }
+
+    @Test
+    fun exploreEventsIncomplete() = capture("explore_events_incomplete") {
+        Explore(ExploreUiState(Loadable.Loaded(Samples.upcoming.copy(complete = false))))
+    }
+
+    @Test
+    fun exploreGroups() = capture("explore_groups") {
+        Explore(ExploreUiState(groups = Loadable.Loaded(Samples.groups)), ExploreTab.Groups)
+    }
+
+    @Test
+    fun exploreOffline() = capture("explore_offline") { Explore(ExploreUiState(Loadable.Failed(ApiError.Offline))) }
+
+    @Test
+    fun event() = capture("event") {
+        EventScreen(Loadable.Loaded(Samples.eventDetails), onBack = {
+        }, onRetry = {}, onOpenMap = {}, onOpenWebsite = {})
+    }
+
+    @Test
+    fun group() = capture("group") {
+        GroupScreen(
+            Loadable.Loaded(GroupPage(Samples.groupDetails, Samples.upcoming)),
+            onBack = {},
+            onRetry = {},
+            onOpenEvent = {},
+            onOpenWebsite = {}
+        )
+    }
+
+    @Composable
+    private fun Explore(state: ExploreUiState, tab: ExploreTab = ExploreTab.Events) = ExploreScreen(
+        state = state,
+        onBack = {},
+        onRefreshEvents = {},
+        onRefreshGroups = {},
+        onOpenEvent = {},
+        onOpenGroup = {},
+        onOpenAllEvents = {},
+        initialTab = tab
+    )
 
     @Test
     fun about() = capture("about") {

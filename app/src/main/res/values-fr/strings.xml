@@ -18,4 +18,38 @@
     <string name="about_privacy">Confidentialité</string>
     <string name="about_imprint">Mentions légales</string>
     <string name="navigate_back">Retour</string>
+    <string name="start_look_around">Jeter un œil</string>
+    <string name="explore_title">Événements et groupes publics</string>
+    <string name="explore_tab_events">Événements</string>
+    <string name="explore_tab_groups">Groupes</string>
+    <string name="loading">Chargement</string>
+    <string name="error_offline">Pas de connexion. Vérifie ton accès à Internet.</string>
+    <string name="error_timeout">Le serveur n\'a pas répondu à temps.</string>
+    <string name="error_server">Le serveur a répondu par une erreur (%1$d).</string>
+    <string name="error_malformed">Le serveur a envoyé une réponse que l\'application ne comprend pas.</string>
+    <string name="error_not_found">Introuvable. Il a peut-être été supprimé.</string>
+    <string name="list_separator">", "</string>
+    <string name="events_end">C\'est tout ce qui est prévu.</string>
+    <string name="events_end_more">Il y a d\'autres événements sur le site.</string>
+    <string name="events_empty">Aucun événement à venir.</string>
+    <string name="events_open_website">Tous les événements sur meetagain.org</string>
+    <string name="groups_end">Ce sont tous les groupes publics.</string>
+    <string name="groups_empty">Pas encore de groupe public.</string>
+    <string name="event_kind_outdoor">Plein air</string>
+    <string name="event_kind_dinner">Dîner</string>
+    <string name="event_open_map">Ouvrir dans les cartes</string>
+    <string name="event_open_website">Ouvrir sur le site</string>
+    <string name="event_photos">Photos</string>
+    <string name="group_upcoming">Événements à venir</string>
+    <string name="group_website">Site web</string>
+    <plurals name="event_going">
+        <item quantity="one">%d participant</item>
+        <item quantity="many">%d participants</item>
+        <item quantity="other">%d participants</item>
+    </plurals>
+    <plurals name="group_members">
+        <item quantity="one">%d membre</item>
+        <item quantity="many">%d membres</item>
+        <item quantity="other">%d membres</item>
+    </plurals>
 </resources>

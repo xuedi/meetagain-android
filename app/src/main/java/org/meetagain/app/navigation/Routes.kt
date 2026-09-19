@@ -8,3 +8,12 @@ data object Start : NavKey
 
 @Serializable
 data object About : NavKey
+
+@Serializable
+data object Explore : NavKey
+
+@Serializable
+data class EventDetail(val id: Int) : NavKey
+
+@Serializable
+data class GroupPage(val slug: String) : NavKey

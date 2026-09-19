@@ -1,0 +1,77 @@
+{
+    "items": [
+        {
+            "slug": "another-country-bookshop",
+            "name": "Another Country Bookshop",
+            "visibility": "public",
+            "domain": "another-country.meetagain.org",
+            "logoUrl": "https://meetagain.org/images/thumbnails/e3ef16ec7c245bfa476fa7c97a9b94c24b9c9c3f_h120.webp",
+            "detailUrl": "https://meetagain.org/api/v1/groups/another-country-bookshop"
+        },
+        {
+            "slug": "berlin-activities",
+            "name": "Berlin Activities",
+            "visibility": "public",
+            "domain": "berlin-activities.meetagain.org",
+            "logoUrl": null,
+            "detailUrl": "https://meetagain.org/api/v1/groups/berlin-activities"
+        },
+        {
+            "slug": "movienight",
+            "name": "Berlin Filmclub",
+            "visibility": "private",
+            "domain": "berlin-filmclub.de",
+            "logoUrl": "https://meetagain.org/images/thumbnails/61392bba73e164d0e43789efd87387c0596d3ba9_h120.webp",
+            "detailUrl": "https://meetagain.org/api/v1/groups/movienight"
+        },
+        {
+            "slug": "berlin-private-bookclub",
+            "name": "Classics Bookclub",
+            "visibility": "hidden",
+            "domain": "classics-bookclub.meetagain.org",
+            "logoUrl": null,
+            "detailUrl": "https://meetagain.org/api/v1/groups/berlin-private-bookclub"
+        },
+        {
+            "slug": "my-community",
+            "name": "Dragon Descendants",
+            "visibility": "public",
+            "domain": "dragon-descendants.de",
+            "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp",
+            "detailUrl": "https://meetagain.org/api/v1/groups/my-community"
+        },
+        {
+            "slug": "german-english-language-exchange-in-berlin",
+            "name": "German English Language Exchange",
+            "visibility": "public",
+            "domain": "travolta-meetup.de",
+            "logoUrl": null,
+            "detailUrl": "https://meetagain.org/api/v1/groups/german-english-language-exchange-in-berlin"
+        },
+        {
+            "slug": "meetagain-developers",
+            "name": "MeetAgain Developers",
+            "visibility": "private",
+            "domain": "code.meetagain.org",
+            "logoUrl": null,
+            "detailUrl": "https://meetagain.org/api/v1/groups/meetagain-developers"
+        },
+        {
+            "slug": "paikuuhan",
+            "name": "Paikuuhan",
+            "visibility": "hidden",
+            "domain": "paikuuhan.meetagain.org",
+            "logoUrl": null,
+            "detailUrl": "https://meetagain.org/api/v1/groups/paikuuhan"
+        },
+        {
+            "slug": "main-site",
+            "name": "Platform",
+            "visibility": "hidden",
+            "domain": "meetagain.org",
+            "logoUrl": "https://meetagain.org/images/thumbnails/285fe2c5dc7870fcdb03385f1c489d60a64db652_h120.webp",
+            "detailUrl": "https://meetagain.org/api/v1/groups/main-site"
+        }
+    ],
+    "total": 9
+}

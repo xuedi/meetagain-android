@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,7 +26,7 @@ import org.meetagain.app.R
 
 /** The signed-out start screen. It has no state, so it has no ViewModel. */
 @Composable
-fun StartScreen(onOpenAbout: () -> Unit) {
+fun StartScreen(onLookAround: () -> Unit, onOpenAbout: () -> Unit) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -53,6 +54,7 @@ fun StartScreen(onOpenAbout: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
+            Button(onClick = onLookAround) { Text(stringResource(R.string.start_look_around)) }
             TextButton(onClick = onOpenAbout) { Text(stringResource(R.string.about_title)) }
         }
     }

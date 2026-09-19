@@ -1,6 +1,8 @@
 package org.meetagain.app.core.network
 
 import java.time.Duration
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -47,6 +49,56 @@ class ApiClientTest {
         assertEquals("/api/status", request.url.encodedPath)
         assertEquals("application/json", request.headers["Accept"])
         assertEquals("de-DE", request.headers["Accept-Language"])
+    }
+
+    @Test
+    fun `events are asked for from a time, with a limit and optionally a group`() = runTest {
+        respond(200, "events.json")
+        respond(200, "events.json")
+        val from = OffsetDateTime.of(2026, 9, 19, 10, 30, 15, 123_000_000, ZoneOffset.ofHours(2))
+        val all = client().events(from, limit = 100)
+        client().events(from, limit = 100, group = "my-community")
+
+        val events = (all as ApiResult.Success).value
+        assertEquals(28, events.total)
+        assertEquals(117, events.items.first().id)
+        assertEquals("2026-09-22T19:00:00+02:00", events.items.first().start)
+        val plain = server.takeRequest().url
+        assertEquals("/api/v1/events", plain.encodedPath)
+        assertEquals("2026-09-19T10:30:15+02:00", plain.queryParameter("from"))
+        assertEquals("100", plain.queryParameter("limit"))
+        assertEquals(null, plain.queryParameter("group"))
+        assertEquals("my-community", server.takeRequest().url.queryParameter("group"))
+    }
+
+    @Test
+    fun `event detail is parsed`() = runTest {
+        respond(200, "event-detail.json")
+        val event = (client().event(117) as ApiResult.Success).value
+        assertEquals("/api/v1/events/117", server.takeRequest().url.encodedPath)
+        assertEquals("Travolta", event.location?.name)
+        assertEquals("10999", event.location?.postcode)
+    }
+
+    @Test
+    fun `groups are parsed`() = runTest {
+        respond(200, "groups.json")
+        val groups = (client().groups() as ApiResult.Success).value
+        assertEquals("/api/v1/groups", server.takeRequest().url.encodedPath)
+        assertEquals(9, groups.items.size)
+        assertEquals("public", groups.items.first().visibility)
+    }
+
+    @Test
+    fun `group detail is parsed and the slug is one path segment`() = runTest {
+        respond(200, "group-detail.json")
+        respond(404, "error-not-found.json")
+        val group = (client().group("my-community") as ApiResult.Success).value
+        assertEquals("/api/v1/groups/my-community", server.takeRequest().url.encodedPath)
+        assertEquals(45, group.memberCount)
+        assertEquals(listOf("de", "en", "zh"), group.languages)
+        assertEquals(ApiResult.Failure(ApiError.Http(404, "Not found")), client().group("a/b"))
+        assertEquals("/api/v1/groups/a%2Fb", server.takeRequest().url.encodedPath)
     }
 
     @Test

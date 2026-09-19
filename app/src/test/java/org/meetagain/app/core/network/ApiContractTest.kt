@@ -6,8 +6,11 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -20,7 +23,14 @@ import org.junit.Test
  */
 class ApiContractTest {
     private val dtos: Map<String, SerialDescriptor> = mapOf(
-        "HealthStatus" to Status.serializer().descriptor
+        "HealthStatus" to Status.serializer().descriptor,
+        "EventList" to EventListDto.serializer().descriptor,
+        "EventSummary" to EventSummaryDto.serializer().descriptor,
+        "EventDetail" to EventDetailDto.serializer().descriptor,
+        "EventLocation" to EventLocationDto.serializer().descriptor,
+        "GroupList" to GroupListDto.serializer().descriptor,
+        "GroupSummary" to GroupSummaryDto.serializer().descriptor,
+        "GroupDetail" to GroupDetailDto.serializer().descriptor
     )
 
     private val schemas: JsonObject by lazy {
@@ -42,8 +52,8 @@ class ApiContractTest {
         return (0 until descriptor.elementsCount).mapNotNull { index ->
             val field = descriptor.getElementName(index)
             val element = descriptor.getElementDescriptor(index)
-            val property = properties[field]?.jsonObject ?: return@mapNotNull "$name.$field: not in the schema"
-            val nullable = property["nullable"]?.jsonPrimitive?.boolean == true
+            val declared = properties[field]?.jsonObject ?: return@mapNotNull "$name.$field: not in the schema"
+            val (property, nullable) = resolve(declared)
             val optional = descriptor.isElementOptional(index)
             when {
                 !typeMatches(element.kind, property) ->
@@ -57,6 +67,25 @@ class ApiContractTest {
                 else -> null
             }
         }
+    }
+
+    /**
+     * The property without its null alternative, and whether null is allowed: OpenAPI 3.0's `nullable`, 3.1's
+     * `type: [x, "null"]`, or `oneOf: [x, {type: null}]`.
+     */
+    private fun resolve(property: JsonObject): Pair<JsonObject, Boolean> {
+        val oneOf = property["oneOf"]?.jsonArray?.map { it.jsonObject }
+        if (oneOf != null) {
+            val nonNull = oneOf.filterNot { it["type"]?.jsonPrimitive?.contentOrNull == "null" }
+            return (nonNull.singleOrNull() ?: property) to (nonNull.size < oneOf.size)
+        }
+        val types = (property["type"] as? JsonArray)?.map { it.jsonPrimitive.content }
+        if (types != null) {
+            val nonNull = types - "null"
+            val single = JsonObject(property + ("type" to JsonPrimitive(nonNull.singleOrNull() ?: nonNull.toString())))
+            return single to (nonNull.size < types.size)
+        }
+        return property to (property["nullable"]?.jsonPrimitive?.boolean == true)
     }
 
     private fun typeMatches(kind: SerialKind, property: JsonObject): Boolean {

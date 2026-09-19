@@ -1,0 +1,55 @@
+{
+  "items": [
+    {
+      "id": 117,
+      "title": "German English Language Exchange",
+      "teaser": "Join us every Tuesday evening at Travolta Bar in Kreuzberg for a casual and fun German-English language exchange. Mark Twain once wrote that there's nothing you can't learn in Berlin except the German language.",
+      "start": "2026-09-22T19:00:00+02:00",
+      "stop": "2026-09-22T22:30:00+02:00",
+      "type": 2,
+      "rsvpCount": 1,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/117",
+      "webUrl": "https://meetagain.org/en/event/117"
+    },
+    {
+      "id": 126,
+      "title": "German English Language Exchange",
+      "teaser": "Join us every Tuesday evening at Travolta Bar in Kreuzberg for a casual and fun German-English language exchange. Mark Twain once wrote that there's nothing you can't learn in Berlin except the German language.",
+      "start": "2026-09-29T19:00:00+02:00",
+      "stop": "2026-09-29T22:30:00+02:00",
+      "type": 2,
+      "rsvpCount": 1,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/126",
+      "webUrl": "https://meetagain.org/en/event/126"
+    },
+    {
+      "id": 91,
+      "title": "Biweekly Chinese-German Exchange",
+      "teaser": "Join our regular Chinese/German meetup in Berlin for cultural exchange, language practice, and cultural exchange. Our meetup is open for everybody. Our members learn Chinese/German, are beginner or fluent/native, and socialize in whatever language they're comfortable with. We meet every second Thursday, but sometimes have other events on different days/locations. Seek out new friends and make new ones.",
+      "start": "2026-10-01T19:00:00+02:00",
+      "stop": "2026-10-01T22:30:00+02:00",
+      "type": 2,
+      "rsvpCount": 3,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/238cb301f894ab4f58d60d8a990b0a69244b215b_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/91",
+      "webUrl": "https://meetagain.org/en/event/91"
+    },
+    {
+      "id": 122,
+      "title": "Quiz night & social gathering",
+      "teaser": "Once a month we meet for quiz night and a social gathering, come by no requirements",
+      "start": "2026-10-02T20:00:00+02:00",
+      "stop": "2026-10-02T23:45:00+02:00",
+      "type": 2,
+      "rsvpCount": 0,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/4eff279294441f72cb26bb065dfe25cb9be18c4f_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/122",
+      "webUrl": "https://meetagain.org/en/event/122"
+    }
+  ],
+  "total": 28,
+  "limit": 100,
+  "offset": 0
+}

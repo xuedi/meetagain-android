@@ -18,4 +18,36 @@
     <string name="about_privacy">Datenschutz</string>
     <string name="about_imprint">Impressum</string>
     <string name="navigate_back">Zurück</string>
+    <string name="start_look_around">Umschauen</string>
+    <string name="explore_title">Öffentliche Events und Gruppen</string>
+    <string name="explore_tab_events">Events</string>
+    <string name="explore_tab_groups">Gruppen</string>
+    <string name="loading">Wird geladen</string>
+    <string name="error_offline">Keine Verbindung. Prüfe deinen Internetzugang.</string>
+    <string name="error_timeout">Der Server hat nicht rechtzeitig geantwortet.</string>
+    <string name="error_server">Der Server hat mit einem Fehler geantwortet (%1$d).</string>
+    <string name="error_malformed">Der Server hat eine Antwort geschickt, die die App nicht versteht.</string>
+    <string name="error_not_found">Das wurde nicht gefunden. Vielleicht wurde es entfernt.</string>
+    <string name="list_separator">", "</string>
+    <string name="events_end">Das ist alles, was ansteht.</string>
+    <string name="events_end_more">Auf der Website gibt es weitere Events.</string>
+    <string name="events_empty">Keine anstehenden Events.</string>
+    <string name="events_open_website">Alle Events auf meetagain.org</string>
+    <string name="groups_end">Das sind alle öffentlichen Gruppen.</string>
+    <string name="groups_empty">Noch keine öffentlichen Gruppen.</string>
+    <string name="event_kind_outdoor">Outdoor</string>
+    <string name="event_kind_dinner">Dinner</string>
+    <string name="event_open_map">In Karten öffnen</string>
+    <string name="event_open_website">Auf der Website öffnen</string>
+    <string name="event_photos">Fotos</string>
+    <string name="group_upcoming">Anstehende Events</string>
+    <string name="group_website">Website</string>
+    <plurals name="event_going">
+        <item quantity="one">%d nimmt teil</item>
+        <item quantity="other">%d nehmen teil</item>
+    </plurals>
+    <plurals name="group_members">
+        <item quantity="one">%d Mitglied</item>
+        <item quantity="other">%d Mitglieder</item>
+    </plurals>
 </resources>

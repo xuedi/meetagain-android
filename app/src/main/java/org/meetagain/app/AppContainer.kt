@@ -3,6 +3,7 @@ package org.meetagain.app
 import java.util.concurrent.TimeUnit
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import org.meetagain.app.core.data.PublicRepository
 import org.meetagain.app.core.i18n.AppLocale
 import org.meetagain.app.core.network.ApiClient
 
@@ -16,4 +17,6 @@ class AppContainer(val appInfo: AppInfo) {
         .build()
 
     val api = ApiClient(appInfo.baseUrl, http, json, languageTag = { AppLocale.current() })
+
+    val publicRepository = PublicRepository(api, appInfo.baseUrl)
 }
