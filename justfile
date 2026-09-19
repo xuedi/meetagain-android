@@ -41,9 +41,10 @@ logcat:
 test:
     ./gradlew :app:testDebugUnitTest
 
-# Everything CI checks: format, lint, tests, the release build
+# Everything CI checks: format, lint, tests, the release build, no literals in the UI
 check:
     ./gradlew spotlessCheck :app:lintRelease :app:testDebugUnitTest :app:assembleRelease
+    scripts/check-literals.sh
 
 # Format the Kotlin sources
 fix:
