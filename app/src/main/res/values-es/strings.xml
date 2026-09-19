@@ -42,6 +42,14 @@
     <string name="event_photos">Fotos</string>
     <string name="group_upcoming">Próximos eventos</string>
     <string name="group_website">Sitio web</string>
+    <string name="calendar_add">Añadir al calendario</string>
+    <string name="calendar_no_app">No hay ninguna aplicación de calendario en este teléfono.</string>
+    <string name="calendar_subscribe">Suscribirse al calendario</string>
+    <string name="calendar_subscribe_intro">Añade este calendario a tu aplicación de calendario y los nuevos eventos aparecerán automáticamente.</string>
+    <string name="calendar_subscribe_heading">Suscríbete a estos eventos</string>
+    <string name="calendar_subscribe_no_app">Este teléfono no tiene ninguna aplicación que se suscriba a calendarios. Una aplicación de suscripción a calendarios, o la web de tu calendario, puede añadir esta dirección.</string>
+    <string name="calendar_copy_address">Copiar dirección</string>
+    <string name="calendar_address_copied">Dirección copiada</string>
     <plurals name="event_going">
         <item quantity="one">%d asiste</item>
         <item quantity="many">%d asisten</item>

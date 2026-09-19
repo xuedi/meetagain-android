@@ -42,6 +42,14 @@
     <string name="event_photos">照片</string>
     <string name="group_upcoming">即将举行的活动</string>
     <string name="group_website">网站</string>
+    <string name="calendar_add">添加到日历</string>
+    <string name="calendar_no_app">这部手机上没有日历应用。</string>
+    <string name="calendar_subscribe">订阅日历</string>
+    <string name="calendar_subscribe_intro">把这个日历添加到你的日历应用，新活动会自动出现。</string>
+    <string name="calendar_subscribe_heading">订阅这些活动</string>
+    <string name="calendar_subscribe_no_app">这部手机上没有可以订阅日历的应用。日历订阅应用或你的日历网站可以添加这个地址。</string>
+    <string name="calendar_copy_address">复制地址</string>
+    <string name="calendar_address_copied">地址已复制</string>
     <plurals name="event_going">
         <item quantity="other">%d 人参加</item>
     </plurals>

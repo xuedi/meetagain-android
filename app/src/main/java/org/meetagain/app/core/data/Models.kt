@@ -42,5 +42,7 @@ data class GroupDetails(
     val description: String?,
     val memberCount: Int,
     /** The group's own website, from its domain. */
-    val websiteUrl: String?
+    val websiteUrl: String?,
+    /** The languages the group publishes in, as language codes. */
+    val languages: List<String>
 )

@@ -112,7 +112,8 @@ class PublicRepository(private val api: ApiClient, baseUrl: String, private val 
         group = Group(slug, name, ownImage(logoUrl)),
         description = description.orNull(),
         memberCount = memberCount,
-        websiteUrl = domain.orNull()?.let { "https://$it" }?.toHttpUrlOrNull()?.toString()
+        websiteUrl = domain.orNull()?.let { "https://$it" }?.toHttpUrlOrNull()?.toString(),
+        languages = languages.mapNotNull { it.orNull() }
     )
 
     /** Only images on the app's own server, so content can never make the app contact anyone else. */

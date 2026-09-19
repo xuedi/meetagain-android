@@ -43,6 +43,14 @@
     <string name="event_photos">Photos</string>
     <string name="group_upcoming">Upcoming events</string>
     <string name="group_website">Website</string>
+    <string name="calendar_add">Add to calendar</string>
+    <string name="calendar_no_app">No calendar app on this phone.</string>
+    <string name="calendar_subscribe">Subscribe to calendar</string>
+    <string name="calendar_subscribe_intro">Add this calendar to your calendar app and new events show up automatically.</string>
+    <string name="calendar_subscribe_heading">Subscribe to these events</string>
+    <string name="calendar_subscribe_no_app">This phone has no app that subscribes to calendars. A calendar subscription app, or the website of your calendar, can add this address.</string>
+    <string name="calendar_copy_address">Copy address</string>
+    <string name="calendar_address_copied">Address copied</string>
     <plurals name="event_going">
         <item quantity="one">%d going</item>
         <item quantity="other">%d going</item>

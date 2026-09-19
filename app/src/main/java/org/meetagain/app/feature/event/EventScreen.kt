@@ -21,12 +21,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -42,6 +45,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.R
 import org.meetagain.app.core.data.EventDetails
@@ -50,6 +54,7 @@ import org.meetagain.app.core.format.rememberEventTime
 import org.meetagain.app.core.ui.ErrorState
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.LoadingState
+import org.meetagain.app.core.ui.calendarInsertIntent
 import org.meetagain.app.core.ui.rememberOpenIntent
 import org.meetagain.app.core.ui.rememberOpenUrl
 
@@ -59,12 +64,21 @@ fun EventRoute(container: AppContainer, id: Int, onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val openIntent = rememberOpenIntent()
     val openUrl = rememberOpenUrl()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val noCalendarApp = stringResource(R.string.calendar_no_app)
     EventScreen(
         state = state,
         onBack = onBack,
         onRetry = viewModel::load,
+        onAddToCalendar = { details ->
+            if (!openIntent(calendarInsertIntent(details))) {
+                scope.launch { snackbarHostState.showSnackbar(noCalendarApp) }
+            }
+        },
         onOpenMap = { location -> openIntent(Intent(Intent.ACTION_VIEW, mapUri(location))) },
-        onOpenWebsite = openUrl
+        onOpenWebsite = openUrl,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -77,8 +91,10 @@ fun EventScreen(
     state: Loadable<EventDetails>,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onAddToCalendar: (EventDetails) -> Unit,
     onOpenMap: (Location) -> Unit,
-    onOpenWebsite: (String) -> Unit
+    onOpenWebsite: (String) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     Scaffold(
         topBar = {
@@ -88,9 +104,17 @@ fun EventScreen(
                     IconButton(onClick = onBack) {
                         Icon(painterResource(R.drawable.ic_arrow_back), stringResource(R.string.navigate_back))
                     }
+                },
+                actions = {
+                    if (state is Loadable.Loaded) {
+                        IconButton(onClick = { onAddToCalendar(state.value) }) {
+                            Icon(painterResource(R.drawable.ic_calendar_add_on), stringResource(R.string.calendar_add))
+                        }
+                    }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         val modifier = Modifier
             .fillMaxSize()

@@ -72,6 +72,7 @@ object Samples {
         description = "Since 2015, this Berlin group brings together locals and internationals for relaxed " +
             "Chinese-German language exchange.",
         memberCount = 45,
-        websiteUrl = "https://dragon-descendants.de/"
+        websiteUrl = "https://dragon-descendants.de/",
+        languages = listOf("de", "en", "zh")
     )
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import java.util.Locale
 import org.junit.Rule
 import org.junit.Test
@@ -65,20 +66,41 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
 
     @Test
     fun event() = capture("event") {
-        EventScreen(Loadable.Loaded(Samples.eventDetails), onBack = {
-        }, onRetry = {}, onOpenMap = {}, onOpenWebsite = {})
-    }
-
-    @Test
-    fun group() = capture("group") {
-        GroupScreen(
-            Loadable.Loaded(GroupPage(Samples.groupDetails, Samples.upcoming)),
+        EventScreen(
+            Loadable.Loaded(Samples.eventDetails),
             onBack = {},
             onRetry = {},
-            onOpenEvent = {},
+            onAddToCalendar = {},
+            onOpenMap = {},
             onOpenWebsite = {}
         )
     }
+
+    @Test
+    fun group() = capture("group") { Group() }
+
+    /** The sheet is a window of its own, so this captures the whole screen rather than the root. */
+    @Test
+    fun groupSubscribe() {
+        compose.setContent {
+            DeviceSettings(Locale.forLanguageTag(language), dark, fontScale) {
+                Group(manualFeedUrl = "https://dragon-descendants.de/$language/events.ics")
+            }
+        }
+        val theme = if (dark) "dark" else "light"
+        captureScreenRoboImage("src/test/screenshots/group_subscribe_${language}_${theme}_$fontScale.png")
+    }
+
+    @Composable
+    private fun Group(manualFeedUrl: String? = null) = GroupScreen(
+        Loadable.Loaded(GroupPage(Samples.groupDetails, Samples.upcoming)),
+        onBack = {},
+        onRetry = {},
+        onOpenEvent = {},
+        onOpenWebsite = {},
+        onSubscribe = {},
+        manualFeedUrl = manualFeedUrl
+    )
 
     @Composable
     private fun Explore(state: ExploreUiState, tab: ExploreTab = ExploreTab.Events) = ExploreScreen(

@@ -129,6 +129,7 @@ class PublicRepositoryTest {
         assertEquals("Dragon Descendants", group.group.name)
         assertEquals(45, group.memberCount)
         assertEquals("https://dragon-descendants.de/", group.websiteUrl)
+        assertEquals(listOf("de", "en", "zh"), group.languages)
     }
 
     @Test

@@ -42,6 +42,14 @@
     <string name="event_photos">Photos</string>
     <string name="group_upcoming">Événements à venir</string>
     <string name="group_website">Site web</string>
+    <string name="calendar_add">Ajouter au calendrier</string>
+    <string name="calendar_no_app">Aucune application de calendrier sur ce téléphone.</string>
+    <string name="calendar_subscribe">S\'abonner au calendrier</string>
+    <string name="calendar_subscribe_intro">Ajoute ce calendrier à ton application de calendrier et les nouveaux événements apparaîtront automatiquement.</string>
+    <string name="calendar_subscribe_heading">S\'abonner à ces événements</string>
+    <string name="calendar_subscribe_no_app">Aucune application de ce téléphone ne sait s\'abonner à un calendrier. Une application d\'abonnement aux calendriers, ou le site web de ton calendrier, peut ajouter cette adresse.</string>
+    <string name="calendar_copy_address">Copier l\'adresse</string>
+    <string name="calendar_address_copied">Adresse copiée</string>
     <plurals name="event_going">
         <item quantity="one">%d participant</item>
         <item quantity="many">%d participants</item>

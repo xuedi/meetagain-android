@@ -7,21 +7,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 
-/** Opens an intent in the member's own apps; when none can handle it (no browser, no map app) nothing happens. */
+/** Opens an intent in the member's own apps; false when none can handle it (no browser, no map app). */
 @Composable
-fun rememberOpenIntent(): (Intent) -> Unit {
+fun rememberOpenIntent(): (Intent) -> Boolean {
     val context = LocalContext.current
     return remember(context) {
         { intent ->
             try {
                 context.startActivity(intent)
+                true
             } catch (_: ActivityNotFoundException) {
-                // Nothing to open it with; the screen stays as it is.
+                false
             }
         }
     }
 }
 
+/** Opens a link in the member's browser; when there is none, nothing happens. */
 @Composable
 fun rememberOpenUrl(): (String) -> Unit {
     val open = rememberOpenIntent()

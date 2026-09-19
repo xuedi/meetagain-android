@@ -2,11 +2,14 @@ package org.meetagain.app.navigation
 
 import android.app.Application
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
@@ -85,7 +88,7 @@ class AppNavigationTest {
         compose.onNodeWithText("Berlin Filmclub").assertDoesNotExist()
         compose.onNodeWithText("Dragon Descendants").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(text(R.string.group_website)) }
-        compose.onNodeWithText(text(R.string.group_upcoming)).assertExists()
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText(text(R.string.group_upcoming)))
 
         compose.onNodeWithContentDescription(text(R.string.navigate_back)).performClick()
         compose.onNodeWithContentDescription(text(R.string.navigate_back)).performClick()

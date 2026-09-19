@@ -42,6 +42,14 @@
     <string name="event_photos">Fotos</string>
     <string name="group_upcoming">Anstehende Events</string>
     <string name="group_website">Website</string>
+    <string name="calendar_add">Zum Kalender hinzufügen</string>
+    <string name="calendar_no_app">Auf diesem Handy ist keine Kalender-App.</string>
+    <string name="calendar_subscribe">Kalender abonnieren</string>
+    <string name="calendar_subscribe_intro">Füge diesen Kalender zu deiner Kalender-App hinzu, dann erscheinen neue Veranstaltungen automatisch.</string>
+    <string name="calendar_subscribe_heading">Diese Veranstaltungen abonnieren</string>
+    <string name="calendar_subscribe_no_app">Auf diesem Handy ist keine App, die Kalender abonnieren kann. Eine App für Kalender-Abos oder die Website deines Kalenders kann diese Adresse hinzufügen.</string>
+    <string name="calendar_copy_address">Adresse kopieren</string>
+    <string name="calendar_address_copied">Adresse kopiert</string>
     <plurals name="event_going">
         <item quantity="one">%d nimmt teil</item>
         <item quantity="other">%d nehmen teil</item>
