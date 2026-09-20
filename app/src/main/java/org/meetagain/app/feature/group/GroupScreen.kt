@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,9 +26,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,8 +53,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.R
+import org.meetagain.app.core.auth.SessionState
 import org.meetagain.app.core.data.Event
 import org.meetagain.app.core.data.GroupDetails
+import org.meetagain.app.core.data.MembershipStatus
 import org.meetagain.app.core.data.calendarFeedUrl
 import org.meetagain.app.core.format.rememberEventTime
 import org.meetagain.app.core.i18n.AppLocale
@@ -67,8 +73,16 @@ import org.meetagain.app.feature.event.eventItems
 
 @Composable
 fun GroupRoute(container: AppContainer, slug: String, onBack: () -> Unit, onOpenEvent: (Event) -> Unit) {
-    val viewModel = viewModel(key = "group-$slug") { GroupViewModel(container.publicRepository, slug) }
+    val session by container.auth.state.collectAsStateWithLifecycle()
+    val signedIn = session is SessionState.SignedIn
+    val viewModel = viewModel(key = "group-$slug") {
+        GroupViewModel(container.publicRepository, container.memberRepository, signedIn, slug)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val standing by viewModel.standing.collectAsStateWithLifecycle()
+    val busy by viewModel.busy.collectAsStateWithLifecycle()
+    val needsConsent by viewModel.needsConsent.collectAsStateWithLifecycle()
+    val problem by viewModel.problem.collectAsStateWithLifecycle()
     val openIntent = rememberOpenIntent()
     var manualFeedUrl by rememberSaveable { mutableStateOf<String?>(null) }
     val clipboard = LocalClipboard.current
@@ -76,8 +90,23 @@ fun GroupRoute(container: AppContainer, slug: String, onBack: () -> Unit, onOpen
     val scope = rememberCoroutineScope()
     val clipLabel = stringResource(R.string.calendar_subscribe)
     val copied = stringResource(R.string.calendar_address_copied)
+    var confirmLeave by rememberSaveable { mutableStateOf(false) }
+    val problemText = problem?.let { membershipProblemText(it) }
+    LaunchedEffect(problem) {
+        if (problemText != null) {
+            snackbarHostState.showSnackbar(problemText)
+            viewModel.dismissProblem()
+        }
+    }
     GroupScreen(
         state = state,
+        standing = standing,
+        signedIn = viewModel.canAct,
+        busy = busy,
+        onJoin = { viewModel.join() },
+        onLeave = { confirmLeave = true },
+        onAcceptInvitation = { viewModel.acceptInvitation(it) },
+        onDeclineInvitation = { viewModel.declineInvitation(it) },
         onBack = onBack,
         onRetry = viewModel::load,
         onOpenEvent = onOpenEvent,
@@ -95,12 +124,42 @@ fun GroupRoute(container: AppContainer, slug: String, onBack: () -> Unit, onOpen
         },
         snackbarHostState = snackbarHostState
     )
+    if (needsConsent) {
+        CrossingConsentDialog(
+            onDismiss = viewModel::dismissConsent,
+            onAnswer = { consent ->
+                val invitation = standing.invitation
+                if (invitation != null) {
+                    viewModel.acceptInvitation(invitation.id, consent)
+                } else {
+                    viewModel.join(consent)
+                }
+            }
+        )
+    }
+    if (confirmLeave) {
+        LeaveDialog(
+            groupName = (state as? Loadable.Loaded)?.value?.details?.group?.name.orEmpty(),
+            onDismiss = { confirmLeave = false },
+            onConfirm = {
+                confirmLeave = false
+                viewModel.leave()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupScreen(
     state: Loadable<GroupPage>,
+    standing: GroupStanding = GroupStanding(null, null),
+    signedIn: Boolean = false,
+    busy: Boolean = false,
+    onJoin: () -> Unit = {},
+    onLeave: () -> Unit = {},
+    onAcceptInvitation: (Int) -> Unit = {},
+    onDeclineInvitation: (Int) -> Unit = {},
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onOpenEvent: (Event) -> Unit,
@@ -134,7 +193,20 @@ fun GroupScreen(
 
             is Loadable.Loaded -> Column(modifier) {
                 state.stale?.let { StaleNotice(it, onRetry = onRetry) }
-                GroupContent(state.value, onOpenEvent, onOpenWebsite, onSubscribe, Modifier.weight(1f))
+                GroupContent(
+                    page = state.value,
+                    standing = standing,
+                    signedIn = signedIn,
+                    busy = busy,
+                    onOpenEvent = onOpenEvent,
+                    onOpenWebsite = onOpenWebsite,
+                    onSubscribe = onSubscribe,
+                    onJoin = onJoin,
+                    onLeave = onLeave,
+                    onAcceptInvitation = onAcceptInvitation,
+                    onDeclineInvitation = onDeclineInvitation,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }
@@ -144,9 +216,16 @@ fun GroupScreen(
 @Composable
 private fun GroupContent(
     page: GroupPage,
+    standing: GroupStanding,
+    signedIn: Boolean,
+    busy: Boolean,
     onOpenEvent: (Event) -> Unit,
     onOpenWebsite: (String) -> Unit,
     onSubscribe: (String) -> Unit,
+    onJoin: () -> Unit,
+    onLeave: () -> Unit,
+    onAcceptInvitation: (Int) -> Unit,
+    onDeclineInvitation: (Int) -> Unit,
     modifier: Modifier
 ) {
     val time = rememberEventTime()
@@ -154,6 +233,20 @@ private fun GroupContent(
     val feedUrl = remember(page.details, language) { calendarFeedUrl(page.details, language) }
     LazyColumn(modifier) {
         item(key = "header") { Header(page.details, feedUrl, onOpenWebsite, onSubscribe) }
+        if (signedIn) {
+            item(key = "membership") {
+                MembershipSection(
+                    details = page.details,
+                    standing = standing,
+                    busy = busy,
+                    onJoin = onJoin,
+                    onLeave = onLeave,
+                    onAcceptInvitation = onAcceptInvitation,
+                    onDeclineInvitation = onDeclineInvitation,
+                    onOpenWebsite = onOpenWebsite
+                )
+            }
+        }
         item(key = "upcoming") {
             Text(
                 text = stringResource(R.string.group_upcoming),
@@ -248,4 +341,98 @@ private fun SubscribeSheet(feedUrl: String, onDismiss: () -> Unit, onCopy: (Stri
             Button(onClick = { onCopy(feedUrl) }) { Text(stringResource(R.string.calendar_copy_address)) }
         }
     }
+}
+
+/**
+ * Where the member stands with this group and what they can do about it. Joining from the app is for listed Public
+ * groups; a Hidden or Private group is joined on its own site, or by an invitation.
+ */
+@Composable
+private fun MembershipSection(
+    details: GroupDetails,
+    standing: GroupStanding,
+    busy: Boolean,
+    onJoin: () -> Unit,
+    onLeave: () -> Unit,
+    onAcceptInvitation: (Int) -> Unit,
+    onDeclineInvitation: (Int) -> Unit,
+    onOpenWebsite: (String) -> Unit
+) {
+    val membership = standing.membership
+    val invitation = standing.invitation
+    Column(
+        Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        when {
+            membership != null && membership.blocked ->
+                Text(stringResource(R.string.membership_blocked), color = MaterialTheme.colorScheme.error)
+
+            membership?.status == MembershipStatus.Approved -> {
+                Text(stringResource(R.string.membership_member))
+                TextButton(onClick = onLeave, enabled = !busy) {
+                    Text(stringResource(R.string.group_leave))
+                }
+            }
+
+            membership?.status == MembershipStatus.Pending -> Text(stringResource(R.string.membership_pending))
+
+            membership?.status == MembershipStatus.Rejected -> Text(stringResource(R.string.membership_rejected))
+
+            invitation != null -> {
+                Text(stringResource(R.string.group_invited))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = { onAcceptInvitation(invitation.id) }, enabled = !busy) {
+                        Text(stringResource(R.string.mygroups_accept))
+                    }
+                    OutlinedButton(onClick = { onDeclineInvitation(invitation.id) }, enabled = !busy) {
+                        Text(stringResource(R.string.mygroups_decline))
+                    }
+                }
+            }
+
+            details.websiteUrl != null -> {
+                // A group on its own domain is joined there, where its own rules are shown.
+                Text(stringResource(R.string.group_join_on_website))
+                OutlinedButton(onClick = { onOpenWebsite(details.websiteUrl) }) {
+                    Text(stringResource(R.string.group_website))
+                }
+            }
+
+            else -> Button(onClick = onJoin, enabled = !busy) { Text(stringResource(R.string.group_join)) }
+        }
+    }
+}
+
+/** The platform's own question, worded and unchecked as on the website, asked only when the server asks for it. */
+@Composable
+private fun CrossingConsentDialog(onDismiss: () -> Unit, onAnswer: (Boolean) -> Unit) {
+    var consent by rememberSaveable { mutableStateOf(false) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.crossing_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.crossing_body))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = consent, onCheckedChange = { consent = it })
+                    Text(stringResource(R.string.crossing_mail_consent))
+                }
+            }
+        },
+        confirmButton = { Button(onClick = { onAnswer(consent) }) { Text(stringResource(R.string.group_join)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+    )
+}
+
+/** Leaving cannot be taken back cleanly - coming back can need approval - so it is confirmed first. */
+@Composable
+private fun LeaveDialog(groupName: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.group_leave)) },
+        text = { Text(stringResource(R.string.group_leave_confirm, groupName)) },
+        confirmButton = { Button(onClick = onConfirm) { Text(stringResource(R.string.group_leave)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+    )
 }

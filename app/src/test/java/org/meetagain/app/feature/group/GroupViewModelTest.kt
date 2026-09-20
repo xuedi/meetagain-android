@@ -8,12 +8,15 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.meetagain.app.core.data.MemberRepository
+import org.meetagain.app.core.data.PublicRepository
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.testing.MainDispatcherRule
 import org.meetagain.app.testing.MemoryAnswers
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
+import org.meetagain.app.testing.memberRepository
 import org.meetagain.app.testing.publicRepository
 import org.meetagain.app.testing.serve
 
@@ -29,6 +32,13 @@ class GroupViewModelTest {
     @After
     fun stop() = server.close()
 
+    private fun groupViewModel(
+        repository: PublicRepository,
+        member: MemberRepository = memberRepository(server),
+        signedIn: Boolean = false,
+        slug: String
+    ) = main.keep(GroupViewModel(repository, member, signedIn, slug))
+
     @Test
     fun `the group loads with its events`() = runTest {
         server.serve(
@@ -37,7 +47,12 @@ class GroupViewModelTest {
                 "/api/v1/events" to listOf(json(fixture("events.json")))
             )
         )
-        GroupViewModel(publicRepository(server), "my-community").state.test {
+        groupViewModel(
+            publicRepository(server),
+            memberRepository(server),
+            signedIn = false,
+            slug = "my-community"
+        ).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             val page = (awaitItem() as Loadable.Loaded).value
             assertEquals("Dragon Descendants", page.details.group.name)
@@ -55,7 +70,12 @@ class GroupViewModelTest {
                 "/api/v1/events" to listOf(json(fixture("events.json")))
             )
         )
-        GroupViewModel(publicRepository(server), "movienight").state.test {
+        groupViewModel(
+            publicRepository(server),
+            memberRepository(server),
+            signedIn = false,
+            slug = "movienight"
+        ).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals(Loadable.Failed(ApiError.Http(404, "not_found")), awaitItem())
         }
@@ -75,7 +95,7 @@ class GroupViewModelTest {
         repository.refreshGroup("my-community")
         repository.refreshUpcomingEvents(group = "my-community")
 
-        GroupViewModel(repository, "my-community").state.test {
+        groupViewModel(repository, memberRepository(server), signedIn = false, slug = "my-community").state.test {
             var state = awaitItem()
             while (state !is Loadable.Failed) state = awaitItem()
             assertEquals(404, (state.error as ApiError.Http).status)

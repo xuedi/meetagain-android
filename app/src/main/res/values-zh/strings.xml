@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="start_tagline">与朋友再次相聚的地方</string>
-    <string name="start_body">应用仍在开发中。在此之前，所有内容都在 meetagain.org 上。</string>
     <string name="about_title">关于</string>
     <string name="about_version">版本</string>
     <string name="about_version_test_build">%1$s，测试版</string>
@@ -52,6 +51,143 @@
     <string name="calendar_address_copied">地址已复制</string>
     <string name="stale_updated">最后更新于%1$s %2$s。</string>
     <string name="stale_notice">%1$s%2$s</string>
+
+    <!-- Signing in -->
+    <string name="signin_email">电子邮件地址</string>
+    <string name="signin_password">密码</string>
+    <string name="signin_submit">登录</string>
+    <string name="signin_forgot">忘记密码？</string>
+    <string name="signin_create">注册账号</string>
+    <string name="signin_password_note">你的密码只会发送给 MeetAgain，不会发往别处。</string>
+    <string name="signin_open_website">打开网站</string>
+    <string name="signin_error_credentials">电子邮件地址和密码不匹配。</string>
+    <string name="signin_error_blocked">此账号无法登录。网站上有更多说明。</string>
+    <string name="signin_error_not_verified">你的电子邮件地址还没有确认。请先在网站上确认，然后再回到这里登录。</string>
+    <string name="signin_error_pending">你的账号正在等待审核。MeetAgain 会通过电子邮件通知你。</string>
+    <string name="signin_error_restricted">MeetAgain 需要确认你是真人，而应用无法显示这个确认。请先在网站上登录一次，然后再回到这里重试。</string>
+    <string name="signin_error_device">无法为这部手机命名。请再试一次。</string>
+
+    <!-- Me -->
+    <string name="me_title">我</string>
+    <string name="me_my_groups">我的群组</string>
+    <string name="me_profile">个人资料</string>
+    <string name="me_sign_out">退出登录</string>
+    <string name="me_delete_account">删除我的账号（在网站上）</string>
+
+    <!-- Home -->
+    <string name="home_title">我的聚会</string>
+    <string name="home_next">接下来</string>
+    <string name="home_later">之后</string>
+    <string name="home_end">以上是你的群组在未来四周里的全部安排。</string>
+    <string name="home_end_more">以上是未来四周的安排。再往后的内容在网站上。</string>
+    <string name="home_empty">你的群组暂无即将举行的活动。</string>
+    <string name="home_look_around">公开活动和群组</string>
+
+    <!-- Saying yes or no -->
+    <string name="rsvp_question">你要参加吗？</string>
+    <string name="rsvp_going">参加</string>
+    <string name="rsvp_not_going">不参加</string>
+    <string name="rsvp_guests">你带的同行人</string>
+    <string name="rsvp_guest_more">增加一位同行人</string>
+    <string name="rsvp_guest_fewer">减少一位同行人</string>
+    <string name="rsvp_saved_going">你已报名参加。</string>
+    <string name="rsvp_saved_not_going">你已标记为不参加。</string>
+    <string name="rsvp_canceled">本次聚会已取消。你仍然可以撤回你的答复。</string>
+    <string name="rsvp_started">本次聚会已经开始。你仍然可以撤回你的答复。</string>
+    <string name="rsvp_not_a_member">只有群组成员才能报名参加。</string>
+    <string name="rsvp_failed">你的答复没能保存。请再试一次。</string>
+    <string name="undo">撤销</string>
+    <string name="cancel">取消</string>
+    <string name="event_canceled">已取消</string>
+    <string name="event_more_dates">本次聚会的更多日期</string>
+
+    <!-- Who is coming -->
+    <string name="attendees_title">谁会参加</string>
+    <string name="attendees_you">你</string>
+    <string name="attendees_empty">还没有人报名参加。</string>
+
+    <!-- The conversation -->
+    <string name="conversation_title">讨论</string>
+    <string name="conversation_write">写点什么</string>
+    <string name="conversation_send">发送</string>
+    <string name="conversation_delete">删除</string>
+    <string name="conversation_older">显示更早的</string>
+    <string name="conversation_end">以上是全部讨论。</string>
+    <string name="conversation_empty">还没有人说过什么。</string>
+    <string name="conversation_add_photo">添加照片</string>
+    <string name="conversation_take_photo">拍照</string>
+    <string name="conversation_comment_removed">评论已删除</string>
+    <string name="conversation_photo_removed">照片已删除</string>
+    <string name="conversation_members_only">只有群组成员才能在这里发言。</string>
+    <string name="conversation_too_long">内容太长了，请稍微缩短一些。</string>
+    <string name="conversation_empty_comment">请先写点内容。</string>
+    <string name="conversation_photo_rejected">这张照片没有被接受。可能是文件太大，或者服务器不接受这种格式。</string>
+    <string name="conversation_failed">这次没有成功。请再试一次。</string>
+
+    <!-- Groups -->
+    <string name="mygroups_invitations">邀请</string>
+    <string name="mygroups_memberships">群组</string>
+    <string name="mygroups_invited_by">由 %1$s 邀请</string>
+    <string name="mygroups_accept">接受</string>
+    <string name="mygroups_decline">拒绝</string>
+    <string name="mygroups_end">以上是你的全部群组。</string>
+    <string name="mygroups_empty">你还没有加入任何群组。</string>
+    <string name="membership_member">成员</string>
+    <string name="membership_owner">所有者</string>
+    <string name="membership_organizer">组织者</string>
+    <string name="membership_pending">等待审核</string>
+    <string name="membership_rejected">该群组拒绝了你的申请。</string>
+    <string name="membership_blocked">该群组已屏蔽你。</string>
+    <string name="membership_not_joinable">无法在应用里加入该群组，请到它自己的网站上申请。</string>
+    <string name="membership_blocked_refusal">该群组已屏蔽你，因此这里无法做任何更改。</string>
+    <string name="membership_last_owner">你是该群组的最后一位所有者。请先让其他人成为所有者。</string>
+    <string name="membership_may_not_leave_platform">只要你还在 MeetAgain 的某个群组里，就不能退出 MeetAgain 本身。</string>
+    <string name="membership_rejected_refusal">该群组拒绝了你的申请，这件事要到网站上处理。</string>
+    <string name="membership_invitation_gone">该邀请已经不在了。</string>
+    <string name="membership_crossing_needed">加入该群组前，还需要你再回答一个问题。</string>
+    <string name="membership_failed">这次没有成功。请再试一次。</string>
+    <string name="group_join">加入</string>
+    <string name="group_leave">退出群组</string>
+    <string name="group_leave_confirm">退出 %1$s 吗？再次加入可能需要该群组的审核。</string>
+    <string name="group_invited">你被邀请加入该群组。</string>
+    <string name="group_join_on_website">该群组有自己的网站，加入要在那里进行。</string>
+    <string name="crossing_title">加入该群组</string>
+    <string name="crossing_body">该群组是 MeetAgain 的一部分，你的账号在这里同样有效。</string>
+    <string name="crossing_mail_consent">MeetAgain 可以向我发送公告和活动邮件。</string>
+
+    <!-- Profile -->
+    <string name="profile_name">名字</string>
+    <string name="profile_bio">个人简介</string>
+    <string name="profile_public">对其他成员可见</string>
+    <string name="profile_public_explained">关闭后，只有你所在的群组能看到你的个人资料。</string>
+    <string name="profile_save">保存</string>
+    <string name="profile_saved">已保存</string>
+    <string name="profile_pick_avatar">选择一张照片</string>
+    <string name="profile_take_avatar">拍一张照片</string>
+    <string name="profile_name_required">需要填写名字。</string>
+    <string name="profile_name_too_long">这个名字太长了。</string>
+    <string name="profile_language_not_allowed">MeetAgain 不支持这种语言。</string>
+    <string name="profile_avatar_rejected">这张照片没有被接受。可能是文件太大，或者服务器不接受这种格式。</string>
+    <string name="profile_failed">没能保存。请再试一次。</string>
+    <string name="profile_on_the_website">以下内容在网站上：</string>
+    <string name="profile_change_password">修改密码</string>
+    <string name="profile_devices">你登录过的手机</string>
+
+    <plurals name="signin_error_attempts">
+        <item quantity="other">尝试次数过多。请在 %d 分钟后重试。</item>
+    </plurals>
+    <plurals name="rsvp_guest_count">
+        <item quantity="other">%d</item>
+    </plurals>
+    <plurals name="attendees_guests">
+        <item quantity="other">携带 %d 位同行人</item>
+    </plurals>
+    <plurals name="attendees_total">
+        <item quantity="other">预计 %d 人参加</item>
+    </plurals>
+    <plurals name="attendees_external">
+        <item quantity="other">另有组织者统计的 %d 人。</item>
+    </plurals>
     <plurals name="event_going">
         <item quantity="other">%d 人参加</item>
     </plurals>

@@ -8,6 +8,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.meetagain.app.core.data.MemberRepository
+import org.meetagain.app.core.data.PublicRepository
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.Stale
@@ -15,6 +17,7 @@ import org.meetagain.app.testing.MainDispatcherRule
 import org.meetagain.app.testing.MemoryAnswers
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
+import org.meetagain.app.testing.memberRepository
 import org.meetagain.app.testing.publicRepository
 import org.meetagain.app.testing.serve
 import org.meetagain.app.testing.testClock
@@ -31,10 +34,17 @@ class EventViewModelTest {
     @After
     fun stop() = server.close()
 
+    private fun eventViewModel(
+        repository: PublicRepository,
+        member: MemberRepository = memberRepository(server),
+        signedIn: Boolean = false,
+        id: Int = 117
+    ) = main.keep(EventViewModel(repository, member, signedIn, id))
+
     @Test
     fun `the event loads`() = runTest {
         server.serve(mapOf("/api/v1/events/117" to listOf(json(fixture("event-detail.json")))))
-        EventViewModel(publicRepository(server), 117).state.test {
+        eventViewModel(publicRepository(server), memberRepository(server), signedIn = false, id = 117).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals("Travolta", (awaitItem() as Loadable.Loaded).value.location?.name)
         }
@@ -48,7 +58,7 @@ class EventViewModelTest {
                     listOf(json(fixture("error-not-found.json"), 404), json(fixture("event-detail.json")))
             )
         )
-        val viewModel = EventViewModel(publicRepository(server), 117)
+        val viewModel = eventViewModel(publicRepository(server), memberRepository(server), signedIn = false, id = 117)
         viewModel.state.test {
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals(Loadable.Failed(ApiError.Http(404, "not_found")), awaitItem())
@@ -71,7 +81,12 @@ class EventViewModelTest {
         )
         publicRepository(server, answers).refreshEvent(117)
 
-        EventViewModel(publicRepository(server, answers), 117).state.test {
+        eventViewModel(
+            publicRepository(server, answers),
+            memberRepository(server),
+            signedIn = false,
+            id = 117
+        ).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             val stored = awaitItem() as Loadable.Loaded
             assertEquals(1, stored.value.event.going)
@@ -88,7 +103,7 @@ class EventViewModelTest {
         val repository = publicRepository(server, answers)
         server.close()
 
-        EventViewModel(repository, 117).state.test {
+        eventViewModel(repository, memberRepository(server), signedIn = false, id = 117).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             var state = awaitItem() as Loadable.Loaded
             if (state.stale == null) state = awaitItem() as Loadable.Loaded
@@ -101,7 +116,7 @@ class EventViewModelTest {
     fun `without a connection and nothing stored the error shows`() = runTest {
         val repository = publicRepository(server)
         server.close()
-        EventViewModel(repository, 117).state.test {
+        eventViewModel(repository, memberRepository(server), signedIn = false, id = 117).state.test {
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals(Loadable.Failed(ApiError.Offline), awaitItem())
         }

@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name" translatable="false">MeetAgain</string>
     <string name="start_tagline">Where everyone meets again</string>
-    <string name="start_body">The app is still being built. Until it is ready, everything is on meetagain.org.</string>
     <string name="about_title">About</string>
     <string name="about_version">Version</string>
     <string name="about_version_test_build">%1$s, test build</string>
@@ -53,6 +52,153 @@
     <string name="calendar_address_copied">Address copied</string>
     <string name="stale_updated">Last updated %1$s, %2$s.</string>
     <string name="stale_notice">%1$s %2$s</string>
+
+    <!-- Signing in -->
+    <string name="signin_email">Email address</string>
+    <string name="signin_password">Password</string>
+    <string name="signin_submit">Sign in</string>
+    <string name="signin_forgot">Forgot your password?</string>
+    <string name="signin_create">Create an account</string>
+    <string name="signin_password_note">Your password goes to MeetAgain and nowhere else.</string>
+    <string name="signin_open_website">Open the website</string>
+    <string name="signin_error_credentials">That email address and password do not go together.</string>
+    <string name="signin_error_blocked">This account cannot sign in. The website says more about why.</string>
+    <string name="signin_error_not_verified">Your email address is not confirmed yet. Confirm it on the website, then sign in here.</string>
+    <string name="signin_error_pending">Your account is waiting to be approved. You will hear from MeetAgain by email.</string>
+    <string name="signin_error_restricted">MeetAgain wants to check that you are a person, which the app cannot show. Sign in on the website once, then try again here.</string>
+    <string name="signin_error_device">This phone could not be named. Try again.</string>
+
+    <!-- Me -->
+    <string name="me_title">Me</string>
+    <string name="me_my_groups">My groups</string>
+    <string name="me_profile">Profile</string>
+    <string name="me_sign_out">Sign out</string>
+    <string name="me_delete_account">Delete my account (on the website)</string>
+
+    <!-- Home -->
+    <string name="home_title">My meetings</string>
+    <string name="home_next">Next</string>
+    <string name="home_later">Later</string>
+    <string name="home_end">That is everything in your groups for the next four weeks.</string>
+    <string name="home_end_more">That is the next four weeks. There is more after that on the website.</string>
+    <string name="home_empty">Nothing coming up in your groups.</string>
+    <string name="home_look_around">Public events and groups</string>
+
+    <!-- Saying yes or no -->
+    <string name="rsvp_question">Are you coming?</string>
+    <string name="rsvp_going">Going</string>
+    <string name="rsvp_not_going">Not going</string>
+    <string name="rsvp_guests">Guests you bring</string>
+    <string name="rsvp_guest_more">One more guest</string>
+    <string name="rsvp_guest_fewer">One guest fewer</string>
+    <string name="rsvp_saved_going">You are going.</string>
+    <string name="rsvp_saved_not_going">You are not going.</string>
+    <string name="rsvp_canceled">This meeting was called off. You can still take your answer back.</string>
+    <string name="rsvp_started">This meeting has started. You can still take your answer back.</string>
+    <string name="rsvp_not_a_member">Only members of the group can say they are coming.</string>
+    <string name="rsvp_failed">Your answer could not be saved. Try again.</string>
+    <string name="undo">Undo</string>
+    <string name="cancel">Cancel</string>
+    <string name="event_canceled">Called off</string>
+    <string name="event_more_dates">More dates of this meeting</string>
+
+    <!-- Who is coming -->
+    <string name="attendees_title">Who is coming</string>
+    <string name="attendees_you">you</string>
+    <string name="attendees_empty">Nobody has said they are coming yet.</string>
+
+    <!-- The conversation -->
+    <string name="conversation_title">Conversation</string>
+    <string name="conversation_write">Write something</string>
+    <string name="conversation_send">Send</string>
+    <string name="conversation_delete">Delete</string>
+    <string name="conversation_older">Show older</string>
+    <string name="conversation_end">That is the whole conversation.</string>
+    <string name="conversation_empty">Nothing has been said yet.</string>
+    <string name="conversation_add_photo">Add a photo</string>
+    <string name="conversation_take_photo">Take a photo</string>
+    <string name="conversation_comment_removed">Comment removed</string>
+    <string name="conversation_photo_removed">Photo removed</string>
+    <string name="conversation_members_only">Only members of the group can write here.</string>
+    <string name="conversation_too_long">That is too long. Shorten it a little.</string>
+    <string name="conversation_empty_comment">Write something first.</string>
+    <string name="conversation_photo_rejected">That photo was not accepted. It may be too large or of a kind the server does not take.</string>
+    <string name="conversation_failed">That did not work. Try again.</string>
+
+    <!-- Groups -->
+    <string name="mygroups_invitations">Invitations</string>
+    <string name="mygroups_memberships">Groups</string>
+    <string name="mygroups_invited_by">Invited by %1$s</string>
+    <string name="mygroups_accept">Accept</string>
+    <string name="mygroups_decline">Decline</string>
+    <string name="mygroups_end">That is all your groups.</string>
+    <string name="mygroups_empty">You are not in any group yet.</string>
+    <string name="membership_member">Member</string>
+    <string name="membership_owner">Owner</string>
+    <string name="membership_organizer">Organiser</string>
+    <string name="membership_pending">Waiting to be approved</string>
+    <string name="membership_rejected">This group turned your request down.</string>
+    <string name="membership_blocked">This group has blocked you.</string>
+    <string name="membership_not_joinable">This group cannot be joined from the app. Its own website is where to ask.</string>
+    <string name="membership_blocked_refusal">This group has blocked you, so nothing can be changed here.</string>
+    <string name="membership_last_owner">You are the last owner of this group. Make someone else an owner first.</string>
+    <string name="membership_may_not_leave_platform">You cannot leave MeetAgain itself while you are in one of its groups.</string>
+    <string name="membership_rejected_refusal">This group turned your request down. The website is where to take that up.</string>
+    <string name="membership_invitation_gone">That invitation is no longer there.</string>
+    <string name="membership_crossing_needed">This group needs one more answer before you can join.</string>
+    <string name="membership_failed">That did not work. Try again.</string>
+    <string name="group_join">Join</string>
+    <string name="group_leave">Leave group</string>
+    <string name="group_leave_confirm">Leave %1$s? Joining again may need the group to approve you.</string>
+    <string name="group_invited">You have been invited to this group.</string>
+    <string name="group_join_on_website">This group has its own website, and that is where you join it.</string>
+    <string name="crossing_title">Joining this group</string>
+    <string name="crossing_body">This group is part of MeetAgain, so your account works here too.</string>
+    <string name="crossing_mail_consent">MeetAgain may send me announcements and event mail.</string>
+
+    <!-- Profile -->
+    <string name="profile_name">Name</string>
+    <string name="profile_bio">About you</string>
+    <string name="profile_public">Visible to other members</string>
+    <string name="profile_public_explained">When this is off, only the groups you are in see your profile.</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_saved">Saved</string>
+    <string name="profile_pick_avatar">Choose a picture</string>
+    <string name="profile_take_avatar">Take a picture</string>
+    <string name="profile_name_required">A name is needed.</string>
+    <string name="profile_name_too_long">That name is too long.</string>
+    <string name="profile_language_not_allowed">MeetAgain does not speak that language.</string>
+    <string name="profile_avatar_rejected">That picture was not accepted. It may be too large or of a kind the server does not take.</string>
+    <string name="profile_failed">That could not be saved. Try again.</string>
+    <string name="profile_on_the_website">These are on the website:</string>
+    <string name="profile_change_password">Change your password</string>
+    <string name="profile_devices">Phones you signed in from</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_de" translatable="false">Deutsch</string>
+    <string name="language_zh" translatable="false">中文</string>
+    <string name="language_fr" translatable="false">Français</string>
+    <string name="language_es" translatable="false">Español</string>
+
+    <plurals name="signin_error_attempts">
+        <item quantity="one">Too many attempts. Try again in a minute.</item>
+        <item quantity="other">Too many attempts. Try again in %d minutes.</item>
+    </plurals>
+    <plurals name="rsvp_guest_count">
+        <item quantity="one">%d</item>
+        <item quantity="other">%d</item>
+    </plurals>
+    <plurals name="attendees_guests">
+        <item quantity="one">brings %d guest</item>
+        <item quantity="other">brings %d guests</item>
+    </plurals>
+    <plurals name="attendees_total">
+        <item quantity="one">%d person expected</item>
+        <item quantity="other">%d people expected</item>
+    </plurals>
+    <plurals name="attendees_external">
+        <item quantity="one">And %d more the organiser counts.</item>
+        <item quantity="other">And %d more the organiser counts.</item>
+    </plurals>
     <plurals name="event_going">
         <item quantity="one">%d going</item>
         <item quantity="other">%d going</item>

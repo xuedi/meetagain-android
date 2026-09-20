@@ -9,3 +9,6 @@ object AppLocale {
     /** A language code the server understands; English when the app runs in any other language. */
     fun current(locale: Locale = Locale.getDefault()): String = locale.language.takeIf { it in supported } ?: "en"
 }
+
+/** A page of the website in the app's language: every page of MeetAgain lives under its language code. */
+fun websiteUrl(baseUrl: String, path: String, language: String = AppLocale.current()) = "$baseUrl/$language$path"

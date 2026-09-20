@@ -1,6 +1,7 @@
 package org.meetagain.app.screenshots
 
 import android.app.Application
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -16,15 +17,25 @@ import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.feature.about.AboutScreen
 import org.meetagain.app.feature.about.AboutUiState
 import org.meetagain.app.feature.about.ServerCheck
+import org.meetagain.app.feature.attendees.AttendeesScreen
+import org.meetagain.app.feature.conversation.ConversationScreen
 import org.meetagain.app.feature.event.EventScreen
 import org.meetagain.app.feature.explore.ExploreScreen
 import org.meetagain.app.feature.explore.ExploreTab
 import org.meetagain.app.feature.explore.ExploreUiState
 import org.meetagain.app.feature.group.GroupPage
 import org.meetagain.app.feature.group.GroupScreen
-import org.meetagain.app.feature.start.StartScreen
+import org.meetagain.app.feature.home.Home
+import org.meetagain.app.feature.home.HomeScreen
+import org.meetagain.app.feature.me.MeScreen
+import org.meetagain.app.feature.mygroups.MyGroupsScreen
+import org.meetagain.app.feature.profile.ProfileScreen
+import org.meetagain.app.feature.signin.SignInProblem
+import org.meetagain.app.feature.signin.SignInScreen
+import org.meetagain.app.feature.signin.SignInState
 import org.meetagain.app.testing.DeviceSettings
 import org.meetagain.app.testing.Samples
+import org.meetagain.app.testing.testClock
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -46,7 +57,127 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
     }
 
     @Test
-    fun start() = capture("start") { StartScreen(onLookAround = {}, onOpenAbout = {}) }
+    fun signIn() = capture("signin") { SignIn(SignInState()) }
+
+    @Test
+    fun signInRefused() = capture("signin_refused") {
+        SignIn(SignInState(email = "crystal.liu@example.org", problem = SignInProblem.WrongCredentials))
+    }
+
+    @Test
+    fun signInPending() = capture("signin_pending") {
+        SignIn(SignInState(email = "crystal.liu@example.org", problem = SignInProblem.PendingApproval))
+    }
+
+    @Test
+    fun home() = capture("home") { Home(Loadable.Loaded(Samples.home)) }
+
+    @Test
+    fun homeEmpty() = capture("home_empty") {
+        Home(Loadable.Loaded(Home(next = null, later = emptyList(), beyondWindow = false)))
+    }
+
+    @Test
+    fun homeStale() = capture("home_stale") {
+        Home(Loadable.Loaded(Samples.home, stale = Samples.offlineSince))
+    }
+
+    @Test
+    fun me() = capture("me") {
+        MeScreen(
+            name = "Crystal Liu",
+            onBack = {},
+            onOpenMyGroups = {},
+            onOpenProfile = {},
+            onOpenAbout = {},
+            onSignOut = {},
+            onDeleteAccount = {}
+        )
+    }
+
+    @Test
+    fun attendees() = capture("attendees") {
+        AttendeesScreen(Loadable.Loaded(Samples.attendees), onBack = {}, onRetry = {})
+    }
+
+    @Test
+    fun conversation() = capture("conversation") {
+        ConversationScreen(
+            state = Loadable.Loaded(Samples.conversation),
+            photos = Samples.photos,
+            draft = "",
+            busy = false,
+            snackbarHostState = SnackbarHostState(),
+            onBack = {},
+            onRetry = {},
+            onDraft = {},
+            onSend = {},
+            onLoadOlder = {},
+            onDeleteComment = {},
+            onUndoDeleteComment = {},
+            onDeletePhoto = {},
+            onUndoDeletePhoto = {},
+            onPickPhoto = {},
+            onTakePhoto = {}
+        )
+    }
+
+    @Test
+    fun myGroups() = capture("mygroups") {
+        MyGroupsScreen(
+            state = Loadable.Loaded(Samples.myGroups),
+            snackbarHostState = SnackbarHostState(),
+            onBack = {},
+            onRetry = {},
+            onOpenGroup = {},
+            onAccept = {},
+            onDecline = {}
+        )
+    }
+
+    @Test
+    fun profile() = capture("profile") {
+        ProfileScreen(
+            state = Loadable.Loaded(Samples.profile),
+            edit = null,
+            snackbarHostState = SnackbarHostState(),
+            onBack = {},
+            onRetry = {},
+            onName = {},
+            onBio = {},
+            onLanguage = {},
+            onPublic = {},
+            onSave = {},
+            onPickAvatar = {},
+            onTakeAvatar = {},
+            onOpenWebsite = {}
+        )
+    }
+
+    @Composable
+    private fun SignIn(state: SignInState) = SignInScreen(
+        state = state,
+        onEmail = {},
+        onPassword = {},
+        onSubmit = {},
+        onOpenWebsite = {},
+        onLookAround = {},
+        onOpenAbout = {}
+    )
+
+    @Composable
+    private fun Home(state: Loadable<Home>) = HomeScreen(
+        state = state,
+        joined = setOf("my-community"),
+        snackbarHostState = SnackbarHostState(),
+        onRetry = {},
+        onOpenEvent = {},
+        onOpenMe = {},
+        onOpenMyGroups = {},
+        onLookAround = {},
+        onAnswer = { _, _, _ -> },
+        clock = testClock
+    )
 
     @Test
     fun exploreEvents() = capture("explore_events") { Explore(ExploreUiState(Loadable.Loaded(Samples.upcoming))) }

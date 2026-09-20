@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import org.meetagain.app.core.data.Group
 
@@ -20,7 +21,7 @@ import org.meetagain.app.core.data.Group
  * group's name, which screen readers read instead.
  */
 @Composable
-fun GroupLogo(group: Group, size: Dp, modifier: Modifier = Modifier) {
+fun GroupLogo(group: Group, modifier: Modifier = Modifier, size: Dp = 40.dp) {
     val shape = Modifier
         .size(size)
         .clip(CircleShape)

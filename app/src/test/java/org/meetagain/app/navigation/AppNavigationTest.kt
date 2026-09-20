@@ -45,6 +45,8 @@ class AppNavigationTest {
         compose.enableAccessibilityChecks()
         val container = testContainer(context, server)
         compose.setContent { MeetAgainTheme { AppNavigation(container) } }
+        // The app starts on whatever session is stored, which is read from disk before the first screen shows.
+        compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(text(R.string.start_tagline)) }
     }
 
     @After
@@ -52,9 +54,13 @@ class AppNavigationTest {
 
     private fun text(id: Int) = context.getString(id)
 
+    /** The sign-in screen scrolls; its lower links are off the bottom of a small screen. */
+    private fun signInScreen() = compose.onNode(hasScrollAction())
+
     @Test
     fun `about opens from the start screen and back returns`() {
         server.enqueue(MockResponse.Builder().body("""{"status":"OK"}""").build())
+        signInScreen().performScrollToNode(hasText(text(R.string.about_title)))
         compose.onNodeWithText(text(R.string.about_title)).performClick()
         compose.waitUntil(5_000) {
             compose.onAllNodesWithTextExists(text(R.string.about_server_reachable))
@@ -74,6 +80,7 @@ class AppNavigationTest {
             )
         )
         val event = hasContentDescription("German English Language Exchange", substring = true)
+        signInScreen().performScrollToNode(hasText(text(R.string.start_look_around)))
         compose.onNodeWithText(text(R.string.start_look_around)).performClick()
         compose.waitUntil(5_000) { compose.onAllNodes(event).fetchSemanticsNodes().isNotEmpty() }
 
@@ -98,6 +105,7 @@ class AppNavigationTest {
     fun `a failed server check can be retried`() {
         server.enqueue(MockResponse.Builder().code(500).build())
         server.enqueue(MockResponse.Builder().body("""{"status":"OK"}""").build())
+        signInScreen().performScrollToNode(hasText(text(R.string.about_title)))
         compose.onNodeWithText(text(R.string.about_title)).performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(text(R.string.retry)) }
         compose.onNodeWithText(text(R.string.retry)).performClick()

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="start_tagline">Donde todos vuelven a encontrarse</string>
-    <string name="start_body">La aplicación todavía está en construcción. Mientras tanto, todo está en meetagain.org.</string>
     <string name="about_title">Acerca de</string>
     <string name="about_version">Versión</string>
     <string name="about_version_test_build">%1$s, versión de prueba</string>
@@ -52,6 +51,153 @@
     <string name="calendar_address_copied">Dirección copiada</string>
     <string name="stale_updated">Última actualización: %1$s, %2$s.</string>
     <string name="stale_notice">%1$s %2$s</string>
+
+    <!-- Signing in -->
+    <string name="signin_email">Correo electrónico</string>
+    <string name="signin_password">Contraseña</string>
+    <string name="signin_submit">Iniciar sesión</string>
+    <string name="signin_forgot">¿Has olvidado tu contraseña?</string>
+    <string name="signin_create">Crear una cuenta</string>
+    <string name="signin_password_note">Tu contraseña va a MeetAgain y a ningún otro sitio.</string>
+    <string name="signin_open_website">Abrir el sitio web</string>
+    <string name="signin_error_credentials">Ese correo electrónico y esa contraseña no coinciden.</string>
+    <string name="signin_error_blocked">Esta cuenta no puede iniciar sesión. El sitio web explica el motivo.</string>
+    <string name="signin_error_not_verified">Tu dirección de correo electrónico aún no está confirmada. Confírmala en el sitio web y luego inicia sesión aquí.</string>
+    <string name="signin_error_pending">Tu cuenta está esperando aprobación. MeetAgain te escribirá por correo electrónico.</string>
+    <string name="signin_error_restricted">MeetAgain quiere comprobar que eres una persona, y la aplicación no puede mostrarlo. Inicia sesión una vez en el sitio web y vuelve a intentarlo aquí.</string>
+    <string name="signin_error_device">No se pudo dar un nombre a este teléfono. Inténtalo de nuevo.</string>
+
+    <!-- Me -->
+    <string name="me_title">Mi cuenta</string>
+    <string name="me_my_groups">Mis grupos</string>
+    <string name="me_profile">Perfil</string>
+    <string name="me_sign_out">Cerrar sesión</string>
+    <string name="me_delete_account">Eliminar mi cuenta (en el sitio web)</string>
+
+    <!-- Home -->
+    <string name="home_title">Mis encuentros</string>
+    <string name="home_next">Próximo</string>
+    <string name="home_later">Más adelante</string>
+    <string name="home_end">Eso es todo lo que hay en tus grupos para las próximas cuatro semanas.</string>
+    <string name="home_end_more">Esas son las próximas cuatro semanas. Hay más después en el sitio web.</string>
+    <string name="home_empty">No hay nada próximo en tus grupos.</string>
+    <string name="home_look_around">Eventos y grupos públicos</string>
+
+    <!-- Saying yes or no -->
+    <string name="rsvp_question">¿Vas a asistir?</string>
+    <string name="rsvp_going">Asisto</string>
+    <string name="rsvp_not_going">No asisto</string>
+    <string name="rsvp_guests">Acompañantes que traes</string>
+    <string name="rsvp_guest_more">Un acompañante más</string>
+    <string name="rsvp_guest_fewer">Un acompañante menos</string>
+    <string name="rsvp_saved_going">Vas a asistir.</string>
+    <string name="rsvp_saved_not_going">No vas a asistir.</string>
+    <string name="rsvp_canceled">Este encuentro se ha cancelado. Aún puedes retirar tu respuesta.</string>
+    <string name="rsvp_started">Este encuentro ya ha empezado. Aún puedes retirar tu respuesta.</string>
+    <string name="rsvp_not_a_member">Solo los miembros del grupo pueden decir que asisten.</string>
+    <string name="rsvp_failed">No se pudo guardar tu respuesta. Inténtalo de nuevo.</string>
+    <string name="undo">Deshacer</string>
+    <string name="cancel">Cancelar</string>
+    <string name="event_canceled">Cancelado</string>
+    <string name="event_more_dates">Más fechas de este encuentro</string>
+
+    <!-- Who is coming -->
+    <string name="attendees_title">Quién asiste</string>
+    <string name="attendees_you">tú</string>
+    <string name="attendees_empty">Todavía nadie ha dicho que asiste.</string>
+
+    <!-- The conversation -->
+    <string name="conversation_title">Conversación</string>
+    <string name="conversation_write">Escribe algo</string>
+    <string name="conversation_send">Enviar</string>
+    <string name="conversation_delete">Eliminar</string>
+    <string name="conversation_older">Mostrar anteriores</string>
+    <string name="conversation_end">Esa es toda la conversación.</string>
+    <string name="conversation_empty">Todavía no se ha dicho nada.</string>
+    <string name="conversation_add_photo">Añadir una foto</string>
+    <string name="conversation_take_photo">Hacer una foto</string>
+    <string name="conversation_comment_removed">Comentario eliminado</string>
+    <string name="conversation_photo_removed">Foto eliminada</string>
+    <string name="conversation_members_only">Solo los miembros del grupo pueden escribir aquí.</string>
+    <string name="conversation_too_long">Eso es demasiado largo. Acórtalo un poco.</string>
+    <string name="conversation_empty_comment">Escribe algo primero.</string>
+    <string name="conversation_photo_rejected">Esa foto no se aceptó. Puede que sea demasiado grande o de un tipo que el servidor no admite.</string>
+    <string name="conversation_failed">Eso no funcionó. Inténtalo de nuevo.</string>
+
+    <!-- Groups -->
+    <string name="mygroups_invitations">Invitaciones</string>
+    <string name="mygroups_memberships">Grupos</string>
+    <string name="mygroups_invited_by">Invitación de %1$s</string>
+    <string name="mygroups_accept">Aceptar</string>
+    <string name="mygroups_decline">Rechazar</string>
+    <string name="mygroups_end">Esos son todos tus grupos.</string>
+    <string name="mygroups_empty">Todavía no estás en ningún grupo.</string>
+    <string name="membership_member">Miembro</string>
+    <string name="membership_owner">Propietario</string>
+    <string name="membership_organizer">Organizador</string>
+    <string name="membership_pending">Esperando aprobación</string>
+    <string name="membership_rejected">Este grupo rechazó tu solicitud.</string>
+    <string name="membership_blocked">Este grupo te ha bloqueado.</string>
+    <string name="membership_not_joinable">A este grupo no se puede entrar desde la aplicación. Su propio sitio web es donde pedirlo.</string>
+    <string name="membership_blocked_refusal">Este grupo te ha bloqueado, así que aquí no se puede cambiar nada.</string>
+    <string name="membership_last_owner">Eres el último propietario de este grupo. Haz propietaria a otra persona primero.</string>
+    <string name="membership_may_not_leave_platform">No puedes salir de MeetAgain mientras estés en uno de sus grupos.</string>
+    <string name="membership_rejected_refusal">Este grupo rechazó tu solicitud. El sitio web es donde tratar eso.</string>
+    <string name="membership_invitation_gone">Esa invitación ya no existe.</string>
+    <string name="membership_crossing_needed">Este grupo necesita una respuesta más antes de que puedas unirte.</string>
+    <string name="membership_failed">Eso no funcionó. Inténtalo de nuevo.</string>
+    <string name="group_join">Unirme</string>
+    <string name="group_leave">Salir del grupo</string>
+    <string name="group_leave_confirm">¿Salir de %1$s? Para volver a entrar puede que el grupo tenga que aprobarte.</string>
+    <string name="group_invited">Te han invitado a este grupo.</string>
+    <string name="group_join_on_website">Este grupo tiene su propio sitio web, y ahí es donde te unes.</string>
+    <string name="crossing_title">Unirte a este grupo</string>
+    <string name="crossing_body">Este grupo forma parte de MeetAgain, así que tu cuenta también funciona aquí.</string>
+    <string name="crossing_mail_consent">MeetAgain puede enviarme anuncios y correos sobre eventos.</string>
+
+    <!-- Profile -->
+    <string name="profile_name">Nombre</string>
+    <string name="profile_bio">Sobre ti</string>
+    <string name="profile_public">Visible para otros miembros</string>
+    <string name="profile_public_explained">Cuando esto está desactivado, solo los grupos en los que estás ven tu perfil.</string>
+    <string name="profile_save">Guardar</string>
+    <string name="profile_saved">Guardado</string>
+    <string name="profile_pick_avatar">Elegir una imagen</string>
+    <string name="profile_take_avatar">Hacer una foto</string>
+    <string name="profile_name_required">Hace falta un nombre.</string>
+    <string name="profile_name_too_long">Ese nombre es demasiado largo.</string>
+    <string name="profile_language_not_allowed">MeetAgain no habla ese idioma.</string>
+    <string name="profile_avatar_rejected">Esa imagen no se aceptó. Puede que sea demasiado grande o de un tipo que el servidor no admite.</string>
+    <string name="profile_failed">Eso no se pudo guardar. Inténtalo de nuevo.</string>
+    <string name="profile_on_the_website">Esto está en el sitio web:</string>
+    <string name="profile_change_password">Cambiar tu contraseña</string>
+    <string name="profile_devices">Teléfonos desde los que has iniciado sesión</string>
+
+    <plurals name="signin_error_attempts">
+        <item quantity="one">Demasiados intentos. Inténtalo de nuevo en un minuto.</item>
+        <item quantity="other">Demasiados intentos. Inténtalo de nuevo en %d minutos.</item>
+        <item quantity="many">Demasiados intentos. Inténtalo de nuevo en %d minutos.</item>
+    </plurals>
+    <plurals name="rsvp_guest_count">
+        <item quantity="one">%d</item>
+        <item quantity="other">%d</item>
+        <item quantity="many">%d</item>
+    </plurals>
+    <plurals name="attendees_guests">
+        <item quantity="one">trae %d acompañante</item>
+        <item quantity="other">trae %d acompañantes</item>
+        <item quantity="many">trae %d acompañantes</item>
+    </plurals>
+    <plurals name="attendees_total">
+        <item quantity="one">Se espera %d persona</item>
+        <item quantity="other">Se esperan %d personas</item>
+        <item quantity="many">Se esperan %d personas</item>
+    </plurals>
+    <plurals name="attendees_external">
+        <item quantity="one">Y %d más que cuenta el organizador.</item>
+        <item quantity="other">Y %d más que cuenta el organizador.</item>
+        <item quantity="many">Y %d más que cuenta el organizador.</item>
+    </plurals>
     <plurals name="event_going">
         <item quantity="one">%d asiste</item>
         <item quantity="many">%d asisten</item>

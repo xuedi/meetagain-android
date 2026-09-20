@@ -1,15 +1,27 @@
 package org.meetagain.app.testing
 
 import java.time.Instant
+import org.meetagain.app.core.data.Attendee
+import org.meetagain.app.core.data.Attendees
+import org.meetagain.app.core.data.Comment
 import org.meetagain.app.core.data.Event
 import org.meetagain.app.core.data.EventDetails
 import org.meetagain.app.core.data.EventKind
 import org.meetagain.app.core.data.Group
 import org.meetagain.app.core.data.GroupDetails
+import org.meetagain.app.core.data.Invitation
 import org.meetagain.app.core.data.Location
+import org.meetagain.app.core.data.Membership
+import org.meetagain.app.core.data.MembershipStatus
+import org.meetagain.app.core.data.Photo
+import org.meetagain.app.core.data.Rsvp
 import org.meetagain.app.core.data.Upcoming
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Stale
+import org.meetagain.app.feature.conversation.Comments
+import org.meetagain.app.feature.home.Home
+import org.meetagain.app.feature.mygroups.MyGroups
+import org.meetagain.app.feature.profile.ProfileEdit
 
 /** Content for screenshots and UI tests, in the shape the server sends it, around 22 September 2026. */
 object Samples {
@@ -55,7 +67,7 @@ object Samples {
     val eventDetails = EventDetails(
         event = exchange,
         description = "Every Tuesday from 7:00 PM at Travolta Bar.\n\nWhat to expect\n\n- Friendly and informal " +
-            "atmosphere\n- All levels welcome\n\nIt is <b>free</b>, you only pay for your drinks.",
+            "atmosphere\n- All levels welcome\n\nIt is free, you only pay for your drinks.",
         location = Location("Travolta", "Wiener Strasse 14b", "10999", "Berlin"),
         photoUrls = listOf("https://meetagain.org/images/a_800x600.webp", "https://meetagain.org/images/b_800x600.webp")
     )
@@ -79,5 +91,77 @@ object Samples {
         memberCount = 45,
         websiteUrl = "https://dragon-descendants.de/",
         languages = listOf("de", "en", "zh")
+    )
+
+    // Signed in, as Crystal Liu
+
+    val myExchange = exchange.copy(
+        attending = 14,
+        seriesId = 4,
+        group = dragons,
+        mine = Rsvp(going = true, guests = 1)
+    )
+
+    val myPicnic = picnic.copy(group = dragons, mine = Rsvp(going = false))
+
+    val myDinner = dinner.copy(group = dragons, canceled = true, mine = Rsvp(going = true))
+
+    val home = Home(next = myExchange, later = listOf(myPicnic, myDinner), beyondWindow = false)
+
+    val attendees = Attendees(
+        people = listOf(
+            Attendee(4, "Crystal Liu", null, guests = 1, mine = true),
+            Attendee(6, "Adem Lane", null, guests = 0, mine = false),
+            Attendee(12, "Ali Mahdi", null, guests = 2, mine = false)
+        ),
+        externalCount = 3,
+        total = 9
+    )
+
+    val conversation = Comments(
+        visible = listOf(
+            Comment(
+                id = 10,
+                authorName = "Ali Mahdi",
+                authorAvatarUrl = null,
+                writtenAt = Instant.parse("2026-09-18T18:00:00Z"),
+                text = "Count me in, I will bring my own board.",
+                mine = false,
+                canDelete = false
+            ),
+            Comment(
+                id = 9,
+                authorName = "Crystal Liu",
+                authorAvatarUrl = null,
+                writtenAt = Instant.parse("2026-09-17T09:30:00Z"),
+                text = "See you all on Tuesday.",
+                mine = true,
+                canDelete = true
+            )
+        ),
+        total = 2,
+        hasOlder = false
+    )
+
+    val photos = listOf(
+        Photo(41, "https://meetagain.org/images/a_1024x768.webp", "https://meetagain.org/images/a_350x263.webp", true),
+        Photo(42, "https://meetagain.org/images/b_1024x768.webp", "https://meetagain.org/images/b_350x263.webp", false)
+    )
+
+    val myGroups = MyGroups(
+        memberships = listOf(
+            Membership(dragons, "member", MembershipStatus.Approved, blocked = false, joinedAt = null),
+            Membership(groups[0], "owner", MembershipStatus.Approved, blocked = false, joinedAt = null),
+            Membership(groups[1], null, MembershipStatus.Pending, blocked = false, joinedAt = null)
+        ),
+        invitations = listOf(Invitation(7, groups[3], "member", "Adem Lane", null))
+    )
+
+    val profile = ProfileEdit(
+        name = "Crystal Liu",
+        bio = "Adventurer at heart, I explore the great outdoors and capture moments through photography.",
+        language = "zh",
+        public = true,
+        avatarUrl = null
     )
 }

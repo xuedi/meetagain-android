@@ -42,7 +42,11 @@ class EventCalendarTest {
         server.serve(mapOf("/api/v1/events/117" to listOf(json(fixture("event-detail.json")))))
         compose.enableAccessibilityChecks()
         val container = testContainer(context, server)
-        compose.setContent { MeetAgainTheme { EventRoute(container, 117, onBack = {}) } }
+        compose.setContent {
+            MeetAgainTheme {
+                EventRoute(container, 117, onBack = {}, onOpenGroup = {}, onOpenAttendees = {}, onOpenConversation = {})
+            }
+        }
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(context.getString(R.string.event_open_map)) }
     }
 

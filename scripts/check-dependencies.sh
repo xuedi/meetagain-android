@@ -9,7 +9,7 @@ apk=app/build/outputs/apk/release/app-release-unsigned.apk
 aapt2=$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -1)
 forbidden='gms|firebase|play-services|datatransport|crashlytics|analytics|measurement|installreferrer|telemetry'
 # meetagain.org is the app's server; the others appear only in library error messages.
-allowed_hosts='^https?://(meetagain\.org|goo\.gle|youtrack\.jetbrains\.com)$'
+allowed_hosts='^https?://(meetagain\.org|goo\.gle|youtrack\.jetbrains\.com|issuetracker\.google\.com)$'
 noise='schemas\.android\.com|w3\.org|xmlpull|apache\.org|ns\.adobe|json-schema'
 allowed_permissions='^(android\.permission\.INTERNET|org\.meetagain\.app\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)$'
 failed=0
