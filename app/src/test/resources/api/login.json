@@ -1,0 +1,11 @@
+{
+  "token": "mapat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "scopes": [
+    "me:read",
+    "me:write",
+    "memberships:read",
+    "memberships:write",
+    "event-actions:read",
+    "event-actions:write"
+  ]
+}

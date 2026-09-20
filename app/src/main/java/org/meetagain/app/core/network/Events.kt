@@ -16,12 +16,18 @@ data class EventSummaryDto(
     val stop: String? = null,
     val type: Int? = null,
     val rsvpCount: Int,
+    val attendeeCount: Int,
+    val canceled: Boolean = false,
+    val seriesId: Int? = null,
+    val group: EventGroupDto? = null,
+    val myRsvp: Boolean? = null,
+    val myGuests: Int? = null,
     val previewImageUrl: String? = null,
     val detailUrl: String,
     val webUrl: String
 )
 
-/** `EventDetail` in the API description. [description] is text with newlines and optional inline HTML. */
+/** `EventDetail` in the API description. [description] is plain text with newlines. */
 @Serializable
 data class EventDetailDto(
     val id: Int,
@@ -31,6 +37,12 @@ data class EventDetailDto(
     val stop: String? = null,
     val type: Int? = null,
     val rsvpCount: Int,
+    val attendeeCount: Int,
+    val canceled: Boolean = false,
+    val seriesId: Int? = null,
+    val group: EventGroupDto? = null,
+    val myRsvp: Boolean? = null,
+    val myGuests: Int? = null,
     val previewImageUrl: String? = null,
     val detailUrl: String,
     val webUrl: String,
@@ -46,4 +58,14 @@ data class EventLocationDto(
     val street: String? = null,
     val city: String? = null,
     val postcode: String? = null
+)
+
+/** `EventGroup` in the API description: the group an event belongs to. */
+@Serializable
+data class EventGroupDto(
+    val slug: String,
+    val name: String,
+    val visibility: String? = null,
+    val domain: String? = null,
+    val logoUrl: String? = null
 )

@@ -13,11 +13,22 @@ sealed interface ApiError {
     data object Timeout : ApiError
 
     /**
-     * The server answered with a non-2xx status. [code] is the body's `error` field when the body is JSON;
-     * only `invalid_token` is a stable identifier today, the rest are English messages.
+     * The server answered with a non-2xx status. [code] is the body's `error` field, a machine code the screens
+     * turn into their own sentence; [message] is the server's English text, which is never shown.
+     * [retryAfter] is the seconds the server asks the app to wait, where it says so.
      */
-    data class Http(val status: Int, val code: String? = null, val message: String? = null) : ApiError
+    data class Http(
+        val status: Int,
+        val code: String? = null,
+        val message: String? = null,
+        val retryAfter: Int? = null
+    ) : ApiError
 
     /** A 2xx answer whose body does not match the expected shape. */
     data object Malformed : ApiError
 }
+
+/** The server's machine code for a refusal, for the screens that word each one differently. */
+val ApiError.code: String? get() = (this as? ApiError.Http)?.code
+
+fun ApiError.isCode(code: String) = this.code == code

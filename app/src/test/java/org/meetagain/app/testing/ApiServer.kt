@@ -11,6 +11,9 @@ fun fixture(name: String): String =
 fun json(body: String, status: Int = 200): MockResponse =
     MockResponse.Builder().code(status).setHeader("Content-Type", "application/json").body(body).build()
 
+/** The answer for the calls that say everything with their status. */
+fun noContent(): MockResponse = MockResponse.Builder().code(204).build()
+
 /**
  * Answers by path, so requests a screen sends in parallel get the right body in any order. [routes] maps an encoded
  * path to the answers for it, one per request; the last one repeats. Anything else is a 404.

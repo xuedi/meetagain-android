@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": 41,
+      "url": "https://meetagain.org/images/thumbnails/3f0f0b4d1e2c4a5b6c7d8e9f0a1b2c3d4e5f6a7b_1024x768.webp",
+      "urls": {
+        "1024x768": "https://meetagain.org/images/thumbnails/3f0f0b4d1e2c4a5b6c7d8e9f0a1b2c3d4e5f6a7b_1024x768.webp",
+        "350x263": "https://meetagain.org/images/thumbnails/3f0f0b4d1e2c4a5b6c7d8e9f0a1b2c3d4e5f6a7b_350x263.webp",
+        "210x140": "https://meetagain.org/images/thumbnails/3f0f0b4d1e2c4a5b6c7d8e9f0a1b2c3d4e5f6a7b_210x140.webp"
+      },
+      "mine": true
+    },
+    {
+      "id": 42,
+      "url": "https://meetagain.org/images/thumbnails/9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b_1024x768.webp",
+      "urls": {
+        "1024x768": "https://meetagain.org/images/thumbnails/9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b_1024x768.webp",
+        "350x263": "https://meetagain.org/images/thumbnails/9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b_350x263.webp",
+        "210x140": "https://meetagain.org/images/thumbnails/9b8a7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b_210x140.webp"
+      },
+      "mine": false
+    }
+  ],
+  "total": 2
+}

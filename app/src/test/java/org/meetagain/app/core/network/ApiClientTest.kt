@@ -85,7 +85,7 @@ class ApiClientTest {
         respond(200, "groups.json")
         val groups = (client().groups() as ApiResult.Success).value
         assertEquals("/api/v1/groups", server.takeRequest().url.encodedPath)
-        assertEquals(9, groups.items.size)
+        assertEquals(4, groups.items.size)
         assertEquals("public", groups.items.first().visibility)
     }
 
@@ -95,9 +95,9 @@ class ApiClientTest {
         respond(404, "error-not-found.json")
         val group = (client().group("my-community") as ApiResult.Success).value
         assertEquals("/api/v1/groups/my-community", server.takeRequest().url.encodedPath)
-        assertEquals(45, group.memberCount)
+        assertEquals(46, group.memberCount)
         assertEquals(listOf("de", "en", "zh"), group.languages)
-        assertEquals(ApiResult.Failure(ApiError.Http(404, "Not found")), client().group("a/b"))
+        assertEquals(ApiResult.Failure(ApiError.Http(404, "not_found")), client().group("a/b"))
         assertEquals("/api/v1/groups/a%2Fb", server.takeRequest().url.encodedPath)
     }
 
@@ -110,7 +110,7 @@ class ApiClientTest {
     @Test
     fun `not found error`() = runTest {
         respond(404, "error-not-found.json")
-        assertEquals(ApiResult.Failure(ApiError.Http(404, "Not found")), client().status())
+        assertEquals(ApiResult.Failure(ApiError.Http(404, "not_found")), client().status())
     }
 
     @Test

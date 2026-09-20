@@ -1,0 +1,14 @@
+{
+  "group": {
+    "slug": "berlin-cinephile-club",
+    "name": "Berlin Cinephile Club",
+    "visibility": "public",
+    "domain": "cinema.meetagain.local",
+    "logoUrl": "https://meetagain.org/images/thumbnails/cb951a327688ce6c9821f1a7ce552e5c5f7a255e_h120.webp",
+    "detailUrl": "https://meetagain.org/api/v1/groups/berlin-cinephile-club"
+  },
+  "role": "member",
+  "status": "pending",
+  "blocked": false,
+  "joinedAt": null
+}

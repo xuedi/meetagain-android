@@ -1119,6 +1119,121 @@
         ]
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign in and receive a personal access token",
+        "description": "Issues a new personal access token for this device and revokes the one an earlier sign-in issued for the same device name. Send it as a Bearer token on every call and sign in again on a 401.",
+        "operationId": "e543937f37f4e9c9fbf2c0f13ded3a24",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "email",
+                  "password",
+                  "deviceName"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "deviceName": {
+                    "description": "Stable name of this installation, shown to the member in their token list",
+                    "type": "string",
+                    "maxLength": 80,
+                    "minLength": 1
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body or invalid device name (bad_request, invalid_device_name)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Wrong email or password (invalid_credentials)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The account cannot sign in yet or any more (account_blocked, email_not_verified, pending_approval); the member fixes it on the website",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many attempts (too_many_attempts, with Retry-After) or login protection active (login_restricted); sign in on the website",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign out and revoke the calling token",
+        "operationId": "28b3b3d293ac36d2a58aebed201ff6c2",
+        "responses": {
+          "204": {
+            "description": "Token revoked"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
     "/api/v1/groups/{groupSlug}/cms": {
       "get": {
         "tags": [
@@ -1231,12 +1346,134 @@
       }
     },
     "/api/v1/events/{id}/rsvp": {
+      "put": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Set RSVP and guests on an event",
+        "description": "Idempotent: sets the RSVP and the guest count in one call and answers the resulting state.",
+        "operationId": "637ed8351adbac6248ae264215c3c0fd",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "going"
+                ],
+                "properties": {
+                  "going": {
+                    "type": "boolean"
+                  },
+                  "guests": {
+                    "description": "Guests the member brings, 0 to 5; ignored when not going",
+                    "type": "integer",
+                    "maximum": 5,
+                    "minimum": 0
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resulting RSVP state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RsvpResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed (not_a_member)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Event canceled or already started (event_canceled, event_started)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Body is not an object, or going is not a boolean (bad_request)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Guest count out of range (validation_failed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "event-actions"
         ],
         "summary": "RSVP yes to an event",
         "operationId": "df4effc912f06e62f5d59da98050bfaf",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "RSVP added (or already present)",
@@ -1252,7 +1489,14 @@
             "description": "Missing or invalid Bearer token"
           },
           "403": {
-            "description": "Not allowed (group membership / blocked)"
+            "description": "Not allowed (group membership / blocked)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "404": {
             "description": "Event not found",
@@ -1286,7 +1530,18 @@
           "event-actions"
         ],
         "summary": "Remove RSVP from an event",
+        "description": "Withdrawing is never refused: a canceled event, an event that has started and a lost group membership all still let the member off the attendee list.",
         "operationId": "6e371c84b405a3267204e75014f8592a",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "RSVP removed (or already absent)",
@@ -1301,8 +1556,55 @@
           "401": {
             "description": "Missing or invalid Bearer token"
           },
-          "403": {
-            "description": "Not allowed"
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/occurrences": {
+      "get": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "List the other dates of a recurring meeting",
+        "description": "The upcoming visible events of the same recurring series, each with the caller's own RSVP state. An event without a series answers with itself.",
+        "operationId": "5b52fea2aba4f38dea244e1bd1e7991a",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upcoming occurrences of the series",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
           },
           "404": {
             "description": "Event not found",
@@ -1313,9 +1615,59 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/attendees": {
+      "get": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "List who is coming to an event",
+        "description": "Who is coming, as the event page shows it to a signed-in member: the people who RSVPed with their guests, plus the organizer-maintained external count.",
+        "operationId": "9a19de5073fb10976dc6b2973eb4bb66",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The people coming",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendeeList"
+                }
+              }
+            }
           },
-          "409": {
-            "description": "Event canceled or already started",
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the event-actions:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found or not visible to the caller (not_found)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1333,12 +1685,100 @@
       }
     },
     "/api/v1/events/{id}/comments": {
+      "get": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "List the comments on an event",
+        "description": "Newest first, as on the event page. Page backwards by passing the previous page's nextBefore.",
+        "operationId": "7200d2a9210f4f01269c4ce441e33889",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Only comments older than this comment id",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the event-actions:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found or not visible to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "event-actions"
         ],
         "summary": "Post a comment on an event",
         "operationId": "7850bf33d0c66a5bc68df70f9ab8a047",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1366,7 +1806,7 @@
             }
           },
           "400": {
-            "description": "Empty or over-long content",
+            "description": "content_required or content_too_long",
             "content": {
               "application/json": {
                 "schema": {
@@ -1379,38 +1819,24 @@
             "description": "Missing or invalid Bearer token"
           },
           "403": {
-            "description": "Not allowed"
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Event not found"
-          }
-        },
-        "security": [
-          {
-            "pat": []
-          }
-        ]
-      }
-    },
-    "/api/v1/events/{id}/comments/{commentId}": {
-      "delete": {
-        "tags": [
-          "event-actions"
-        ],
-        "summary": "Delete an event comment (own or admin)",
-        "operationId": "fce7fdfa8826ec1ab92c6882887fedc0",
-        "responses": {
-          "204": {
-            "description": "Comment deleted"
-          },
-          "401": {
-            "description": "Missing or invalid Bearer token"
-          },
-          "403": {
-            "description": "Not your comment and not admin"
-          },
-          "404": {
-            "description": "Comment or event not found"
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1421,12 +1847,80 @@
       }
     },
     "/api/v1/events/{id}/images": {
+      "get": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "List the photos of an event",
+        "description": "The photos of the event in every generated size. Photos reported by a member are left out, as on the event page.",
+        "operationId": "2ad6d9529d05010ca9b99540469149df",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photos of the event",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the event-actions:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found or not visible to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "event-actions"
         ],
         "summary": "Upload an image to an event",
         "operationId": "687af32c249969810630cd7c5b598d14",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1455,7 +1949,7 @@
             }
           },
           "400": {
-            "description": "No file or unsupported format",
+            "description": "file_required, file_rejected or upload_failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -1468,10 +1962,84 @@
             "description": "Missing or invalid Bearer token"
           },
           "403": {
-            "description": "Not allowed"
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Event not found"
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}/comments/{commentId}": {
+      "delete": {
+        "tags": [
+          "event-actions"
+        ],
+        "summary": "Delete an event comment (own or admin)",
+        "operationId": "fce7fdfa8826ec1ab92c6882887fedc0",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment deleted"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not your comment and not admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment or event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1488,6 +2056,24 @@
         ],
         "summary": "Delete an event image (own upload or admin)",
         "operationId": "d6983599af553919c41b1da8cd1685bb",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "imageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "Image deleted"
@@ -1496,10 +2082,24 @@
             "description": "Missing or invalid Bearer token"
           },
           "403": {
-            "description": "Not your image and not admin"
+            "description": "Not your image and not admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Image or event not found"
+            "description": "Image or event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1565,6 +2165,16 @@
               "type": "integer",
               "default": 0,
               "minimum": 0
+            }
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "description": "Group slug; an unknown slug returns an empty list",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "weiqi-club"
             }
           }
         ],
@@ -1825,6 +2435,178 @@
             "pat": []
           }
         ]
+      },
+      "patch": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Edit the authenticated member profile",
+        "description": "Only the fields present in the body change. The name follows the website rule: a name already stored above the cap keeps working, but a change has to fit it.",
+        "operationId": "c31fc853e8bc8a1f34427a763b91f8fb",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "bio": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "locale": {
+                    "description": "One of the languages enabled on this platform",
+                    "type": "string"
+                  },
+                  "public": {
+                    "type": "boolean"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The saved profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "A field was rejected (validation_failed); errors names them: name_required, name_too_long, locale_not_enabled, bio_invalid, public_invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/avatar": {
+      "post": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Replace the authenticated member avatar",
+        "description": "Replaces the member avatar. The previous picture stays in the member own gallery, as on the website.",
+        "operationId": "675c14fccc3ca338f7ef7df37d66b029",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The profile with its new avatar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeProfile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "file_required, file_rejected or upload_failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/groups": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "List the groups of the authenticated member",
+        "description": "Every group the member belongs to or has asked to join, including the ones that blocked them, each with the role and the membership status.",
+        "operationId": "17a0800cc0ea32a12c67419202165150",
+        "responses": {
+          "200": {
+            "description": "The memberships of the authenticated member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
       }
     },
     "/api/v1/me/rsvps": {
@@ -1834,6 +2616,18 @@
         ],
         "summary": "List the authenticated user upcoming RSVPs",
         "operationId": "f31de8be8245bcbece8c09402db5c580",
+        "parameters": [
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language code; overrides Accept-Language",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Array of upcoming events the user has RSVPed to",
@@ -1847,6 +2641,364 @@
           },
           "401": {
             "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/events": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "List the upcoming meetings of the authenticated member",
+        "description": "The upcoming events of the member's groups plus the visible upcoming events they RSVPed to elsewhere, canceled ones included and flagged.",
+        "operationId": "2e124c0510dd28ee72676de0cb37a63f",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "ISO-8601 lower bound (default: now)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language code; overrides Accept-Language",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated event list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/memberships/invitations": {
+      "get": {
+        "tags": [
+          "memberships"
+        ],
+        "summary": "List the open group invitations",
+        "description": "Invitations addressed to the calling member, minus those hidden by a block in either direction.",
+        "operationId": "2081a743b7c179460808118364f2912e",
+        "responses": {
+          "200": {
+            "description": "The open invitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the memberships:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/memberships/invitations/{id}/accept": {
+      "post": {
+        "tags": [
+          "memberships"
+        ],
+        "summary": "Accept a group invitation",
+        "description": "Accepting settles the membership at the invited role. While the member still has to join the platform group, this answers 409 platform_crossing_required; retry with platformMailConsent to answer that question first.",
+        "operationId": "3f463c0b472e9f491231d2a73288166b",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "platformMailConsent": {
+                    "description": "Answers the platform crossing: whether the platform may send announcements and event mail",
+                    "type": "boolean"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The resulting membership",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Membership"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such invitation for this member (invitation_not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "blocked_in_group, membership_rejected or platform_crossing_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/memberships/invitations/{id}/decline": {
+      "post": {
+        "tags": [
+          "memberships"
+        ],
+        "summary": "Decline a group invitation",
+        "operationId": "4ee589ba5df6ea62d0f2843918a3935d",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Invitation declined"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such invitation for this member (invitation_not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/memberships/groups/{slug}": {
+      "post": {
+        "tags": [
+          "memberships"
+        ],
+        "summary": "Join a listed group, or ask to",
+        "description": "Only a group listed on the groups portal can be joined here. A Hidden group is joined on its own domain and a Private group by invitation, so both answer group_not_joinable. When the group requires approval the membership comes back pending.",
+        "operationId": "aef7f090c69f710362018ac90527df79",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "platformMailConsent": {
+                    "description": "Answers the platform crossing: whether the platform may send announcements and event mail",
+                    "type": "boolean"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The resulting membership, approved or pending",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Membership"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such group (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "group_not_joinable, blocked_in_group or platform_crossing_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "memberships"
+        ],
+        "summary": "Leave a group",
+        "description": "The same rules the website applies: the last owner cannot leave, a blocked member cannot, and the platform group can only be left once it is no longer needed for another membership.",
+        "operationId": "7db6c3be9c153eb9b7489a0b935d9e7a",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Membership ended"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such group, or no membership in it (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "last_owner, blocked_in_group or may_not_leave_platform",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2848,6 +4000,62 @@
         },
         "type": "object"
       },
+      "Attendee": {
+        "required": [
+          "id",
+          "name",
+          "guests",
+          "mine"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "guests": {
+            "description": "Guests this person brings along.",
+            "type": "integer"
+          },
+          "mine": {
+            "description": "Whether this is the calling member.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "AttendeeList": {
+        "required": [
+          "items",
+          "externalCount",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Attendee"
+            }
+          },
+          "externalCount": {
+            "description": "Attendees the organizer counts without an account.",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Everyone expected: the people listed, their guests and the external count.",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "CmsPage": {
         "required": [
           "slug",
@@ -2897,6 +4105,32 @@
         },
         "type": "object"
       },
+      "CommentAuthor": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "description": "Null once the account is gone.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
       "CommentCreated": {
         "required": [
           "id",
@@ -2919,6 +4153,32 @@
         },
         "type": "object"
       },
+      "CommentList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventComment"
+            }
+          },
+          "total": {
+            "description": "All comments on the event, not just this page.",
+            "type": "integer"
+          },
+          "nextBefore": {
+            "description": "Pass as before to fetch the next, older page; null on the last page.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "ErrorResponse": {
         "required": [
           "error"
@@ -2930,12 +4190,50 @@
         },
         "type": "object"
       },
+      "EventComment": {
+        "required": [
+          "id",
+          "author",
+          "content",
+          "mine",
+          "canDelete"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "author": {
+            "$ref": "#/components/schemas/CommentAuthor"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "content": {
+            "type": "string"
+          },
+          "mine": {
+            "description": "Whether the calling member wrote it.",
+            "type": "boolean"
+          },
+          "canDelete": {
+            "description": "Whether the calling member may delete it.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
       "EventDetail": {
         "required": [
           "id",
           "title",
           "start",
           "rsvpCount",
+          "attendeeCount",
+          "canceled",
           "detailUrl",
           "webUrl",
           "images"
@@ -2973,6 +4271,37 @@
           },
           "rsvpCount": {
             "type": "integer"
+          },
+          "attendeeCount": {
+            "description": "RSVPs plus their guests plus the organizer-maintained external count.",
+            "type": "integer"
+          },
+          "canceled": {
+            "type": "boolean"
+          },
+          "seriesId": {
+            "description": "Set when the event belongs to a recurring series.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "group": {
+            "$ref": "#/components/schemas/EventGroup"
+          },
+          "myRsvp": {
+            "description": "Whether the calling member has RSVPed; null without a member-scoped token.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "myGuests": {
+            "description": "Guests the calling member brings; null without a member-scoped token.",
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "previewImageUrl": {
             "type": [
@@ -3012,6 +4341,77 @@
               "type": "string",
               "format": "uri"
             }
+          }
+        },
+        "type": "object"
+      },
+      "EventGroup": {
+        "required": [
+          "slug",
+          "name",
+          "visibility"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "public",
+              "hidden",
+              "private"
+            ]
+          },
+          "domain": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "logoUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
+      "EventImage": {
+        "required": [
+          "id",
+          "url",
+          "urls",
+          "mine"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "description": "The largest generated size, for a full-screen view.",
+            "type": "string",
+            "format": "uri"
+          },
+          "urls": {
+            "description": "Every generated size, keyed by its dimensions.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "mine": {
+            "description": "Whether the calling member uploaded it.",
+            "type": "boolean"
           }
         },
         "type": "object"
@@ -3077,6 +4477,8 @@
           "title",
           "start",
           "rsvpCount",
+          "attendeeCount",
+          "canceled",
           "detailUrl",
           "webUrl"
         ],
@@ -3113,6 +4515,37 @@
           },
           "rsvpCount": {
             "type": "integer"
+          },
+          "attendeeCount": {
+            "description": "RSVPs plus their guests plus the organizer-maintained external count.",
+            "type": "integer"
+          },
+          "canceled": {
+            "type": "boolean"
+          },
+          "seriesId": {
+            "description": "Set when the event belongs to a recurring series.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "group": {
+            "$ref": "#/components/schemas/EventGroup"
+          },
+          "myRsvp": {
+            "description": "Whether the calling member has RSVPed; null without a member-scoped token.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "myGuests": {
+            "description": "Guests the calling member brings; null without a member-scoped token.",
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "previewImageUrl": {
             "type": [
@@ -3271,6 +4704,24 @@
         },
         "type": "object"
       },
+      "ImageList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventImage"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "ImageUploaded": {
         "required": [
           "id",
@@ -3287,6 +4738,90 @@
         },
         "type": "object"
       },
+      "Invitation": {
+        "required": [
+          "id",
+          "group",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "group": {
+            "$ref": "#/components/schemas/GroupSummary"
+          },
+          "role": {
+            "description": "The role the invitation grants on acceptance.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "invitedBy": {
+            "description": "Who sent it; null once that account is gone.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "InvitationList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invitation"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "LoginResult": {
+        "required": [
+          "token",
+          "scopes"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "mapat_..."
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "me:read"
+            ]
+          }
+        },
+        "type": "object"
+      },
       "MeProfile": {
         "required": [
           "id",
@@ -3294,7 +4829,8 @@
           "name",
           "role",
           "status",
-          "locale"
+          "locale",
+          "public"
         ],
         "properties": {
           "id": {
@@ -3321,6 +4857,10 @@
               "string",
               "null"
             ]
+          },
+          "public": {
+            "description": "Whether the member profile is visible to other members.",
+            "type": "boolean"
           },
           "avatarUrl": {
             "type": [
@@ -3357,16 +4897,80 @@
         },
         "type": "object"
       },
+      "Membership": {
+        "required": [
+          "group",
+          "role",
+          "status",
+          "blocked"
+        ],
+        "properties": {
+          "group": {
+            "$ref": "#/components/schemas/GroupSummary"
+          },
+          "role": {
+            "description": "owner, organizer or member.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "description": "pending while the group still has to approve the request.",
+            "type": "string"
+          },
+          "blocked": {
+            "description": "Whether the group has blocked this member.",
+            "type": "boolean"
+          },
+          "joinedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "MembershipList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Membership"
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "RsvpResult": {
         "required": [
           "rsvp",
-          "rsvpCount"
+          "rsvpCount",
+          "guests",
+          "attendeeCount"
         ],
         "properties": {
           "rsvp": {
             "type": "boolean"
           },
           "rsvpCount": {
+            "type": "integer"
+          },
+          "guests": {
+            "description": "Guests the calling member brings.",
+            "type": "integer"
+          },
+          "attendeeCount": {
+            "description": "RSVPs plus their guests plus the external count.",
             "type": "integer"
           }
         },
@@ -3422,6 +5026,10 @@
       "description": "Cron and email send logs. Read-only, reserved for users with ROLE_ADMIN."
     },
     {
+      "name": "auth",
+      "description": "Sign in with email and password to obtain a personal access token"
+    },
+    {
       "name": "event-actions",
       "description": "Authenticated user actions on events: RSVP, comments, image upload"
     },
@@ -3440,6 +5048,10 @@
     {
       "name": "me",
       "description": "Authenticated user (token-scoped reads)"
+    },
+    {
+      "name": "memberships",
+      "description": "The calling member's group memberships: invitations, joining and leaving"
     },
     {
       "name": "status",

@@ -22,4 +22,8 @@ interface CachedAnswerDao {
 
     @Query("DELETE FROM cached_answer WHERE used_at < :before")
     suspend fun deleteUnusedSince(before: Instant)
+
+    /** Everything stored for one member, as they sign out. */
+    @Query("DELETE FROM cached_answer WHERE `key` LIKE :prefix || '%'")
+    suspend fun deleteWithPrefix(prefix: String)
 }

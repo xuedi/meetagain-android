@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.meetagain.app.core.auth.SessionStore
+import org.meetagain.app.core.auth.deviceName
 import org.meetagain.app.core.cache.CacheDatabase
 
 class MeetAgainApp :
@@ -23,7 +25,10 @@ class MeetAgainApp :
         super.onCreate()
         container = AppContainer(
             AppInfo(BuildConfig.VERSION_NAME, BuildConfig.DEBUG, BuildConfig.BASE_URL),
-            CacheDatabase.open(this)
+            CacheDatabase.open(this),
+            SessionStore.open(this),
+            deviceName = { deviceName(this) },
+            scope = housekeeping
         )
         housekeeping.launch { container.publicRepository.forgetUnused() }
     }

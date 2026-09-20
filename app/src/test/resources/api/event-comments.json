@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": 10,
+      "author": {
+        "id": 12,
+        "name": "Ali Mahdi",
+        "avatarUrl": "https://meetagain.org/images/thumbnails/9a0d578ef21f1afc601c9ca1cb5f0f87d58a43d2_400x400.webp"
+      },
+      "createdAt": "2026-09-22T18:00:00+02:00",
+      "content": "Count me in, I will bring my own board.",
+      "mine": false,
+      "canDelete": true
+    },
+    {
+      "id": 9,
+      "author": {
+        "id": 6,
+        "name": "Adem Lane",
+        "avatarUrl": "https://meetagain.org/images/thumbnails/ddde6f9c2ca89fc15b6544f67093a8ffbabc5576_400x400.webp"
+      },
+      "createdAt": "2026-09-21T18:00:00+02:00",
+      "content": "Great to see so many new faces last week!",
+      "mine": false,
+      "canDelete": true
+    }
+  ],
+  "total": 2,
+  "nextBefore": null
+}

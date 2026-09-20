@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": 3,
+      "name": "admin",
+      "avatarUrl": "https://meetagain.org/images/thumbnails/c6f0208f15bb20290ea2152004c2bf0b97412448_400x400.webp",
+      "guests": 0,
+      "mine": false
+    },
+    {
+      "id": 4,
+      "name": "Crystal Liu",
+      "avatarUrl": "https://meetagain.org/images/thumbnails/c79532c476e00a2400292babd40d98ac7dff9997_400x400.webp",
+      "guests": 0,
+      "mine": true
+    },
+    {
+      "id": 6,
+      "name": "Adem Lane",
+      "avatarUrl": "https://meetagain.org/images/thumbnails/ddde6f9c2ca89fc15b6544f67093a8ffbabc5576_400x400.webp",
+      "guests": 0,
+      "mine": false
+    },
+    {
+      "id": 12,
+      "name": "Ali Mahdi",
+      "avatarUrl": "https://meetagain.org/images/thumbnails/9a0d578ef21f1afc601c9ca1cb5f0f87d58a43d2_400x400.webp",
+      "guests": 0,
+      "mine": false
+    }
+  ],
+  "externalCount": 0,
+  "total": 4
+}

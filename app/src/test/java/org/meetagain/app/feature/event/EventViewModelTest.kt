@@ -51,7 +51,7 @@ class EventViewModelTest {
         val viewModel = EventViewModel(publicRepository(server), 117)
         viewModel.state.test {
             assertEquals(Loadable.Loading, awaitItem())
-            assertEquals(Loadable.Failed(ApiError.Http(404, "Not found")), awaitItem())
+            assertEquals(Loadable.Failed(ApiError.Http(404, "not_found")), awaitItem())
             viewModel.load()
             assertEquals(Loadable.Loading, awaitItem())
             assertEquals(117, (awaitItem() as Loadable.Loaded).value.event.id)

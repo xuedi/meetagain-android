@@ -1,0 +1,79 @@
+{
+  "items": [
+    {
+      "id": 73,
+      "title": "Monthly Supper Club - Sicilian Edition",
+      "teaser": "A six-course Sicilian menu cooked in front of you, with wine pairings and a recipe booklet to take home.",
+      "start": "2026-09-22T19:00:00+02:00",
+      "stop": "2026-09-22T23:30:00+02:00",
+      "type": 4,
+      "rsvpCount": 0,
+      "attendeeCount": 0,
+      "canceled": false,
+      "seriesId": 9,
+      "group": {
+        "slug": "berlin-supper-club",
+        "name": "Berlin Supper Club",
+        "visibility": "public",
+        "domain": "supper.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/84b747966d39924acfc290cb056719d95c292b28_h120.webp"
+      },
+      "myRsvp": false,
+      "myGuests": 0,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71a185614cb3c6315672b3a450b768a6f5ef4d87_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/73",
+      "webUrl": "https://meetagain.org/en/event/73"
+    },
+    {
+      "id": 6,
+      "title": "Weekly Go Study Group",
+      "teaser": "Join our Wednesday meetup at Spreeblick Cafe to discuss International Weiqi news and play games. We have 6 board sets available, but feel free to bring your own.",
+      "start": "2026-09-23T18:00:00+02:00",
+      "stop": "2026-09-23T21:00:00+02:00",
+      "type": 2,
+      "rsvpCount": 4,
+      "attendeeCount": 4,
+      "canceled": false,
+      "seriesId": 1,
+      "group": {
+        "slug": "weiqi-club",
+        "name": "Weiqi Club",
+        "visibility": "public",
+        "domain": "weiqi.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/192348baa79673e708c8d06068ed69c03be79189_h120.webp"
+      },
+      "myRsvp": true,
+      "myGuests": 0,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71a185614cb3c6315672b3a450b768a6f5ef4d87_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/6",
+      "webUrl": "https://meetagain.org/en/event/6"
+    },
+    {
+      "id": 58,
+      "title": "Biweekly Movie Night - Upcoming",
+      "teaser": "Our next screening. Voting is open now - pick what we watch together.",
+      "start": "2026-09-25T20:00:00+02:00",
+      "stop": "2026-09-25T23:30:00+02:00",
+      "type": 2,
+      "rsvpCount": 5,
+      "attendeeCount": 5,
+      "canceled": false,
+      "seriesId": 8,
+      "group": {
+        "slug": "berlin-cinephile-club",
+        "name": "Berlin Cinephile Club",
+        "visibility": "public",
+        "domain": "cinema.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/cb951a327688ce6c9821f1a7ce552e5c5f7a255e_h120.webp"
+      },
+      "myRsvp": false,
+      "myGuests": 0,
+      "previewImageUrl": "https://meetagain.org/images/thumbnails/71a185614cb3c6315672b3a450b768a6f5ef4d87_600x400.webp",
+      "detailUrl": "https://meetagain.org/api/v1/events/58",
+      "webUrl": "https://meetagain.org/en/event/58"
+    }
+  ],
+  "total": 59,
+  "limit": 3,
+  "offset": 0
+}

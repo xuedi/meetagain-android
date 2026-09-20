@@ -72,10 +72,10 @@ class PublicRepositoryTest {
     }
 
     @Test
-    fun `events without a title in the language are dropped`() = runTest {
+    fun `a list of one group carries its kinds and is complete`() = runTest {
         respond(
-            """{"items":[${summary(1, "")},${summary(2, "Picnic", type = 3)},${summary(3, "Dinner", type = 4)}],
-            |"total":3,"limit":100,"offset":0}
+            """{"items":[${summary(2, "Picnic", type = 3)},${summary(3, "Dinner", type = 4)}],
+            |"total":2,"limit":100,"offset":0}
             """.trimMargin()
         )
         val upcoming = upcoming(group = "my-community")
@@ -104,9 +104,13 @@ class PublicRepositoryTest {
     }
 
     @Test
-    fun `an event without a title in the language is not found`() = runTest {
-        respond(fixture("event-detail.json").replace("\"German English Language Exchange\"", "\"\""))
-        assertEquals(ApiResult.Failure(ApiError.Http(404)), repository().refreshEvent(117))
+    fun `an event the server does not have is forgotten`() = runTest {
+        respond(fixture("event-detail.json"))
+        val repository = repository()
+        repository.refreshEvent(117)
+        respond(fixture("error-not-found.json"), status = 404)
+        assertEquals(ApiResult.Failure(ApiError.Http(404, "not_found")), repository.refreshEvent(117))
+        assertNull(repository.event(117).first())
     }
 
     @Test
@@ -118,7 +122,7 @@ class PublicRepositoryTest {
     }
 
     @Test
-    fun `only public groups are listed`() = runTest {
+    fun `the groups are the ones the server lists`() = runTest {
         respond(fixture("groups.json"))
         val repository = repository()
         repository.refreshGroups()
@@ -140,15 +144,18 @@ class PublicRepositoryTest {
         repository.refreshGroup("my-community")
         val group = checkNotNull(repository.group("my-community").first()).value
         assertEquals("Dragon Descendants", group.group.name)
-        assertEquals(45, group.memberCount)
+        assertEquals(46, group.memberCount)
         assertEquals("https://dragon-descendants.de/", group.websiteUrl)
         assertEquals(listOf("de", "en", "zh"), group.languages)
     }
 
     @Test
-    fun `a group that is not public is not found`() = runTest {
-        respond(fixture("group-detail.json").replace("\"public\"", "\"private\""))
-        assertEquals(ApiResult.Failure(ApiError.Http(404)), repository().refreshGroup("my-community"))
+    fun `a group the member may see is shown whatever its visibility`() = runTest {
+        // The server decides: a Hidden group of the signed-in member answers, and the app shows what it gets.
+        respond(fixture("group-detail.json").replace("\"public\"", "\"hidden\""))
+        val repository = repository()
+        assertEquals(ApiResult.Success(Unit), repository.refreshGroup("my-community"))
+        assertEquals("Dragon Descendants", checkNotNull(repository.group("my-community").first()).value.group.name)
     }
 
     @Test
@@ -218,6 +225,7 @@ class PublicRepositoryTest {
 
     private fun summary(id: Int, title: String, type: Int = 2) =
         """{"id":$id,"title":"$title","start":"2026-09-22T19:00:00+02:00","type":$type,"rsvpCount":0,
+        |"attendeeCount":0,"canceled":false,
         |"detailUrl":"https://meetagain.org/api/v1/events/$id","webUrl":"https://meetagain.org/en/event/$id"}"""
             .trimMargin()
 }

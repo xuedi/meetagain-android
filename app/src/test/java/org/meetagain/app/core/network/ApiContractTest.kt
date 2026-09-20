@@ -30,8 +30,28 @@ class ApiContractTest {
         "EventLocation" to EventLocationDto.serializer().descriptor,
         "GroupList" to GroupListDto.serializer().descriptor,
         "GroupSummary" to GroupSummaryDto.serializer().descriptor,
-        "GroupDetail" to GroupDetailDto.serializer().descriptor
+        "GroupDetail" to GroupDetailDto.serializer().descriptor,
+        "EventGroup" to EventGroupDto.serializer().descriptor,
+        "LoginResult" to LoginResultDto.serializer().descriptor,
+        "MeProfile" to MeDto.serializer().descriptor,
+        "RsvpResult" to RsvpResultDto.serializer().descriptor,
+        "AttendeeList" to AttendeeListDto.serializer().descriptor,
+        "Attendee" to AttendeeDto.serializer().descriptor,
+        "CommentList" to CommentListDto.serializer().descriptor,
+        "EventComment" to EventCommentDto.serializer().descriptor,
+        "CommentAuthor" to CommentAuthorDto.serializer().descriptor,
+        "CommentCreated" to CommentCreatedDto.serializer().descriptor,
+        "ImageList" to ImageListDto.serializer().descriptor,
+        "EventImage" to EventImageDto.serializer().descriptor,
+        "ImageUploaded" to ImageUploadedDto.serializer().descriptor,
+        "MembershipList" to MembershipListDto.serializer().descriptor,
+        "Membership" to MembershipDto.serializer().descriptor,
+        "InvitationList" to InvitationListDto.serializer().descriptor,
+        "Invitation" to InvitationDto.serializer().descriptor
     )
+
+    // ErrorBody is deliberately not here: it reads ErrorResponse and ValidationErrorResponse through one lenient
+    // shape, so it has fields neither schema alone declares.
 
     private val schemas: JsonObject by lazy {
         val spec = File(System.getProperty("openapi.spec") ?: error("openapi.spec is not set"))

@@ -1,17 +1,17 @@
 {
-    "slug": "my-community",
-    "name": "Dragon Descendants",
-    "visibility": "public",
-    "domain": "dragon-descendants.de",
-    "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp",
-    "detailUrl": "https://meetagain.org/api/v1/groups/my-community",
-    "description": "Since 2015, this Berlin group brings together locals and internationals for relaxed Chinese-German language exchange. They meet twice monthly on Thursday evenings, plus organize casual hangouts like picnics, karaoke, and dinners. No classroom pressure—just real conversations with people who love sharing languages and cultures.",
-    "previewImageUrl": "https://meetagain.org/images/thumbnails/238cb301f894ab4f58d60d8a990b0a69244b215b_1200x630.webp",
-    "languages": [
-        "de",
-        "en",
-        "zh"
-    ],
-    "createdAt": "2026-02-13T23:55:38+01:00",
-    "memberCount": 45
+  "slug": "my-community",
+  "name": "Dragon Descendants",
+  "visibility": "public",
+  "domain": "dragon-descendants.de",
+  "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp",
+  "detailUrl": "https://meetagain.org/api/v1/groups/my-community",
+  "description": "Since 2015, this Berlin group brings together locals and internationals for relaxed Chinese-German language exchange. They meet twice monthly on Thursday evenings, plus organize casual hangouts like picnics, karaoke, and dinners. No classroom pressure—just real conversations with people who love sharing languages and cultures.",
+  "previewImageUrl": "https://meetagain.org/images/thumbnails/238cb301f894ab4f58d60d8a990b0a69244b215b_1200x630.webp",
+  "languages": [
+    "de",
+    "en",
+    "zh"
+  ],
+  "createdAt": "2026-02-13T23:55:38+01:00",
+  "memberCount": 46
 }

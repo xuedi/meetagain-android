@@ -8,6 +8,18 @@
       "stop": "2026-09-22T22:30:00+02:00",
       "type": 2,
       "rsvpCount": 1,
+      "attendeeCount": 14,
+      "canceled": false,
+      "seriesId": 2,
+      "group": {
+        "slug": "german-english-language-exchange-in-berlin",
+        "name": "German English Language Exchange",
+        "visibility": "public",
+        "domain": "travolta-meetup.de",
+        "logoUrl": null
+      },
+      "myRsvp": null,
+      "myGuests": null,
       "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
       "detailUrl": "https://meetagain.org/api/v1/events/117",
       "webUrl": "https://meetagain.org/en/event/117"
@@ -20,6 +32,18 @@
       "stop": "2026-09-29T22:30:00+02:00",
       "type": 2,
       "rsvpCount": 1,
+      "attendeeCount": 11,
+      "canceled": false,
+      "seriesId": 2,
+      "group": {
+        "slug": "german-english-language-exchange-in-berlin",
+        "name": "German English Language Exchange",
+        "visibility": "public",
+        "domain": "travolta-meetup.de",
+        "logoUrl": null
+      },
+      "myRsvp": null,
+      "myGuests": null,
       "previewImageUrl": "https://meetagain.org/images/thumbnails/71cbfeca2e1c1417941fecbd19a55f10f5d24a1d_600x400.webp",
       "detailUrl": "https://meetagain.org/api/v1/events/126",
       "webUrl": "https://meetagain.org/en/event/126"
@@ -32,6 +56,18 @@
       "stop": "2026-10-01T22:30:00+02:00",
       "type": 2,
       "rsvpCount": 3,
+      "attendeeCount": 16,
+      "canceled": false,
+      "seriesId": 1,
+      "group": {
+        "slug": "my-community",
+        "name": "Dragon Descendants",
+        "visibility": "public",
+        "domain": "dragon-descendants.de",
+        "logoUrl": "https://meetagain.org/images/thumbnails/2f8b9dbfb6dce7080f1177545c4e3c4b1b9fe8dd_h120.webp"
+      },
+      "myRsvp": null,
+      "myGuests": null,
       "previewImageUrl": "https://meetagain.org/images/thumbnails/238cb301f894ab4f58d60d8a990b0a69244b215b_600x400.webp",
       "detailUrl": "https://meetagain.org/api/v1/events/91",
       "webUrl": "https://meetagain.org/en/event/91"
@@ -44,12 +80,24 @@
       "stop": "2026-10-02T23:45:00+02:00",
       "type": 2,
       "rsvpCount": 0,
+      "attendeeCount": 0,
+      "canceled": false,
+      "seriesId": 3,
+      "group": {
+        "slug": "another-country-bookshop",
+        "name": "Another Country Bookshop",
+        "visibility": "public",
+        "domain": "another-country.meetagain.org",
+        "logoUrl": "https://meetagain.org/images/thumbnails/e3ef16ec7c245bfa476fa7c97a9b94c24b9c9c3f_h120.webp"
+      },
+      "myRsvp": null,
+      "myGuests": null,
       "previewImageUrl": "https://meetagain.org/images/thumbnails/4eff279294441f72cb26bb065dfe25cb9be18c4f_600x400.webp",
       "detailUrl": "https://meetagain.org/api/v1/events/122",
       "webUrl": "https://meetagain.org/en/event/122"
     }
   ],
   "total": 28,
-  "limit": 100,
+  "limit": 4,
   "offset": 0
 }

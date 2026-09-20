@@ -48,17 +48,16 @@ class GroupViewModelTest {
     }
 
     @Test
-    fun `a group that is not public is not found`() = runTest {
+    fun `a group the server does not show is not found`() = runTest {
         server.serve(
             mapOf(
-                "/api/v1/groups/movienight" to
-                    listOf(json(fixture("group-detail.json").replace("\"public\"", "\"private\""))),
+                "/api/v1/groups/movienight" to listOf(json(fixture("error-not-found.json"), 404)),
                 "/api/v1/events" to listOf(json(fixture("events.json")))
             )
         )
         GroupViewModel(publicRepository(server), "movienight").state.test {
             assertEquals(Loadable.Loading, awaitItem())
-            assertEquals(Loadable.Failed(ApiError.Http(404)), awaitItem())
+            assertEquals(Loadable.Failed(ApiError.Http(404, "not_found")), awaitItem())
         }
     }
 

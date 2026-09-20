@@ -1,0 +1,12 @@
+{
+  "id": 4,
+  "email": "crystal.liu@example.org",
+  "name": "Crystal Liu",
+  "role": "ADMIN",
+  "status": 2,
+  "locale": "zh",
+  "bio": "✨ Adventurer at heart, I explore the great outdoors and capture moments through photography. 🎨 On weekends, you can find me painting or whipping up new recipes! #NatureLover #CreativeSoul",
+  "public": true,
+  "avatarUrl": "https://meetagain.org/images/thumbnails/c79532c476e00a2400292babd40d98ac7dff9997_400x400.webp",
+  "createdAt": "2025-09-15T00:00:00+02:00"
+}
