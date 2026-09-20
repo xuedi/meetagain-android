@@ -206,4 +206,20 @@
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>
     </plurals>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_empty">Nothing is waiting for you right now.</string>
+    <string name="notifications_end">This is what the website shows you too.</string>
+    <string name="notification_settings_title">Notification settings</string>
+    <string name="notification_settings_master">Notify me</string>
+    <string name="notification_settings_master_off">Everything below is off while this is off.</string>
+    <string name="notification_settings_announcements">Announcements</string>
+    <string name="notification_settings_following">Updates from people I follow</string>
+    <string name="notification_settings_message">Direct messages</string>
+    <string name="notification_settings_reminder">Reminders before a meeting</string>
+    <string name="notification_settings_upcoming">Weekly overview of upcoming meetings</string>
+    <string name="notification_settings_event_update">Changes to meetings I am going to</string>
+    <string name="notification_settings_intro">MeetAgain sends these by email. They are the same settings as on the website.</string>
+    <string name="notification_settings_failed">That could not be saved.</string>
 </resources>

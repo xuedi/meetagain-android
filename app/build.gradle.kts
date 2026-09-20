@@ -10,12 +10,18 @@ val appVersion = "0.1.0"
 val openApiSpec = rootProject.file("api/openapi.json").path
 val debugBaseUrl = providers.gradleProperty("meetagain.baseUrl").getOrElse("http://localhost:8000")
 
+// The website links are written against, which is the public site whichever server a build talks to. It is both
+// the App Links host in the manifest and what the app matches a tapped link against, so the two cannot drift.
+val linkHost = "meetagain.org"
+
 android {
     namespace = "org.meetagain.app"
     compileSdk = 37
 
     defaultConfig {
         applicationId = "org.meetagain.app"
+        buildConfigField("String", "LINK_HOST", "\"$linkHost\"")
+        manifestPlaceholders["appLinksHost"] = linkHost
         minSdk = 26
         targetSdk = 36
         versionName = appVersion

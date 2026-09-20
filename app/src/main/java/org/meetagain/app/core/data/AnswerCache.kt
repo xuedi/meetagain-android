@@ -100,6 +100,8 @@ object Keys {
     const val MY_GROUPS = "me/groups"
     const val INVITATIONS = "me/invitations"
     const val ME = "me"
+    const val NOTIFICATIONS = "me/notifications"
+    const val NOTIFICATION_SETTINGS = "me/notification-settings"
 
     fun events(group: String? = null) = if (group == null) "events" else "events?group=$group"
 

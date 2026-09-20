@@ -15,6 +15,8 @@ import org.meetagain.app.core.network.ImageListDto
 import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
 import org.meetagain.app.core.network.MembershipListDto
+import org.meetagain.app.core.network.NotificationListDto
+import org.meetagain.app.core.network.NotificationSettingsDto
 import org.meetagain.app.core.network.ProfileChangeDto
 import org.meetagain.app.core.network.Upload
 
@@ -145,6 +147,31 @@ class MemberRepository(
     suspend fun declineInvitation(id: Int): ApiResult<Unit> = after(api.declineInvitation(id)) {
         refreshInvitations()
     }
+
+    // What the member is told, and what they want to hear about
+
+    fun notifications(): Flow<Cached<List<Notification>>?> =
+        cache.observe(Keys.NOTIFICATIONS, NotificationListDto.serializer()) { it.toNotifications() }
+
+    suspend fun refreshNotifications(): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATIONS, NotificationListDto.serializer()) { api.notifications() }
+
+    fun notificationSettings(): Flow<Cached<NotificationSettings>?> =
+        cache.observe(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) { it.toSettings() }
+
+    suspend fun refreshNotificationSettings(): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
+            api.notificationSettings()
+        }
+
+    /**
+     * Turns one switch, sending that key alone. The server answers with everything it has stored, which is what is
+     * kept, so a setting this app has no screen for cannot be written back stale.
+     */
+    suspend fun setNotificationSetting(setting: NotificationSetting, value: Boolean): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
+            api.updateNotificationSettings(setting.change(value))
+        }
 
     // The profile
 

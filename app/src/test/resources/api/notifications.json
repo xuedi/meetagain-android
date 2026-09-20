@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "key": "unread_messages",
+      "label": "3 unread messages",
+      "icon": "fa-envelope",
+      "webUrl": "https://meetagain.org/en/profile/messages"
+    },
+    {
+      "key": "group_invitation",
+      "label": "1 group invitation",
+      "icon": "fa-user-plus",
+      "webUrl": "https://meetagain.org/en/profile/invitations"
+    },
+    {
+      "key": "review_pending",
+      "label": "2 items waiting for review",
+      "icon": "fa-clipboard-check",
+      "webUrl": "https://meetagain.org/en/profile/review"
+    }
+  ],
+  "total": 3
+}

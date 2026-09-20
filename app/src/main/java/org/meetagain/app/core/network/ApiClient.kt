@@ -101,6 +101,20 @@ class ApiClient(
 
     suspend fun myGroups(): ApiResult<MembershipListDto> = get(url("api/v1/me/groups"), MembershipListDto.serializer())
 
+    /** The bell, as the website shows it, in the language this call asks for. */
+    suspend fun notifications(): ApiResult<NotificationListDto> =
+        get(url("api/v1/me/notifications"), NotificationListDto.serializer())
+
+    suspend fun notificationSettings(): ApiResult<NotificationSettingsDto> =
+        get(url("api/v1/me/notification-settings"), NotificationSettingsDto.serializer())
+
+    /** Only the keys [change] names are sent, so the settings this app has no screen for keep their stored value. */
+    suspend fun updateNotificationSettings(change: NotificationSettingsChangeDto): ApiResult<NotificationSettingsDto> =
+        send(
+            request(url("api/v1/me/notification-settings")).patch(body(change)),
+            NotificationSettingsDto.serializer()
+        )
+
     // What happens around an event
 
     suspend fun rsvp(id: Int, going: Boolean, guests: Int): ApiResult<RsvpResultDto> = send(

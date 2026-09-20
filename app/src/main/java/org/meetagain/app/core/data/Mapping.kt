@@ -16,6 +16,9 @@ import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
 import org.meetagain.app.core.network.MembershipDto
 import org.meetagain.app.core.network.MembershipListDto
+import org.meetagain.app.core.network.NotificationListDto
+import org.meetagain.app.core.network.NotificationSettingsChangeDto
+import org.meetagain.app.core.network.NotificationSettingsDto
 
 /**
  * The server's answers as the app's models. Only images on the app's own server are kept, so content can never make
@@ -196,3 +199,35 @@ internal fun String?.orNull() = this?.trim()?.takeIf { it.isNotEmpty() }
 private const val GRID_SIZE = "350x263"
 private const val OUTDOOR = 3
 private const val DINNER = 4
+
+/** An item whose label is blank says nothing worth a row, so it is left out rather than shown empty. */
+internal fun NotificationListDto.toNotifications(): List<Notification> = items.mapNotNull { item ->
+    item.label.orNull()?.let { Notification(key = item.key, text = it, webUrl = item.webUrl.orNull()) }
+}
+
+internal fun NotificationSettingsDto.toSettings() = NotificationSettings(
+    master = enabled,
+    announcements = announcements,
+    followingUpdates = followingUpdates,
+    receivedMessage = receivedMessage,
+    eventReminder = eventReminder,
+    upcomingEvents = upcomingEvents,
+    attendedEventUpdate = attendedEventUpdate,
+    other = OtherSettings(
+        push = push,
+        quietHours = quietHours?.let {
+            QuietHours(it.enabled, it.start, it.end, it.timeZone, it.allowUrgent)
+        }
+    )
+)
+
+/** One switch as the server takes it: everything else stays absent, so the server keeps what it has stored. */
+internal fun NotificationSetting.change(value: Boolean): NotificationSettingsChangeDto = when (this) {
+    NotificationSetting.Master -> NotificationSettingsChangeDto(enabled = value)
+    NotificationSetting.Announcements -> NotificationSettingsChangeDto(announcements = value)
+    NotificationSetting.FollowingUpdates -> NotificationSettingsChangeDto(followingUpdates = value)
+    NotificationSetting.ReceivedMessage -> NotificationSettingsChangeDto(receivedMessage = value)
+    NotificationSetting.EventReminder -> NotificationSettingsChangeDto(eventReminder = value)
+    NotificationSetting.UpcomingEvents -> NotificationSettingsChangeDto(upcomingEvents = value)
+    NotificationSetting.AttendedEventUpdate -> NotificationSettingsChangeDto(attendedEventUpdate = value)
+}

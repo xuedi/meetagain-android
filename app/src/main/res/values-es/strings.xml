@@ -207,4 +207,20 @@
         <item quantity="many">%d miembros</item>
         <item quantity="other">%d miembros</item>
     </plurals>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_empty">Ahora mismo no hay nada esperándote.</string>
+    <string name="notifications_end">Esto es lo mismo que te muestra la web.</string>
+    <string name="notification_settings_title">Ajustes de notificaciones</string>
+    <string name="notification_settings_master">Avisarme</string>
+    <string name="notification_settings_master_off">Mientras esto esté apagado, todo lo de abajo también lo está.</string>
+    <string name="notification_settings_announcements">Anuncios</string>
+    <string name="notification_settings_following">Novedades de quienes sigo</string>
+    <string name="notification_settings_message">Mensajes directos</string>
+    <string name="notification_settings_reminder">Recordatorios antes de un encuentro</string>
+    <string name="notification_settings_upcoming">Resumen semanal de los próximos encuentros</string>
+    <string name="notification_settings_event_update">Cambios en encuentros a los que voy</string>
+    <string name="notification_settings_intro">MeetAgain las envía por correo. Son los mismos ajustes que en la web.</string>
+    <string name="notification_settings_failed">No se ha podido guardar.</string>
 </resources>

@@ -12,6 +12,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.meetagain.app.AppInfo
+import org.meetagain.app.core.data.Notification
+import org.meetagain.app.core.data.NotificationSettings
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.feature.about.AboutScreen
@@ -29,6 +31,8 @@ import org.meetagain.app.feature.home.Home
 import org.meetagain.app.feature.home.HomeScreen
 import org.meetagain.app.feature.me.MeScreen
 import org.meetagain.app.feature.mygroups.MyGroupsScreen
+import org.meetagain.app.feature.notifications.NotificationsScreen
+import org.meetagain.app.feature.notificationsettings.NotificationSettingsScreen
 import org.meetagain.app.feature.profile.ProfileScreen
 import org.meetagain.app.feature.signin.SignInProblem
 import org.meetagain.app.feature.signin.SignInScreen
@@ -89,6 +93,8 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
             onBack = {},
             onOpenMyGroups = {},
             onOpenProfile = {},
+            onOpenNotifications = {},
+            onOpenNotificationSettings = {},
             onOpenAbout = {},
             onSignOut = {},
             onDeleteAccount = {}
@@ -136,6 +142,30 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
     }
 
     @Test
+    fun notifications() = capture("notifications") {
+        Notifications(Loadable.Loaded(Samples.notifications))
+    }
+
+    @Test
+    fun notificationsEmpty() = capture("notifications_empty") { Notifications(Loadable.Loaded(emptyList())) }
+
+    @Test
+    fun notificationsStale() = capture("notifications_stale") {
+        Notifications(Loadable.Loaded(Samples.notifications, stale = Samples.offlineSince))
+    }
+
+    @Test
+    fun notificationSettings() = capture("notification_settings") {
+        Settings(Loadable.Loaded(Samples.notificationSettings))
+    }
+
+    /** With the master switch off the six stay visible and say why they cannot be changed. */
+    @Test
+    fun notificationSettingsOff() = capture("notification_settings_off") {
+        Settings(Loadable.Loaded(Samples.notificationSettings.copy(master = false)))
+    }
+
+    @Test
     fun profile() = capture("profile") {
         ProfileScreen(
             state = Loadable.Loaded(Samples.profile),
@@ -164,6 +194,14 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
         onLookAround = {},
         onOpenAbout = {}
     )
+
+    @Composable
+    private fun Notifications(state: Loadable<List<Notification>>) =
+        NotificationsScreen(state = state, onBack = {}, onRetry = {}, onOpen = {})
+
+    @Composable
+    private fun Settings(state: Loadable<NotificationSettings>) =
+        NotificationSettingsScreen(state = state, onBack = {}, onRetry = {}, onSet = { _, _ -> })
 
     @Composable
     private fun Home(state: Loadable<Home>) = HomeScreen(

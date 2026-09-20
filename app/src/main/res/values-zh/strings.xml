@@ -193,4 +193,20 @@
     <plurals name="group_members">
         <item quantity="other">%d 位成员</item>
     </plurals>
+
+    <!-- Notifications -->
+    <string name="notifications_title">通知</string>
+    <string name="notifications_empty">目前没有需要你处理的事。</string>
+    <string name="notifications_end">网站上显示的也是这些。</string>
+    <string name="notification_settings_title">通知设置</string>
+    <string name="notification_settings_master">通知我</string>
+    <string name="notification_settings_master_off">关闭后，下面的选项全部不生效。</string>
+    <string name="notification_settings_announcements">公告</string>
+    <string name="notification_settings_following">我关注的人的动态</string>
+    <string name="notification_settings_message">私信</string>
+    <string name="notification_settings_reminder">聚会前的提醒</string>
+    <string name="notification_settings_upcoming">下周聚会概览</string>
+    <string name="notification_settings_event_update">我要参加的聚会有变动</string>
+    <string name="notification_settings_intro">MeetAgain 通过邮件发送这些通知。设置与网站上的一致。</string>
+    <string name="notification_settings_failed">没能保存。</string>
 </resources>

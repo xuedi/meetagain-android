@@ -112,3 +112,50 @@ data class Profile(
     val public: Boolean,
     val avatarUrl: String?
 )
+
+/**
+ * One entry of the bell. [key] says what kind of thing it is, so the app can open its own screen for it; [text] is
+ * the sentence the server already wrote in the member's language, shown as it is. [webUrl] is where the website
+ * shows it, used when the app has no screen of its own.
+ */
+data class Notification(val key: String, val text: String, val webUrl: String?)
+
+/**
+ * What the member hears about, the same switches as the website's profile settings. [master] off means they hear
+ * nothing whatever the rest say.
+ *
+ * [other] carries the settings this app has no screen for yet - the push categories and quiet hours - so reading
+ * and writing the settings never drops them.
+ */
+data class NotificationSettings(
+    val master: Boolean,
+    val announcements: Boolean,
+    val followingUpdates: Boolean,
+    val receivedMessage: Boolean,
+    val eventReminder: Boolean,
+    val upcomingEvents: Boolean,
+    val attendedEventUpdate: Boolean,
+    val other: OtherSettings
+)
+
+/** The parts of the notification settings that belong to push delivery, kept as the server sent them. */
+data class OtherSettings(val push: Map<String, Boolean>, val quietHours: QuietHours?)
+
+data class QuietHours(
+    val enabled: Boolean,
+    val start: String,
+    val end: String,
+    val timeZone: String,
+    val allowUrgent: Boolean
+)
+
+/** Which switch a toggle on the settings screen means, and the key the server knows it by. */
+enum class NotificationSetting(val key: String) {
+    Master("enabled"),
+    Announcements("announcements"),
+    FollowingUpdates("followingUpdates"),
+    ReceivedMessage("receivedMessage"),
+    EventReminder("eventReminder"),
+    UpcomingEvents("upcomingEvents"),
+    AttendedEventUpdate("attendedEventUpdate")
+}

@@ -35,3 +35,9 @@ data class Conversation(val id: Int) : NavKey
 
 @Serializable
 data class GroupPage(val slug: String) : NavKey
+
+@Serializable
+data object Notifications : NavKey
+
+@Serializable
+data object NotificationSettings : NavKey

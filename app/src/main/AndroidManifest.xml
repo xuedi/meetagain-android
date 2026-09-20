@@ -23,6 +23,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--
+                Links to the platform's own host open in the app once the server serves assetlinks.json with this
+                build's signing fingerprint. A group's own domain is left out on purpose: it cannot be verified
+                without being named here, and which domains exist is not known when the app is built.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="${appLinksHost}" />
+            </intent-filter>
         </activity>
 
         <!-- Hands the camera app a file of ours to write the photo into, without any storage permission. -->

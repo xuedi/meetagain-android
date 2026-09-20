@@ -13,7 +13,11 @@ import org.meetagain.app.core.data.Invitation
 import org.meetagain.app.core.data.Location
 import org.meetagain.app.core.data.Membership
 import org.meetagain.app.core.data.MembershipStatus
+import org.meetagain.app.core.data.Notification
+import org.meetagain.app.core.data.NotificationSettings
+import org.meetagain.app.core.data.OtherSettings
 import org.meetagain.app.core.data.Photo
+import org.meetagain.app.core.data.QuietHours
 import org.meetagain.app.core.data.Rsvp
 import org.meetagain.app.core.data.Upcoming
 import org.meetagain.app.core.network.ApiError
@@ -163,5 +167,44 @@ object Samples {
         language = "zh",
         public = true,
         avatarUrl = null
+    )
+
+    /** The bell as the server words it, including one item the app has no screen of its own for. */
+    val notifications = listOf(
+        Notification(
+            key = "group_invitation",
+            text = "1 group invitation",
+            webUrl = "https://meetagain.org/en/profile/my-groups/"
+        ),
+        Notification(
+            key = "unread_messages",
+            text = "3 unread messages",
+            webUrl = "https://meetagain.org/en/profile/messages/12"
+        ),
+        Notification(
+            key = "review_pending",
+            text = "2 items waiting for review",
+            webUrl = "https://meetagain.org/en/profile/review"
+        )
+    )
+
+    val notificationSettings = NotificationSettings(
+        master = true,
+        announcements = true,
+        followingUpdates = false,
+        receivedMessage = true,
+        eventReminder = true,
+        upcomingEvents = false,
+        attendedEventUpdate = true,
+        other = OtherSettings(
+            push = mapOf("event-changes" to false, "reminders" to false),
+            quietHours = QuietHours(
+                enabled = true,
+                start = "22:00",
+                end = "07:00",
+                timeZone = "Europe/Berlin",
+                allowUrgent = false
+            )
+        )
     )
 }
