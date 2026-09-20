@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "announcements": true,
+  "followingUpdates": false,
+  "receivedMessage": true,
+  "eventReminder": true,
+  "upcomingEvents": false,
+  "attendedEventUpdate": true,
+  "push": {
+    "event-changes": true,
+    "reminders": false,
+    "messages": true,
+    "announcements": true
+  },
+  "quietHours": {
+    "enabled": true,
+    "start": "22:00",
+    "end": "07:00",
+    "timeZone": "Europe/Berlin",
+    "allowUrgent": true
+  }
+}

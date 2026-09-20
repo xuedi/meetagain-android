@@ -1,0 +1,7 @@
+{
+  "available": true,
+  "vapidPublicKey": "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U",
+  "subscriptions": [
+    { "id": 3, "transport": "unifiedpush", "createdAt": "2026-09-19T10:00:00+02:00", "lastSuccessAt": null }
+  ]
+}

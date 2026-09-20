@@ -207,4 +207,16 @@ object Samples {
             )
         )
     )
+
+    /** The same member, with push turned on for what matters most. */
+    val pushOnSettings = notificationSettings.copy(
+        other = notificationSettings.other.copy(
+            push = mapOf(
+                "event-changes" to true,
+                "reminders" to true,
+                "messages" to false,
+                "announcements" to false
+            )
+        )
+    )
 }

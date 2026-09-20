@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.meetagain.app.core.auth.SessionStore
 import org.meetagain.app.core.auth.deviceName
 import org.meetagain.app.core.cache.CacheDatabase
+import org.meetagain.app.core.push.Channels
 
 class MeetAgainApp :
     Application(),
@@ -24,6 +25,7 @@ class MeetAgainApp :
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(
+            this,
             AppInfo(BuildConfig.VERSION_NAME, BuildConfig.DEBUG, BuildConfig.BASE_URL),
             CacheDatabase.open(this),
             SessionStore.open(this),
@@ -31,6 +33,7 @@ class MeetAgainApp :
             scope = housekeeping
         )
         housekeeping.launch { container.publicRepository.forgetUnused() }
+        Channels.create(this)
     }
 
     /** Images load through the app's own HTTP client, with its timeouts. */

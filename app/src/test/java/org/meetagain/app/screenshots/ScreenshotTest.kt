@@ -15,6 +15,8 @@ import org.meetagain.app.AppInfo
 import org.meetagain.app.core.data.Notification
 import org.meetagain.app.core.data.NotificationSettings
 import org.meetagain.app.core.network.ApiError
+import org.meetagain.app.core.push.PushInterval
+import org.meetagain.app.core.push.PushObstacle
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.feature.about.AboutScreen
 import org.meetagain.app.feature.about.AboutUiState
@@ -33,6 +35,7 @@ import org.meetagain.app.feature.me.MeScreen
 import org.meetagain.app.feature.mygroups.MyGroupsScreen
 import org.meetagain.app.feature.notifications.NotificationsScreen
 import org.meetagain.app.feature.notificationsettings.NotificationSettingsScreen
+import org.meetagain.app.feature.notificationsettings.PushUiState
 import org.meetagain.app.feature.profile.ProfileScreen
 import org.meetagain.app.feature.signin.SignInProblem
 import org.meetagain.app.feature.signin.SignInScreen
@@ -159,6 +162,20 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
         Settings(Loadable.Loaded(Samples.notificationSettings))
     }
 
+    /** With no push app installed, the screen says why news arrives later rather than hiding it. */
+    @Test
+    fun notificationSettingsNoDistributor() = capture("notification_settings_no_distributor") {
+        Settings(
+            Loadable.Loaded(Samples.pushOnSettings),
+            PushUiState(obstacle = PushObstacle.NoDistributor, interval = PushInterval.Hourly)
+        )
+    }
+
+    @Test
+    fun notificationSettingsPushOn() = capture("notification_settings_push_on") {
+        Settings(Loadable.Loaded(Samples.pushOnSettings))
+    }
+
     /** With the master switch off the six stay visible and say why they cannot be changed. */
     @Test
     fun notificationSettingsOff() = capture("notification_settings_off") {
@@ -200,8 +217,8 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
         NotificationsScreen(state = state, onBack = {}, onRetry = {}, onOpen = {})
 
     @Composable
-    private fun Settings(state: Loadable<NotificationSettings>) =
-        NotificationSettingsScreen(state = state, onBack = {}, onRetry = {}, onSet = { _, _ -> })
+    private fun Settings(state: Loadable<NotificationSettings>, push: PushUiState = PushUiState()) =
+        NotificationSettingsScreen(state = state, push = push, onBack = {}, onRetry = {}, onSet = { _, _ -> })
 
     @Composable
     private fun Home(state: Loadable<Home>) = HomeScreen(

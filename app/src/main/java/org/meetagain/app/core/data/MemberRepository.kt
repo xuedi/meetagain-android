@@ -16,8 +16,11 @@ import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
 import org.meetagain.app.core.network.MembershipListDto
 import org.meetagain.app.core.network.NotificationListDto
+import org.meetagain.app.core.network.NotificationSettingsChangeDto
 import org.meetagain.app.core.network.NotificationSettingsDto
 import org.meetagain.app.core.network.ProfileChangeDto
+import org.meetagain.app.core.network.PushRegistrationDto
+import org.meetagain.app.core.network.TRANSPORT_UNIFIEDPUSH
 import org.meetagain.app.core.network.Upload
 
 /**
@@ -171,6 +174,59 @@ class MemberRepository(
     suspend fun setNotificationSetting(setting: NotificationSetting, value: Boolean): ApiResult<Unit> =
         cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
             api.updateNotificationSettings(setting.change(value))
+        }
+
+    // Push devices
+
+    /**
+     * Registering is not cached: it is a write whose answer only matters for its id, and the list is read fresh
+     * whenever the app needs to know what is registered.
+     */
+    suspend fun pushDevices(): ApiResult<PushDevices> = when (val result = api.pushSubscriptions()) {
+        is ApiResult.Failure -> ApiResult.Failure(result.error)
+        is ApiResult.Success -> ApiResult.Success(result.value.toDevices())
+    }
+
+    suspend fun registerPush(registration: PushRegistration): ApiResult<Int> = when (
+        val result = api.registerPush(
+            PushRegistrationDto(
+                registration.endpoint,
+                registration.p256dh,
+                registration.auth,
+                TRANSPORT_UNIFIEDPUSH
+            )
+        )
+    ) {
+        is ApiResult.Failure -> ApiResult.Failure(result.error)
+        is ApiResult.Success -> ApiResult.Success(result.value.id)
+    }
+
+    suspend fun deletePushDevice(id: Int): ApiResult<Unit> = api.deletePushSubscription(id)
+
+    /** Turns one push category on or off, sending that category alone inside the push map. */
+    suspend fun setPushCategory(category: PushCategory, value: Boolean): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
+            api.updateNotificationSettings(pushChange(mapOf(category.key to value)))
+        }
+
+    suspend fun setQuietHours(quietHours: QuietHours): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
+            api.updateNotificationSettings(NotificationSettingsChangeDto(quietHours = quietHours.toDto()))
+        }
+
+    /** Copies the six email switches onto the four push categories, as one explicit act by the member. */
+    suspend fun matchPushToEmail(settings: NotificationSettings): ApiResult<Unit> =
+        cache.refresh(Keys.NOTIFICATION_SETTINGS, NotificationSettingsDto.serializer()) {
+            api.updateNotificationSettings(
+                pushChange(
+                    mapOf(
+                        PushCategory.EventChanges.key to settings.attendedEventUpdate,
+                        PushCategory.Reminders.key to settings.eventReminder,
+                        PushCategory.Messages.key to settings.receivedMessage,
+                        PushCategory.Announcements.key to settings.announcements
+                    )
+                )
+            )
         }
 
     // The profile

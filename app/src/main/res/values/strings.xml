@@ -222,4 +222,28 @@
     <string name="notification_settings_event_update">Changes to meetings I am going to</string>
     <string name="notification_settings_intro">MeetAgain sends these by email. They are the same settings as on the website.</string>
     <string name="notification_settings_failed">That could not be saved.</string>
+
+    <!-- Push -->
+    <string name="push_title">Notify me on this phone</string>
+    <string name="push_intro">MeetAgain can tell this phone as soon as something happens. The message itself never leaves your phone unencrypted, and carries nothing a relay could read.</string>
+    <string name="push_category_event_changes">Changes to my meetings</string>
+    <string name="push_category_reminders">Reminders</string>
+    <string name="push_category_messages">Direct messages</string>
+    <string name="push_category_announcements">Announcements</string>
+    <string name="push_match_email">Match my email settings</string>
+    <string name="push_no_distributor">No push app is installed, so this phone checks about once an hour instead. Installing a UnifiedPush app such as ntfy or Sunup makes it instant.</string>
+    <string name="push_learn_more">How this works</string>
+    <string name="push_unavailable">This server does not offer push.</string>
+    <string name="push_permission_denied">Android is not allowing notifications for MeetAgain. You can change that in the system settings.</string>
+    <string name="quiet_hours_title">Quiet hours</string>
+    <string name="quiet_hours_enabled">Stay quiet at night</string>
+    <string name="quiet_hours_window">From %1$s to %2$s</string>
+    <string name="quiet_hours_urgent">Let a cancelled meeting through anyway</string>
+    <string name="push_interval_title">Check for news</string>
+    <string name="push_interval_15">Every 15 minutes</string>
+    <string name="push_interval_60">Every hour</string>
+    <string name="push_interval_360">Every six hours</string>
+    <string name="push_event_canceled">%1$s was called off</string>
+    <string name="push_event_moved">%1$s now starts %2$s</string>
+    <string name="push_reminder">%1$s starts %2$s</string>
 </resources>

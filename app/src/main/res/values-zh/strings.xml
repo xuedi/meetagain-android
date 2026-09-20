@@ -209,4 +209,28 @@
     <string name="notification_settings_event_update">我要参加的聚会有变动</string>
     <string name="notification_settings_intro">MeetAgain 通过邮件发送这些通知。设置与网站上的一致。</string>
     <string name="notification_settings_failed">没能保存。</string>
+
+    <!-- Push -->
+    <string name="push_title">通知这部手机</string>
+    <string name="push_intro">MeetAgain 可以第一时间通知这部手机。消息本身始终加密，中转服务器读不到任何内容。</string>
+    <string name="push_category_event_changes">我的聚会有变动</string>
+    <string name="push_category_reminders">提醒</string>
+    <string name="push_category_messages">私信</string>
+    <string name="push_category_announcements">公告</string>
+    <string name="push_match_email">与邮件设置一致</string>
+    <string name="push_no_distributor">没有安装推送应用，这部手机改为大约每小时查看一次。装一个 UnifiedPush 应用（如 ntfy 或 Sunup）就能即时收到。</string>
+    <string name="push_learn_more">这是怎么运作的</string>
+    <string name="push_unavailable">这个服务器不提供推送。</string>
+    <string name="push_permission_denied">Android 不允许 MeetAgain 发送通知。你可以在系统设置里更改。</string>
+    <string name="quiet_hours_title">免打扰时段</string>
+    <string name="quiet_hours_enabled">夜间保持安静</string>
+    <string name="quiet_hours_window">从 %1$s 到 %2$s</string>
+    <string name="quiet_hours_urgent">聚会取消时仍然通知</string>
+    <string name="push_interval_title">查看新消息</string>
+    <string name="push_interval_15">每 15 分钟</string>
+    <string name="push_interval_60">每小时</string>
+    <string name="push_interval_360">每六小时</string>
+    <string name="push_event_canceled">%1$s 已取消</string>
+    <string name="push_event_moved">%1$s 改为 %2$s 开始</string>
+    <string name="push_reminder">%1$s %2$s 开始</string>
 </resources>

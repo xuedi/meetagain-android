@@ -9,9 +9,13 @@ apk=app/build/outputs/apk/release/app-release-unsigned.apk
 aapt2=$(find "$ANDROID_HOME/build-tools" -name aapt2 -type f | sort -V | tail -1)
 forbidden='gms|firebase|play-services|datatransport|crashlytics|analytics|measurement|installreferrer|telemetry'
 # meetagain.org is the app's server; the others appear only in library error messages.
-allowed_hosts='^https?://(meetagain\.org|goo\.gle|youtrack\.jetbrains\.com|issuetracker\.google\.com)$'
+allowed_hosts='^https?://(meetagain\.org|goo\.gle|youtrack\.jetbrains\.com|issuetracker\.google\.com|developer\.android\.com)$'
 noise='schemas\.android\.com|w3\.org|xmlpull|apache\.org|ns\.adobe|json-schema'
-allowed_permissions='^(android\.permission\.INTERNET|org\.meetagain\.app\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)$'
+# Beyond INTERNET: POST_NOTIFICATIONS is asked for in context when a push category is turned on; WAKE_LOCK comes
+# from the UnifiedPush connector, which holds one while handing a push to the app; ACCESS_NETWORK_STATE and
+# RECEIVE_BOOT_COMPLETED come from WorkManager, which needs them for the "only on a connection" rule and to put the
+# timer back after a restart. FOREGROUND_SERVICE is removed in the manifest, so it must not appear here.
+allowed_permissions='^(android\.permission\.(INTERNET|POST_NOTIFICATIONS|WAKE_LOCK|ACCESS_NETWORK_STATE|RECEIVE_BOOT_COMPLETED)|org\.meetagain\.app\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)$'
 failed=0
 
 [ -f "$apk" ] || { echo "No release APK; run ./gradlew :app:assembleRelease first."; exit 1; }

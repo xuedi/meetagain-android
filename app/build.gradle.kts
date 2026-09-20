@@ -93,6 +93,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.room.runtime)
     implementation(libs.datastore.preferences)
+    implementation(libs.unifiedpush.connector)
+    implementation(libs.work.runtime)
     ksp(libs.room.compiler)
 
     debugImplementation(libs.compose.ui.tooling)

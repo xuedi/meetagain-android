@@ -223,4 +223,28 @@
     <string name="notification_settings_event_update">Changements aux rencontres où je vais</string>
     <string name="notification_settings_intro">MeetAgain les envoie par e-mail. Ce sont les mêmes réglages que sur le site.</string>
     <string name="notification_settings_failed">Cela n\'a pas pu être enregistré.</string>
+
+    <!-- Push -->
+    <string name="push_title">Me notifier sur ce téléphone</string>
+    <string name="push_intro">MeetAgain peut prévenir ce téléphone tout de suite. Le message ne quitte jamais ton téléphone en clair et ne contient rien qu\'un relais puisse lire.</string>
+    <string name="push_category_event_changes">Changements à mes rencontres</string>
+    <string name="push_category_reminders">Rappels</string>
+    <string name="push_category_messages">Messages directs</string>
+    <string name="push_category_announcements">Annonces</string>
+    <string name="push_match_email">Comme mes réglages e-mail</string>
+    <string name="push_no_distributor">Aucune application de push n\'est installée, ce téléphone vérifie donc environ toutes les heures. Une application UnifiedPush comme ntfy ou Sunup rend cela instantané.</string>
+    <string name="push_learn_more">Comment ça marche</string>
+    <string name="push_unavailable">Ce serveur ne propose pas de push.</string>
+    <string name="push_permission_denied">Android n\'autorise pas les notifications pour MeetAgain. Tu peux changer cela dans les réglages du système.</string>
+    <string name="quiet_hours_title">Heures calmes</string>
+    <string name="quiet_hours_enabled">Rester silencieux la nuit</string>
+    <string name="quiet_hours_window">De %1$s à %2$s</string>
+    <string name="quiet_hours_urgent">Laisser passer une rencontre annulée</string>
+    <string name="push_interval_title">Chercher du nouveau</string>
+    <string name="push_interval_15">Toutes les 15 minutes</string>
+    <string name="push_interval_60">Toutes les heures</string>
+    <string name="push_interval_360">Toutes les six heures</string>
+    <string name="push_event_canceled">%1$s a été annulée</string>
+    <string name="push_event_moved">%1$s commence maintenant %2$s</string>
+    <string name="push_reminder">%1$s commence %2$s</string>
 </resources>

@@ -115,6 +115,21 @@ class ApiClient(
             NotificationSettingsDto.serializer()
         )
 
+    /** The devices registered for push, and the key one needs before it can register. */
+    suspend fun pushSubscriptions(): ApiResult<PushSubscriptionListDto> =
+        get(url("api/v1/me/push-subscriptions"), PushSubscriptionListDto.serializer())
+
+    suspend fun registerPush(registration: PushRegistrationDto): ApiResult<PushSubscriptionDto> = send(
+        request(url("api/v1/me/push-subscriptions")).post(body(registration)),
+        PushSubscriptionDto.serializer()
+    )
+
+    suspend fun deletePushSubscription(id: Int): ApiResult<Unit> = noContent(
+        request(
+            url("api/v1/me/push-subscriptions").newBuilder().addPathSegment(id.toString()).build()
+        ).delete()
+    )
+
     // What happens around an event
 
     suspend fun rsvp(id: Int, going: Boolean, guests: Int): ApiResult<RsvpResultDto> = send(

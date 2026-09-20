@@ -22,7 +22,12 @@ class AuthRepository(
     private val deviceName: () -> String,
     private val scope: CoroutineScope,
     /** Everything kept for the member that just left, dropped as they go. */
-    private val forget: suspend (memberId: Int) -> Unit = {}
+    private val forget: suspend (memberId: Int) -> Unit = {},
+    /**
+     * Anything that needs the token while it still works - taking this phone off the push register, which is the
+     * only way the deletion is confirmed rather than assumed.
+     */
+    private val beforeSignOut: suspend () -> Unit = {}
 ) {
     private val current = MutableStateFlow<SessionState>(SessionState.Unknown)
 
@@ -74,7 +79,10 @@ class AuthRepository(
     suspend fun signOut() {
         scope.async {
             val member = current.value.member
-            if (member != null) api.logout()
+            if (member != null) {
+                runCatching { beforeSignOut() }
+                api.logout()
+            }
             wipe(member?.memberId)
         }.await()
     }

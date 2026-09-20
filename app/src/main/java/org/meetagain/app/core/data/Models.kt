@@ -159,3 +159,22 @@ enum class NotificationSetting(val key: String) {
     UpcomingEvents("upcomingEvents"),
     AttendedEventUpdate("attendedEventUpdate")
 }
+
+/** What a member can ask to be told about at once. The server decides what to ping about from these. */
+enum class PushCategory(val key: String) {
+    EventChanges("event-changes"),
+    Reminders("reminders"),
+    Messages("messages"),
+    Announcements("announcements")
+}
+
+/**
+ * The push devices registered for this member, and whether the server can do push at all.
+ * [available] false means the platform has no key configured - push is off there, not broken.
+ */
+data class PushDevices(val available: Boolean, val vapidPublicKey: String, val devices: List<PushDevice>)
+
+data class PushDevice(val id: Int, val transport: String, val registeredAt: Instant?)
+
+/** What the distributor handed the app, on its way to the server. */
+data class PushRegistration(val endpoint: String, val p256dh: String, val auth: String)

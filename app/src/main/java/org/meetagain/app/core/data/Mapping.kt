@@ -19,6 +19,8 @@ import org.meetagain.app.core.network.MembershipListDto
 import org.meetagain.app.core.network.NotificationListDto
 import org.meetagain.app.core.network.NotificationSettingsChangeDto
 import org.meetagain.app.core.network.NotificationSettingsDto
+import org.meetagain.app.core.network.PushSubscriptionListDto
+import org.meetagain.app.core.network.QuietHoursDto
 
 /**
  * The server's answers as the app's models. Only images on the app's own server are kept, so content can never make
@@ -231,3 +233,14 @@ internal fun NotificationSetting.change(value: Boolean): NotificationSettingsCha
     NotificationSetting.UpcomingEvents -> NotificationSettingsChangeDto(upcomingEvents = value)
     NotificationSetting.AttendedEventUpdate -> NotificationSettingsChangeDto(attendedEventUpdate = value)
 }
+
+internal fun PushSubscriptionListDto.toDevices() = PushDevices(
+    available = available,
+    vapidPublicKey = vapidPublicKey,
+    devices = subscriptions.map { PushDevice(it.id, it.transport, it.createdAt?.let(::instant)) }
+)
+
+/** One push category as the server takes it, leaving every other setting absent. */
+internal fun pushChange(categories: Map<String, Boolean>) = NotificationSettingsChangeDto(push = categories)
+
+internal fun QuietHours.toDto() = QuietHoursDto(enabled, start, end, timeZone, allowUrgent)

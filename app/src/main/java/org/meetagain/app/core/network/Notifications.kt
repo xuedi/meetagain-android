@@ -54,5 +54,40 @@ data class NotificationSettingsChangeDto(
     val receivedMessage: Boolean? = null,
     val eventReminder: Boolean? = null,
     val upcomingEvents: Boolean? = null,
-    val attendedEventUpdate: Boolean? = null
+    val attendedEventUpdate: Boolean? = null,
+    val push: Map<String, Boolean>? = null,
+    val quietHours: QuietHoursDto? = null
 )
+
+// Push devices
+
+/**
+ * `PushSubscriptionList` in the API description. [available] is false when the server has no VAPID key
+ * configured, which means push is off on that platform rather than broken.
+ */
+@Serializable
+data class PushSubscriptionListDto(
+    val available: Boolean,
+    val vapidPublicKey: String = "",
+    val subscriptions: List<PushSubscriptionDto> = emptyList()
+)
+
+/** `PushSubscriptionEntry` in the API description. */
+@Serializable
+data class PushSubscriptionDto(
+    val id: Int,
+    val transport: String,
+    val createdAt: String? = null,
+    val lastSuccessAt: String? = null
+)
+
+/**
+ * What the distributor gave the app, on its way to the server so it can encrypt to this device. [transport] has no
+ * default here on purpose: the server would fill one in, and the app says which path it registered for rather than
+ * letting that be decided elsewhere.
+ */
+@Serializable
+data class PushRegistrationDto(val endpoint: String, val p256dh: String, val auth: String, val transport: String)
+
+/** The only transport the app registers for; FCM is out of this version by decision. */
+const val TRANSPORT_UNIFIEDPUSH = "unifiedpush"

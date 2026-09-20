@@ -4,6 +4,21 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+        Asked for in context, when the member turns on their first push category - never at launch.
+        WAKE_LOCK is not declared here: it is merged in from the UnifiedPush connector, which holds one
+        while it hands a push to this app.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        WorkManager declares this for expedited and long-running work. The app runs neither - only plain periodic
+        work - so it is dropped rather than carried. Adding expedited work later means putting it back.
+    -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:node="remove" />
+
     <application
         android:name=".MeetAgainApp"
         android:allowBackup="false"
@@ -36,6 +51,18 @@
                 <data android:scheme="https" android:host="${appLinksHost}" />
             </intent-filter>
         </activity>
+
+        <!--
+            Where a push from the member's distributor arrives. The payload carries nothing: the app fetches
+            what it already fetches and works out what changed.
+        -->
+        <service
+            android:name=".core.push.MeetAgainPushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.unifiedpush.android.connector.PUSH_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Hands the camera app a file of ours to write the photo into, without any storage permission. -->
         <provider

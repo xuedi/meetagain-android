@@ -216,4 +216,28 @@
     <string name="notification_settings_event_update">Änderungen an Treffen, zu denen ich gehe</string>
     <string name="notification_settings_intro">MeetAgain schickt das per E-Mail. Es sind dieselben Einstellungen wie auf der Website.</string>
     <string name="notification_settings_failed">Das konnte nicht gespeichert werden.</string>
+
+    <!-- Push -->
+    <string name="push_title">Dieses Handy benachrichtigen</string>
+    <string name="push_intro">MeetAgain kann diesem Handy sofort Bescheid geben. Die Nachricht selbst verlässt dein Handy nie unverschlüsselt und enthält nichts, was ein Relay lesen könnte.</string>
+    <string name="push_category_event_changes">Änderungen an meinen Treffen</string>
+    <string name="push_category_reminders">Erinnerungen</string>
+    <string name="push_category_messages">Direktnachrichten</string>
+    <string name="push_category_announcements">Ankündigungen</string>
+    <string name="push_match_email">Wie meine E-Mail-Einstellungen</string>
+    <string name="push_no_distributor">Es ist keine Push-App installiert, deshalb schaut dieses Handy etwa stündlich nach. Mit einer UnifiedPush-App wie ntfy oder Sunup geht es sofort.</string>
+    <string name="push_learn_more">Wie das funktioniert</string>
+    <string name="push_unavailable">Dieser Server bietet kein Push an.</string>
+    <string name="push_permission_denied">Android lässt Benachrichtigungen für MeetAgain nicht zu. Das kannst du in den Systemeinstellungen ändern.</string>
+    <string name="quiet_hours_title">Ruhezeiten</string>
+    <string name="quiet_hours_enabled">Nachts still bleiben</string>
+    <string name="quiet_hours_window">Von %1$s bis %2$s</string>
+    <string name="quiet_hours_urgent">Abgesagte Treffen trotzdem durchlassen</string>
+    <string name="push_interval_title">Nach Neuem schauen</string>
+    <string name="push_interval_15">Alle 15 Minuten</string>
+    <string name="push_interval_60">Jede Stunde</string>
+    <string name="push_interval_360">Alle sechs Stunden</string>
+    <string name="push_event_canceled">%1$s wurde abgesagt</string>
+    <string name="push_event_moved">%1$s beginnt jetzt %2$s</string>
+    <string name="push_reminder">%1$s beginnt %2$s</string>
 </resources>

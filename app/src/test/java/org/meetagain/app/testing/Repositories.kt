@@ -71,6 +71,7 @@ fun testContainer(
     sessionStore: SessionStore = testSessionStore(context),
     scope: CoroutineScope = CoroutineScope(UnconfinedTestDispatcher())
 ): AppContainer = AppContainer(
+    context,
     AppInfo("0.1.0", testBuild = false, server.url("/").toString().trimEnd('/')),
     Room.inMemoryDatabaseBuilder(context, CacheDatabase::class.java).build(),
     sessionStore,
