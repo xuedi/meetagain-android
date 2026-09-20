@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "partner": {
+        "id": 21,
+        "name": "Mila Novak",
+        "avatarUrl": null
+      },
+      "messages": 1,
+      "unread": 0,
+      "lastMessageAt": "2026-08-30T10:00:00+02:00"
+    }
+  ],
+  "total": 21,
+  "limit": 20,
+  "offset": 20
+}

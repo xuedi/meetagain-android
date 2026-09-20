@@ -102,6 +102,8 @@ object Keys {
     const val ME = "me"
     const val NOTIFICATIONS = "me/notifications"
     const val NOTIFICATION_SETTINGS = "me/notification-settings"
+    const val CONVERSATIONS = "community/conversations"
+    const val BLOCKS = "community/blocks"
 
     fun events(group: String? = null) = if (group == null) "events" else "events?group=$group"
 
@@ -116,4 +118,11 @@ object Keys {
     fun comments(id: Int) = "event/$id/comments"
 
     fun photos(id: Int) = "event/$id/images"
+
+    /** The newest page of a thread; the pages before it are read but never stored. */
+    fun conversation(partnerId: Int) = "community/conversation/$partnerId"
+
+    fun member(id: Int) = "community/member/$id"
+
+    fun groupMembers(slug: String) = "community/group/$slug/members"
 }

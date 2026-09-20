@@ -45,7 +45,12 @@ import org.meetagain.app.core.ui.StaleNotice
 import org.meetagain.app.feature.group.membershipProblemText
 
 @Composable
-fun MyGroupsRoute(container: AppContainer, onBack: () -> Unit, onOpenGroup: (String) -> Unit) {
+fun MyGroupsRoute(
+    container: AppContainer,
+    onOpenGroup: (String) -> Unit,
+    onOpenMe: () -> Unit,
+    bottomBar: @Composable () -> Unit = {}
+) {
     val viewModel = viewModel { MyGroupsViewModel(container.memberRepository) }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val problem by viewModel.problem.collectAsStateWithLifecycle()
@@ -60,11 +65,12 @@ fun MyGroupsRoute(container: AppContainer, onBack: () -> Unit, onOpenGroup: (Str
     MyGroupsScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onBack = onBack,
         onRetry = viewModel::load,
         onOpenGroup = onOpenGroup,
+        onOpenMe = onOpenMe,
         onAccept = viewModel::accept,
-        onDecline = viewModel::decline
+        onDecline = viewModel::decline,
+        bottomBar = bottomBar
     )
 }
 
@@ -73,24 +79,26 @@ fun MyGroupsRoute(container: AppContainer, onBack: () -> Unit, onOpenGroup: (Str
 fun MyGroupsScreen(
     state: Loadable<MyGroups>,
     snackbarHostState: SnackbarHostState,
-    onBack: () -> Unit,
     onRetry: () -> Unit,
     onOpenGroup: (String) -> Unit,
+    onOpenMe: () -> Unit,
     onAccept: (Invitation) -> Unit,
-    onDecline: (Invitation) -> Unit
+    onDecline: (Invitation) -> Unit,
+    bottomBar: @Composable () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.me_my_groups)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(painterResource(R.drawable.ic_arrow_back), stringResource(R.string.navigate_back))
+                actions = {
+                    IconButton(onClick = onOpenMe) {
+                        Icon(painterResource(R.drawable.ic_person), stringResource(R.string.me_title))
                     }
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = bottomBar
     ) { padding ->
         val modifier = Modifier
             .fillMaxSize()

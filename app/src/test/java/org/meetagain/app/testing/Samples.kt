@@ -9,10 +9,14 @@ import org.meetagain.app.core.data.EventDetails
 import org.meetagain.app.core.data.EventKind
 import org.meetagain.app.core.data.Group
 import org.meetagain.app.core.data.GroupDetails
+import org.meetagain.app.core.data.InboxEntry
 import org.meetagain.app.core.data.Invitation
 import org.meetagain.app.core.data.Location
+import org.meetagain.app.core.data.MemberProfile
+import org.meetagain.app.core.data.MemberSummary
 import org.meetagain.app.core.data.Membership
 import org.meetagain.app.core.data.MembershipStatus
+import org.meetagain.app.core.data.Message
 import org.meetagain.app.core.data.Notification
 import org.meetagain.app.core.data.NotificationSettings
 import org.meetagain.app.core.data.OtherSettings
@@ -24,6 +28,9 @@ import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.ui.Stale
 import org.meetagain.app.feature.conversation.Comments
 import org.meetagain.app.feature.home.Home
+import org.meetagain.app.feature.members.MemberList
+import org.meetagain.app.feature.messages.Conversations
+import org.meetagain.app.feature.messages.Thread
 import org.meetagain.app.feature.mygroups.MyGroups
 import org.meetagain.app.feature.profile.ProfileEdit
 
@@ -207,6 +214,88 @@ object Samples {
             )
         )
     )
+
+    // The community
+
+    val adem = MemberSummary(6, "Adem Lane", null)
+
+    val ali = MemberSummary(12, "Ali Mahdi", null)
+
+    val inbox = Conversations(
+        entries = listOf(
+            InboxEntry(adem, messages = 12, unread = 2, lastMessageAt = Instant.parse("2026-09-19T05:40:00Z")),
+            InboxEntry(ali, messages = 3, unread = 0, lastMessageAt = Instant.parse("2026-09-14T17:12:00Z")),
+            InboxEntry(
+                MemberSummary(21, "Mila Novak", null),
+                messages = 1,
+                unread = 0,
+                lastMessageAt = Instant.parse("2026-08-30T08:00:00Z")
+            )
+        ),
+        total = 3
+    )
+
+    val thread = Thread(
+        partner = adem,
+        messages = listOf(
+            Message(
+                id = 31,
+                text = "A question was asked through support.",
+                sentAt = Instant.parse("2026-09-12T07:00:00Z"),
+                mine = false,
+                read = true,
+                editable = false,
+                editedAt = null,
+                systemNote = true
+            ),
+            Message(
+                id = 32,
+                text = "Are you coming on Tuesday? I can bring the board.",
+                sentAt = Instant.parse("2026-09-18T16:30:00Z"),
+                mine = false,
+                read = true,
+                editable = false,
+                editedAt = null,
+                systemNote = false
+            ),
+            Message(
+                id = 33,
+                text = "Yes, I will be there.",
+                sentAt = Instant.parse("2026-09-19T07:58:00Z"),
+                mine = true,
+                read = false,
+                editable = true,
+                editedAt = Instant.parse("2026-09-19T07:59:00Z"),
+                systemNote = false
+            )
+        ),
+        total = 3,
+        earliestOffset = 0,
+        blocked = false
+    )
+
+    /** A block in either direction: the thread still reads, and nothing can be sent. */
+    val blockedThread = thread.copy(partner = ali, blocked = true, messages = thread.messages.take(2))
+
+    val member = MemberProfile(
+        id = 6,
+        name = "Adem Lane",
+        bio = "Berlin. Board games, long walks and bad puns.",
+        avatarUrl = null,
+        public = true,
+        memberSince = Instant.parse("2024-03-11T13:22:00Z"),
+        following = false,
+        followsMe = true,
+        blockedByMe = false,
+        canMessage = true
+    )
+
+    /** The caller has blocked them: the page reads, and unblocking is the only thing on it. */
+    val blockedMember = member.copy(blockedByMe = true, canMessage = false)
+
+    val groupMembers = MemberList(people = listOf(MemberSummary(4, "Crystal Liu", null), adem, ali), total = 3)
+
+    val blockedMembers = MemberList(people = listOf(ali), total = 1)
 
     /** The same member, with push turned on for what matters most. */
     val pushOnSettings = notificationSettings.copy(

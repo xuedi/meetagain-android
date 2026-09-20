@@ -1,5 +1,7 @@
 package org.meetagain.app.core.auth
 
+import org.meetagain.app.core.network.SessionRefusal
+
 /** The member the app is signed in as, their access token and what the server lets that token do. */
 data class Session(val memberId: Int, val name: String, val token: String, val scopes: Set<String>) {
     fun may(scope: String) = scope in scopes
@@ -11,6 +13,8 @@ data class Session(val memberId: Int, val name: String, val token: String, val s
         const val MEMBERSHIPS_WRITE = "memberships:write"
         const val EVENTS_READ = "event-actions:read"
         const val EVENTS_WRITE = "event-actions:write"
+        const val COMMUNITY_READ = "community:read"
+        const val COMMUNITY_WRITE = "community:write"
     }
 }
 
@@ -18,7 +22,8 @@ data class Session(val memberId: Int, val name: String, val token: String, val s
 sealed interface SessionState {
     data object Unknown : SessionState
 
-    data object SignedOut : SessionState
+    /** [refusal] is set when the server ended the session rather than the member, which the sign-in screen says. */
+    data class SignedOut(val refusal: SessionRefusal? = null) : SessionState
 
     data class SignedIn(val session: Session) : SessionState
 }

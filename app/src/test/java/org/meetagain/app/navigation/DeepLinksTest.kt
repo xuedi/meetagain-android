@@ -36,6 +36,22 @@ class DeepLinksTest {
         assertEquals(MyGroups, destination("https://meetagain.org/en/profile/my-groups/"))
         assertEquals(Notifications, destination("https://meetagain.org/en/profile/notifications"))
         assertEquals(NotificationSettings, destination("https://meetagain.org/en/profile/config"))
+        assertEquals(Blocked, destination("https://meetagain.org/en/profile/blocked"))
+    }
+
+    /** What makes the bell's unread-messages item and the message push open the app instead of the browser. */
+    @Test
+    fun `the messages pages open the inbox and that thread`() {
+        assertEquals(Messages, destination("https://meetagain.org/en/profile/messages"))
+        assertEquals(Messages, destination("https://meetagain.org/de/profile/messages/"))
+        assertEquals(Thread(12), destination("https://meetagain.org/en/profile/messages/12"))
+        assertEquals(Thread(12), destination("https://meetagain.org/zh/profile/messages/12?from=mail#last"))
+    }
+
+    @Test
+    fun `a partner that is not a number is not a screen`() {
+        assertNull(destination("https://meetagain.org/en/profile/messages/not-a-number"))
+        assertNull(destination("https://meetagain.org/en/profile/messages/12/extra"))
     }
 
     @Test
@@ -48,8 +64,7 @@ class DeepLinksTest {
     @Test
     fun `a profile page the app does not have stays on the website`() {
         assertNull(destination("https://meetagain.org/en/profile/review"))
-        assertNull(destination("https://meetagain.org/en/profile/messages/12"))
-        assertNull(destination("https://meetagain.org/en/profile/blocked"))
+        assertNull(destination("https://meetagain.org/en/profile/access-tokens"))
     }
 
     /** A group's own domain can never be a verified App Links host, so it is never taken. */

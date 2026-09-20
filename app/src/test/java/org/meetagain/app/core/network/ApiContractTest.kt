@@ -50,6 +50,10 @@ class ApiContractTest {
         "Invitation" to InvitationDto.serializer().descriptor
     )
 
+    // The community DTOs (ConversationList, ConversationSummary, MemberSummary, MessageThread, ThreadMessage,
+    // MemberList, MemberProfile) are not here yet: the section is implemented upstream but not deployed, so the
+    // committed spec has no schema for them. They go in with the next `just api-refresh`.
+
     // ErrorBody is deliberately not here: it reads ErrorResponse and ValidationErrorResponse through one lenient
     // shape, so it has fields neither schema alone declares.
 

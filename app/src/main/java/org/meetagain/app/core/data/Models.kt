@@ -1,5 +1,6 @@
 package org.meetagain.app.core.data
 
+import java.time.Duration
 import java.time.Instant
 
 /** The kinds of meeting worth a label; a regular meeting has none. */
@@ -178,3 +179,70 @@ data class PushDevice(val id: Int, val transport: String, val registeredAt: Inst
 
 /** What the distributor handed the app, on its way to the server. */
 data class PushRegistration(val endpoint: String, val p256dh: String, val auth: String)
+
+// The community: messages and members
+
+/** One person as a member list, a conversation or a thread names them. */
+data class MemberSummary(val id: Int, val name: String, val avatarUrl: String?)
+
+/**
+ * One row of the inbox: who, how much was said, how much is unread and when the last one came. There is no
+ * preview, because the server sends none - and so no message text ever sits in a list.
+ */
+data class InboxEntry(val partner: MemberSummary, val messages: Int, val unread: Int, val lastMessageAt: Instant?)
+
+/** A page of the inbox, newest first; [total] counts every conversation the member has. */
+data class Inbox(val entries: List<InboxEntry>, val total: Int)
+
+/**
+ * One message of a thread. [systemNote] marks a support question carried into the thread, which is shown as a note
+ * rather than as something the partner typed.
+ */
+data class Message(
+    val id: Int,
+    val text: String,
+    val sentAt: Instant?,
+    val mine: Boolean,
+    /** Whether the receiver has read it; on a partner's message, false is what the thread marks read for. */
+    val read: Boolean,
+    /** Whether the member may still take it back: the server's answer, and the window counted here as well. */
+    val editable: Boolean,
+    val editedAt: Instant?,
+    val systemNote: Boolean
+)
+
+/**
+ * A page of one thread, oldest first. [offset] is where the page starts in the whole thread, which is what the page
+ * before it is asked for with; [blocked] means a block in either direction, so the thread reads but nothing sends.
+ */
+data class MessageThread(
+    val partner: MemberSummary,
+    val messages: List<Message>,
+    val total: Int,
+    val offset: Int,
+    val blocked: Boolean
+) {
+    /** Whether there is anything before this page. */
+    val hasEarlier: Boolean get() = offset > 0
+}
+
+/** A member's page, with the same fields the website shows and no more. */
+data class MemberProfile(
+    val id: Int,
+    val name: String,
+    val bio: String?,
+    val avatarUrl: String?,
+    /** Whether they appear in the list shown to visitors who are not signed in. */
+    val public: Boolean,
+    val memberSince: Instant?,
+    val following: Boolean,
+    val followsMe: Boolean,
+    val blockedByMe: Boolean,
+    val canMessage: Boolean
+)
+
+/** A page of members: a group's list, or the ones the member has blocked. */
+data class Members(val people: List<MemberSummary>, val total: Int)
+
+/** How long a message can be taken back, counted from when it was sent, as the server counts it. */
+val MESSAGE_EDIT_WINDOW: Duration = Duration.ofMinutes(10)

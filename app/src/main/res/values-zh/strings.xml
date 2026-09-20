@@ -66,6 +66,8 @@
     <string name="signin_error_pending">你的账号正在等待审核。MeetAgain 会通过电子邮件通知你。</string>
     <string name="signin_error_restricted">MeetAgain 需要确认你是真人，而应用无法显示这个确认。请先在网站上登录一次，然后再回到这里重试。</string>
     <string name="signin_error_device">无法为这部手机命名。请再试一次。</string>
+    <string name="signin_session_ended">MeetAgain 已结束本次登录。请重新登录以继续。</string>
+    <string name="signin_session_new_section">MeetAgain 新增了应用可以显示的内容。重新登录一次即可使用。</string>
 
     <!-- Me -->
     <string name="me_title">我</string>
@@ -73,6 +75,10 @@
     <string name="me_profile">个人资料</string>
     <string name="me_sign_out">退出登录</string>
     <string name="me_delete_account">删除我的账号（在网站上）</string>
+    <string name="nav_meetings">聚会</string>
+    <string name="nav_messages">消息</string>
+    <string name="nav_groups">群组</string>
+    <string name="me_blocked">你屏蔽的成员</string>
 
     <!-- Home -->
     <string name="home_title">我的聚会</string>
@@ -123,6 +129,46 @@
     <string name="conversation_empty_comment">请先写点内容。</string>
     <string name="conversation_photo_rejected">这张照片没有被接受。可能是文件太大，或者服务器不接受这种格式。</string>
     <string name="conversation_failed">这次没有成功。请再试一次。</string>
+    <string name="messages_title">消息</string>
+    <string name="messages_unread_dot">未读消息</string>
+    <string name="messages_empty">还没有会话。你可以从群组成员或聚会的参加者中打开某个成员的页面，从那里开始。</string>
+    <string name="messages_end">这就是全部会话。</string>
+    <string name="messages_more">显示更多</string>
+    <string name="thread_write">写一条消息</string>
+    <string name="thread_earlier">更早的消息</string>
+    <string name="thread_empty">这里还没有消息。写下第一条吧。</string>
+    <string name="thread_edit">修改这条消息</string>
+    <string name="thread_editing">正在修改消息</string>
+    <string name="thread_edited">已修改</string>
+    <string name="thread_edit_window_expired">消息只能在发送后十分钟内修改。</string>
+    <string name="thread_from_you">你发送</string>
+    <string name="thread_from_them">收到</string>
+    <string name="thread_system_note">通过 MeetAgain 客服</string>
+    <string name="thread_blocked">你无法在这里写消息：你们之间有一方屏蔽了对方。已有的消息仍可阅读。</string>
+    <string name="thread_blocked_refusal">这条消息无法发送：你们之间有一方屏蔽了对方。</string>
+    <string name="member_message">发消息</string>
+    <string name="member_follow">关注</string>
+    <string name="member_unfollow">取消关注</string>
+    <string name="member_block">屏蔽</string>
+    <string name="member_unblock">解除屏蔽</string>
+    <string name="member_block_heading">屏蔽 %1$s？</string>
+    <string name="member_block_explained">你们将无法再互相发消息，会话也会从双方的收件箱中消失。已有的消息双方仍可阅读。你可以在“你屏蔽的成员”中撤销。</string>
+    <string name="member_since">自 %1$s 加入 MeetAgain</string>
+    <string name="member_follows_you">关注了你</string>
+    <string name="member_refused">无法打开这位成员的页面。</string>
+    <string name="member_blocked_refusal">没有成功：你们之间有一方屏蔽了对方。</string>
+    <string name="group_members_title">成员</string>
+    <string name="group_members_empty">这里没有可显示的成员。</string>
+    <string name="group_members_end">这就是本群组的全部成员。</string>
+    <string name="blocked_empty">你没有屏蔽任何人。</string>
+    <string name="blocked_end">打开某位成员即可解除屏蔽。</string>
+    <string name="messages_failed">没有成功。请再试一次。</string>
+    <plurals name="messages_count">
+        <item quantity="other">%d 条消息</item>
+    </plurals>
+    <plurals name="messages_unread">
+        <item quantity="other">%d 条未读</item>
+    </plurals>
 
     <!-- Groups -->
     <string name="mygroups_invitations">邀请</string>

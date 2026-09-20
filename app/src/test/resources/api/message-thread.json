@@ -1,0 +1,43 @@
+{
+  "partner": {
+    "id": 6,
+    "name": "Adem Lane",
+    "avatarUrl": "https://meetagain.org/images/thumbnails/adem_400x400.webp"
+  },
+  "items": [
+    {
+      "id": 31,
+      "content": "A question was asked through support.",
+      "createdAt": "2026-09-12T09:00:00+02:00",
+      "mine": false,
+      "wasRead": true,
+      "editable": false,
+      "editedAt": null,
+      "systemNote": true
+    },
+    {
+      "id": 32,
+      "content": "Are you coming on Tuesday?",
+      "createdAt": "2026-09-18T18:30:00+02:00",
+      "mine": false,
+      "wasRead": false,
+      "editable": false,
+      "editedAt": null,
+      "systemNote": false
+    },
+    {
+      "id": 33,
+      "content": "Yes, I will be there.",
+      "createdAt": "2026-09-19T09:58:00+02:00",
+      "mine": true,
+      "wasRead": false,
+      "editable": true,
+      "editedAt": null,
+      "systemNote": false
+    }
+  ],
+  "total": 3,
+  "limit": 100,
+  "offset": 0,
+  "blocked": false
+}

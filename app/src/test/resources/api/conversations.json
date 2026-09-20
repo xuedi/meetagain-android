@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "partner": {
+        "id": 6,
+        "name": "Adem Lane",
+        "avatarUrl": "https://meetagain.org/images/thumbnails/adem_400x400.webp"
+      },
+      "messages": 12,
+      "unread": 2,
+      "lastMessageAt": "2026-09-19T07:40:00+02:00",
+      "tone": "friendly"
+    },
+    {
+      "partner": {
+        "id": 12,
+        "name": "Ali Mahdi",
+        "avatarUrl": null
+      },
+      "messages": 3,
+      "unread": 0,
+      "lastMessageAt": "2026-09-14T19:12:00+02:00"
+    }
+  ],
+  "total": 2,
+  "limit": 20,
+  "offset": 0
+}

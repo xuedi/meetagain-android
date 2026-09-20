@@ -72,7 +72,13 @@ import org.meetagain.app.core.ui.subscribeIntent
 import org.meetagain.app.feature.event.eventItems
 
 @Composable
-fun GroupRoute(container: AppContainer, slug: String, onBack: () -> Unit, onOpenEvent: (Event) -> Unit) {
+fun GroupRoute(
+    container: AppContainer,
+    slug: String,
+    onBack: () -> Unit,
+    onOpenEvent: (Event) -> Unit,
+    onOpenMembers: () -> Unit = {}
+) {
     val session by container.auth.state.collectAsStateWithLifecycle()
     val signedIn = session is SessionState.SignedIn
     val viewModel = viewModel(key = "group-$slug") {
@@ -110,6 +116,7 @@ fun GroupRoute(container: AppContainer, slug: String, onBack: () -> Unit, onOpen
         onBack = onBack,
         onRetry = viewModel::load,
         onOpenEvent = onOpenEvent,
+        onOpenMembers = onOpenMembers,
         onOpenWebsite = rememberOpenUrl(),
         onSubscribe = { url -> if (!openIntent(subscribeIntent(url))) manualFeedUrl = url },
         manualFeedUrl = manualFeedUrl,
@@ -163,6 +170,7 @@ fun GroupScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onOpenEvent: (Event) -> Unit,
+    onOpenMembers: () -> Unit = {},
     onOpenWebsite: (String) -> Unit,
     onSubscribe: (String) -> Unit,
     manualFeedUrl: String? = null,
@@ -199,6 +207,7 @@ fun GroupScreen(
                     signedIn = signedIn,
                     busy = busy,
                     onOpenEvent = onOpenEvent,
+                    onOpenMembers = onOpenMembers,
                     onOpenWebsite = onOpenWebsite,
                     onSubscribe = onSubscribe,
                     onJoin = onJoin,
@@ -220,6 +229,7 @@ private fun GroupContent(
     signedIn: Boolean,
     busy: Boolean,
     onOpenEvent: (Event) -> Unit,
+    onOpenMembers: () -> Unit,
     onOpenWebsite: (String) -> Unit,
     onSubscribe: (String) -> Unit,
     onJoin: () -> Unit,
@@ -234,6 +244,11 @@ private fun GroupContent(
     LazyColumn(modifier) {
         item(key = "header") { Header(page.details, feedUrl, onOpenWebsite, onSubscribe) }
         if (signedIn) {
+            item(key = "members") {
+                TextButton(onClick = onOpenMembers, modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(stringResource(R.string.group_members_title))
+                }
+            }
             item(key = "membership") {
                 MembershipSection(
                     details = page.details,

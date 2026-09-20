@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "id": 4,
+      "name": "Crystal Liu",
+      "avatarUrl": null
+    },
+    {
+      "id": 6,
+      "name": "Adem Lane",
+      "avatarUrl": "https://meetagain.org/images/thumbnails/adem_400x400.webp"
+    },
+    {
+      "id": 12,
+      "name": "Ali Mahdi",
+      "avatarUrl": "https://elsewhere.example/avatar.webp"
+    }
+  ],
+  "total": 3,
+  "limit": 20,
+  "offset": 0
+}

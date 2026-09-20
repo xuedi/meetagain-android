@@ -66,6 +66,8 @@
     <string name="signin_error_pending">Ton compte attend d\'être approuvé. MeetAgain te préviendra par e-mail.</string>
     <string name="signin_error_restricted">MeetAgain veut vérifier que tu es une personne, ce que l\'application ne peut pas montrer. Connecte-toi une fois sur le site, puis réessaie ici.</string>
     <string name="signin_error_device">Ce téléphone n\'a pas pu être nommé. Réessaie.</string>
+    <string name="signin_session_ended">MeetAgain a mis fin à cette session. Reconnecte-toi pour continuer.</string>
+    <string name="signin_session_new_section">MeetAgain propose du nouveau que l\'application peut te montrer. Reconnecte-toi une fois et ce sera là.</string>
 
     <!-- Moi -->
     <string name="me_title">Moi</string>
@@ -73,6 +75,10 @@
     <string name="me_profile">Profil</string>
     <string name="me_sign_out">Se déconnecter</string>
     <string name="me_delete_account">Supprimer mon compte (sur le site)</string>
+    <string name="nav_meetings">Rencontres</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_groups">Groupes</string>
+    <string name="me_blocked">Membres que tu as bloqués</string>
 
     <!-- Accueil -->
     <string name="home_title">Mes rencontres</string>
@@ -123,6 +129,50 @@
     <string name="conversation_empty_comment">Écris d\'abord quelque chose.</string>
     <string name="conversation_photo_rejected">Cette photo n\'a pas été acceptée. Elle est peut-être trop grande ou d\'un type que le serveur n\'accepte pas.</string>
     <string name="conversation_failed">Cela n\'a pas fonctionné. Réessaie.</string>
+    <string name="messages_title">Messages</string>
+    <string name="messages_unread_dot">Messages non lus</string>
+    <string name="messages_empty">Pas encore de conversation. Elle commence sur la page d\'un membre, que tu atteins par les membres d\'un groupe ou par les participants à une rencontre.</string>
+    <string name="messages_end">Ce sont toutes les conversations.</string>
+    <string name="messages_more">Afficher plus</string>
+    <string name="thread_write">Écris un message</string>
+    <string name="thread_earlier">Messages précédents</string>
+    <string name="thread_empty">Rien n\'a encore été dit. Écris le premier message.</string>
+    <string name="thread_edit">Modifier ce message</string>
+    <string name="thread_editing">Modification d\'un message</string>
+    <string name="thread_edited">modifié</string>
+    <string name="thread_edit_window_expired">Un message ne peut être modifié que dans les dix minutes suivant son envoi.</string>
+    <string name="thread_from_you">De toi</string>
+    <string name="thread_from_them">Reçu</string>
+    <string name="thread_system_note">Via le support MeetAgain</string>
+    <string name="thread_blocked">Tu ne peux pas écrire ici : l\'un de vous a bloqué l\'autre. Ce qui a été dit reste lisible.</string>
+    <string name="thread_blocked_refusal">Ce message n\'a pas pu partir : l\'un de vous a bloqué l\'autre.</string>
+    <string name="member_message">Message</string>
+    <string name="member_follow">Suivre</string>
+    <string name="member_unfollow">Ne plus suivre</string>
+    <string name="member_block">Bloquer</string>
+    <string name="member_unblock">Débloquer</string>
+    <string name="member_block_heading">Bloquer %1$s ?</string>
+    <string name="member_block_explained">Vous ne pourrez plus vous écrire, et votre conversation quittera les deux boîtes. Ce qui a été dit reste lisible pour vous deux. Tu peux annuler cela dans Membres que tu as bloqués.</string>
+    <string name="member_since">Sur MeetAgain depuis %1$s</string>
+    <string name="member_follows_you">Te suit</string>
+    <string name="member_refused">La page de ce membre ne peut pas être ouverte.</string>
+    <string name="member_blocked_refusal">Cela n\'a pas fonctionné : l\'un de vous a bloqué l\'autre.</string>
+    <string name="group_members_title">Membres</string>
+    <string name="group_members_empty">Aucun membre à afficher ici.</string>
+    <string name="group_members_end">Ce sont toutes les personnes de ce groupe.</string>
+    <string name="blocked_empty">Tu n\'as bloqué personne.</string>
+    <string name="blocked_end">Ouvre un membre pour le débloquer.</string>
+    <string name="messages_failed">Cela n\'a pas fonctionné. Réessaie.</string>
+    <plurals name="messages_count">
+        <item quantity="one">%d message</item>
+        <item quantity="many">%d messages</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
+    <plurals name="messages_unread">
+        <item quantity="one">%d non lu</item>
+        <item quantity="many">%d non lus</item>
+        <item quantity="other">%d non lus</item>
+    </plurals>
 
     <!-- Groupes -->
     <string name="mygroups_invitations">Invitations</string>

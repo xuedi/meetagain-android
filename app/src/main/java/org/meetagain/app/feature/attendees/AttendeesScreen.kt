@@ -1,5 +1,6 @@
 package org.meetagain.app.feature.attendees
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,8 +23,8 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,15 +54,20 @@ class AttendeesViewModel(repository: MemberRepository, id: Int) : ViewModel() {
 }
 
 @Composable
-fun AttendeesRoute(container: AppContainer, id: Int, onBack: () -> Unit) {
+fun AttendeesRoute(container: AppContainer, id: Int, onBack: () -> Unit, onOpenMember: (Int) -> Unit) {
     val viewModel = viewModel(key = "attendees-$id") { AttendeesViewModel(container.memberRepository, id) }
     val state by viewModel.state.collectAsStateWithLifecycle()
-    AttendeesScreen(state, onBack = onBack, onRetry = viewModel::load)
+    AttendeesScreen(state, onBack = onBack, onRetry = viewModel::load, onOpenMember = onOpenMember)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttendeesScreen(state: Loadable<Attendees>, onBack: () -> Unit, onRetry: () -> Unit) {
+fun AttendeesScreen(
+    state: Loadable<Attendees>,
+    onBack: () -> Unit,
+    onRetry: () -> Unit,
+    onOpenMember: (Int) -> Unit = {}
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,16 +90,21 @@ fun AttendeesScreen(state: Loadable<Attendees>, onBack: () -> Unit, onRetry: () 
 
             is Loadable.Loaded -> LazyColumn(modifier) {
                 state.stale?.let { item(key = "stale") { StaleNotice(it, onRetry) } }
-                items(state.value.people, key = { "person-${it.id}" }) { AttendeeRow(it) }
+                items(state.value.people, key = { "person-${it.id}" }) { attendee ->
+                    AttendeeRow(attendee) { onOpenMember(attendee.id) }
+                }
                 item(key = "end") { End(state.value) }
             }
         }
     }
 }
 
-/** One stop for a screen reader: the name, the guests they bring, and whether it is the member themselves. */
+/**
+ * One stop for a screen reader: the name, the guests they bring, and whether it is the member themselves. A row
+ * opens that member's page; the member's own row opens nothing, and says so.
+ */
 @Composable
-private fun AttendeeRow(attendee: Attendee) {
+private fun AttendeeRow(attendee: Attendee, onOpen: () -> Unit) {
     val resources = LocalResources.current
     val guests = if (attendee.guests > 0) {
         resources.getQuantityString(R.plurals.attendees_guests, attendee.guests, attendee.guests)
@@ -118,7 +129,9 @@ private fun AttendeeRow(attendee: Attendee) {
         },
         headlineContent = { Text(if (attendee.mine) "${attendee.name} ($you)" else attendee.name) },
         supportingContent = guests?.let { { Text(it) } },
-        modifier = Modifier.clearAndSetSemantics { contentDescription = sentence }
+        modifier = Modifier
+            .let { if (attendee.mine) it else it.clickable(onClick = onOpen) }
+            .semantics(mergeDescendants = true) { contentDescription = sentence }
     )
 }
 

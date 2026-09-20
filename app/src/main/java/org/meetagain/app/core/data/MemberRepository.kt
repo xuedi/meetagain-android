@@ -8,18 +8,23 @@ import org.meetagain.app.core.network.ApiClient
 import org.meetagain.app.core.network.ApiResult
 import org.meetagain.app.core.network.AttendeeListDto
 import org.meetagain.app.core.network.CommentListDto
+import org.meetagain.app.core.network.ConversationListDto
 import org.meetagain.app.core.network.EventDetailDto
 import org.meetagain.app.core.network.EventListDto
 import org.meetagain.app.core.network.GroupDetailDto
 import org.meetagain.app.core.network.ImageListDto
 import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
+import org.meetagain.app.core.network.MemberListDto
+import org.meetagain.app.core.network.MemberProfileDto
 import org.meetagain.app.core.network.MembershipListDto
+import org.meetagain.app.core.network.MessageThreadDto
 import org.meetagain.app.core.network.NotificationListDto
 import org.meetagain.app.core.network.NotificationSettingsChangeDto
 import org.meetagain.app.core.network.NotificationSettingsDto
 import org.meetagain.app.core.network.ProfileChangeDto
 import org.meetagain.app.core.network.PushRegistrationDto
+import org.meetagain.app.core.network.THREAD_PAGE
 import org.meetagain.app.core.network.TRANSPORT_UNIFIEDPUSH
 import org.meetagain.app.core.network.Upload
 
@@ -229,6 +234,94 @@ class MemberRepository(
             )
         }
 
+    // Messages
+
+    fun inbox(): Flow<Cached<Inbox>?> =
+        cache.observe(Keys.CONVERSATIONS, ConversationListDto.serializer()) { it.toInbox(images) }
+
+    suspend fun refreshInbox(): ApiResult<Unit> =
+        cache.refresh(Keys.CONVERSATIONS, ConversationListDto.serializer()) { api.conversations() }
+
+    /** The page after the one the member has read; only the first page is stored. */
+    suspend fun moreConversations(offset: Int): ApiResult<Inbox> = when (
+        val result = api.conversations(offset = offset)
+    ) {
+        is ApiResult.Failure -> ApiResult.Failure(result.error)
+        is ApiResult.Success -> ApiResult.Success(result.value.toInbox(images))
+    }
+
+    fun thread(userId: Int): Flow<Cached<MessageThread>?> =
+        cache.observe(Keys.conversation(userId), MessageThreadDto.serializer()) { it.toThread(images, clock) }
+
+    suspend fun refreshThread(userId: Int): ApiResult<Unit> =
+        cache.refresh(Keys.conversation(userId), MessageThreadDto.serializer()) { newestThreadPage(userId) }
+
+    /**
+     * A thread reads oldest first, so its newest page is its last one. One call is enough for a thread that fits in
+     * a page; a longer one takes a second, at the offset the first answer's total gives.
+     */
+    private suspend fun newestThreadPage(userId: Int): ApiResult<MessageThreadDto> {
+        val first = api.thread(userId)
+        val page = (first as? ApiResult.Success)?.value ?: return first
+        if (page.total <= THREAD_PAGE) return first
+        return api.thread(userId, offset = page.total - THREAD_PAGE)
+    }
+
+    /** The page before the one on screen, asked for by where that one starts; like older comments it is not stored. */
+    suspend fun earlierMessages(userId: Int, before: Int): ApiResult<MessageThread> {
+        val offset = (before - THREAD_PAGE).coerceAtLeast(0)
+        return when (val result = api.thread(userId, limit = before - offset, offset = offset)) {
+            is ApiResult.Failure -> ApiResult.Failure(result.error)
+            is ApiResult.Success -> ApiResult.Success(result.value.toThread(images, clock))
+        }
+    }
+
+    suspend fun sendMessage(userId: Int, text: String): ApiResult<Unit> = after(api.sendMessage(userId, text)) {
+        refreshThread(userId)
+        refreshInbox()
+    }
+
+    suspend fun editMessage(userId: Int, messageId: Int, text: String): ApiResult<Unit> =
+        after(api.editMessage(messageId, text)) { refreshThread(userId) }
+
+    /** The website marks a thread read while rendering it; here the screen says so once it has shown the newest page. */
+    suspend fun markThreadRead(userId: Int): ApiResult<Unit> = after(api.markThreadRead(userId)) { refreshInbox() }
+
+    // Members, following and blocking
+
+    fun member(id: Int): Flow<Cached<MemberProfile>?> =
+        cache.observe(Keys.member(id), MemberProfileDto.serializer()) { it.toMemberProfile(images) }
+
+    suspend fun refreshMember(id: Int): ApiResult<Unit> =
+        cache.refresh(Keys.member(id), MemberProfileDto.serializer()) { api.member(id) }
+
+    fun groupMembers(slug: String): Flow<Cached<Members>?> =
+        cache.observe(Keys.groupMembers(slug), MemberListDto.serializer()) { it.toMembers(images) }
+
+    suspend fun refreshGroupMembers(slug: String): ApiResult<Unit> =
+        cache.refresh(Keys.groupMembers(slug), MemberListDto.serializer()) { api.groupMembers(slug) }
+
+    suspend fun moreGroupMembers(slug: String, offset: Int): ApiResult<Members> = when (
+        val result = api.groupMembers(slug, offset = offset)
+    ) {
+        is ApiResult.Failure -> ApiResult.Failure(result.error)
+        is ApiResult.Success -> ApiResult.Success(result.value.toMembers(images))
+    }
+
+    fun blocked(): Flow<Cached<Members>?> =
+        cache.observe(Keys.BLOCKS, MemberListDto.serializer()) { it.toMembers(images) }
+
+    suspend fun refreshBlocked(): ApiResult<Unit> =
+        cache.refresh(Keys.BLOCKS, MemberListDto.serializer()) { api.blocks() }
+
+    suspend fun follow(id: Int): ApiResult<Unit> = after(api.follow(id)) { refreshMember(id) }
+
+    suspend fun unfollow(id: Int): ApiResult<Unit> = after(api.unfollow(id)) { refreshMember(id) }
+
+    suspend fun block(id: Int): ApiResult<Unit> = after(api.block(id)) { refreshAfterBlockChange(id) }
+
+    suspend fun unblock(id: Int): ApiResult<Unit> = after(api.unblock(id)) { refreshAfterBlockChange(id) }
+
     // The profile
 
     fun profile(): Flow<Cached<Profile>?> = cache.observe(Keys.ME, MeDto.serializer()) { it.toProfile(images) }
@@ -253,6 +346,16 @@ class MemberRepository(
             refreshProfile()
             ApiResult.Success(result.value.toProfile(images))
         }
+    }
+
+    /**
+     * Blocking is mutual in effect: the conversation leaves the inbox, the member joins the blocked list, and their
+     * page answers differently. All three are fetched again rather than forgotten.
+     */
+    private suspend fun refreshAfterBlockChange(id: Int) {
+        refreshInbox()
+        refreshBlocked()
+        refreshMember(id)
     }
 
     /** The member's own answer shows on the event, on their home list and in who is coming. */

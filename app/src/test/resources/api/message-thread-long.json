@@ -1,0 +1,23 @@
+{
+  "partner": {
+    "id": 6,
+    "name": "Adem Lane",
+    "avatarUrl": null
+  },
+  "items": [
+    {
+      "id": 1,
+      "content": "The very first one.",
+      "createdAt": "2026-01-02T09:00:00+01:00",
+      "mine": false,
+      "wasRead": true,
+      "editable": false,
+      "editedAt": null,
+      "systemNote": false
+    }
+  ],
+  "total": 240,
+  "limit": 100,
+  "offset": 0,
+  "blocked": false
+}

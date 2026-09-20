@@ -187,6 +187,48 @@ class ApiClient(
 
     suspend fun leaveGroup(slug: String): ApiResult<Unit> = noContent(request(membershipUrl(slug)).delete())
 
+    // The community: messages, members, following and blocking
+
+    suspend fun conversations(limit: Int = COMMUNITY_PAGE, offset: Int = 0): ApiResult<ConversationListDto> =
+        get(paged(communityUrl("conversations"), limit, offset), ConversationListDto.serializer())
+
+    /** One page of a thread, oldest first. */
+    suspend fun thread(userId: Int, limit: Int = THREAD_PAGE, offset: Int = 0): ApiResult<MessageThreadDto> =
+        get(paged(conversationUrl(userId), limit, offset), MessageThreadDto.serializer())
+
+    suspend fun sendMessage(userId: Int, content: String): ApiResult<ThreadMessageDto> = send(
+        request(conversationUrl(userId)).post(body(MessageRequestDto(content))),
+        ThreadMessageDto.serializer()
+    )
+
+    /** Refused with `edit_window_expired` once the ten minutes since the message was sent have passed. */
+    suspend fun editMessage(id: Int, content: String): ApiResult<ThreadMessageDto> = send(
+        request(communityUrl("messages", id.toString())).patch(body(MessageRequestDto(content))),
+        ThreadMessageDto.serializer()
+    )
+
+    /** Reading a thread does not mark it read, unlike the website's page; this is how the app says it has. */
+    suspend fun markThreadRead(userId: Int): ApiResult<Unit> =
+        noContent(request(conversationUrl(userId).newBuilder().addPathSegment("read").build()).post(EMPTY))
+
+    suspend fun member(id: Int): ApiResult<MemberProfileDto> =
+        get(communityUrl("members", id.toString()), MemberProfileDto.serializer())
+
+    suspend fun follow(id: Int): ApiResult<Unit> =
+        noContent(request(communityUrl("members", id.toString(), "follow")).post(EMPTY))
+
+    suspend fun unfollow(id: Int): ApiResult<Unit> =
+        noContent(request(communityUrl("members", id.toString(), "follow")).delete())
+
+    suspend fun blocks(): ApiResult<MemberListDto> = get(communityUrl("blocks"), MemberListDto.serializer())
+
+    suspend fun block(id: Int): ApiResult<Unit> = noContent(request(communityUrl("blocks", id.toString())).post(EMPTY))
+
+    suspend fun unblock(id: Int): ApiResult<Unit> = noContent(request(communityUrl("blocks", id.toString())).delete())
+
+    suspend fun groupMembers(slug: String, limit: Int = COMMUNITY_PAGE, offset: Int = 0): ApiResult<MemberListDto> =
+        get(paged(communityUrl("groups", slug, "members"), limit, offset), MemberListDto.serializer())
+
     private fun url(path: String): HttpUrl = base.newBuilder().addPathSegments(path).build()
 
     private fun eventUrl(id: Int, action: String): HttpUrl = base.newBuilder()
@@ -199,6 +241,18 @@ class ApiClient(
         .addPathSegments("api/v1/memberships/invitations")
         .addPathSegment(id.toString())
         .addPathSegment(action)
+        .build()
+
+    private fun communityUrl(vararg segments: String): HttpUrl = base.newBuilder()
+        .addPathSegments("api/v1/community")
+        .apply { segments.forEach { addPathSegment(it) } }
+        .build()
+
+    private fun conversationUrl(userId: Int): HttpUrl = communityUrl("conversations", userId.toString())
+
+    private fun paged(url: HttpUrl, limit: Int, offset: Int): HttpUrl = url.newBuilder()
+        .addQueryParameter("limit", limit.toString())
+        .apply { if (offset > 0) addQueryParameter("offset", offset.toString()) }
         .build()
 
     private fun membershipUrl(slug: String): HttpUrl = base.newBuilder()

@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "partner": {
+        "id": 6,
+        "name": "Adem Lane",
+        "avatarUrl": null
+      },
+      "messages": 12,
+      "unread": 2,
+      "lastMessageAt": "2026-09-19T09:40:00+02:00"
+    }
+  ],
+  "total": 21,
+  "limit": 20,
+  "offset": 0
+}

@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.meetagain.app.core.network.AttendeeListDto
 import org.meetagain.app.core.network.CommentListDto
+import org.meetagain.app.core.network.ConversationListDto
 import org.meetagain.app.core.network.EventDetailDto
 import org.meetagain.app.core.network.EventGroupDto
 import org.meetagain.app.core.network.EventListDto
@@ -14,13 +15,18 @@ import org.meetagain.app.core.network.EventSummaryDto
 import org.meetagain.app.core.network.ImageListDto
 import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
+import org.meetagain.app.core.network.MemberListDto
+import org.meetagain.app.core.network.MemberProfileDto
+import org.meetagain.app.core.network.MemberSummaryDto
 import org.meetagain.app.core.network.MembershipDto
 import org.meetagain.app.core.network.MembershipListDto
+import org.meetagain.app.core.network.MessageThreadDto
 import org.meetagain.app.core.network.NotificationListDto
 import org.meetagain.app.core.network.NotificationSettingsChangeDto
 import org.meetagain.app.core.network.NotificationSettingsDto
 import org.meetagain.app.core.network.PushSubscriptionListDto
 import org.meetagain.app.core.network.QuietHoursDto
+import org.meetagain.app.core.network.ThreadMessageDto
 
 /**
  * The server's answers as the app's models. Only images on the app's own server are kept, so content can never make
@@ -244,3 +250,61 @@ internal fun PushSubscriptionListDto.toDevices() = PushDevices(
 internal fun pushChange(categories: Map<String, Boolean>) = NotificationSettingsChangeDto(push = categories)
 
 internal fun QuietHours.toDto() = QuietHoursDto(enabled, start, end, timeZone, allowUrgent)
+
+// The community
+
+fun MemberSummaryDto.toMemberSummary(images: ImageHost) = MemberSummary(id, name, images.own(avatarUrl))
+
+fun ConversationListDto.toInbox(images: ImageHost) = Inbox(
+    entries = items.map {
+        InboxEntry(
+            partner = it.partner.toMemberSummary(images),
+            messages = it.messages,
+            unread = it.unread,
+            lastMessageAt = it.lastMessageAt?.let(::instant)
+        )
+    },
+    total = total
+)
+
+fun MessageThreadDto.toThread(images: ImageHost, clock: Clock) = MessageThread(
+    partner = partner.toMemberSummary(images),
+    messages = items.map { it.toMessage(clock) },
+    total = total,
+    offset = offset,
+    blocked = blocked
+)
+
+/**
+ * The edit window is counted here as well as on the server: a stored answer can be older than the ten minutes it
+ * was fetched in, and an edit control that the server would refuse must not be offered.
+ */
+fun ThreadMessageDto.toMessage(clock: Clock): Message {
+    val sentAt = createdAt?.let(::instant)
+    val stillOpen = sentAt != null && sentAt.isAfter(clock.instant().minus(MESSAGE_EDIT_WINDOW))
+    return Message(
+        id = id,
+        text = content,
+        sentAt = sentAt,
+        mine = mine,
+        read = wasRead,
+        editable = editable && stillOpen,
+        editedAt = editedAt?.let(::instant),
+        systemNote = systemNote
+    )
+}
+
+fun MemberListDto.toMembers(images: ImageHost) = Members(items.map { it.toMemberSummary(images) }, total)
+
+fun MemberProfileDto.toMemberProfile(images: ImageHost) = MemberProfile(
+    id = id,
+    name = name,
+    bio = bio.orNull(),
+    avatarUrl = images.own(avatarUrl),
+    public = public,
+    memberSince = memberSince?.let(::instant),
+    following = following,
+    followsMe = followsMe,
+    blockedByMe = blockedByMe,
+    canMessage = canMessage
+)

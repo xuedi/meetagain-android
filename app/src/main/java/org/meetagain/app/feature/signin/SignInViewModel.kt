@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.meetagain.app.core.auth.AuthRepository
 import org.meetagain.app.core.auth.LoginError
+import org.meetagain.app.core.auth.SessionState
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.network.ApiResult
+import org.meetagain.app.core.network.SessionRefusal
 
 /**
  * Why a sign-in did not happen. Each one is a different sentence, and some send the member to the website, which is
@@ -36,6 +38,9 @@ sealed interface SignInProblem {
 
     /** Anything that is not about the account: no connection, a timeout, a server error. */
     data class Connection(val error: ApiError) : SignInProblem
+
+    /** Nobody typed anything wrong: the server ended the session, and this says which way. */
+    data class SessionEnded(val refusal: SessionRefusal) : SignInProblem
 }
 
 data class SignInState(
@@ -48,7 +53,9 @@ data class SignInState(
 }
 
 class SignInViewModel(private val auth: AuthRepository) : ViewModel() {
-    private val current = MutableStateFlow(SignInState())
+    private val current = MutableStateFlow(
+        SignInState(problem = (auth.state.value as? SessionState.SignedOut)?.refusal?.let(SignInProblem::SessionEnded))
+    )
 
     val state: StateFlow<SignInState> = current.asStateFlow()
 

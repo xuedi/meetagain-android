@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.meetagain.app.AppContainer
 import org.meetagain.app.R
 import org.meetagain.app.core.i18n.websiteUrl
+import org.meetagain.app.core.network.SessionRefusal
 import org.meetagain.app.core.ui.errorMessage
 import org.meetagain.app.core.ui.rememberOpenUrl
 
@@ -174,6 +175,11 @@ private fun Problem(problem: SignInProblem, onOpenWebsite: (String) -> Unit) {
             pluralStringResource(R.plurals.signin_error_attempts, problem.minutes, problem.minutes)
 
         is SignInProblem.Connection -> errorMessage(problem.error)
+
+        is SignInProblem.SessionEnded -> when (problem.refusal) {
+            SessionRefusal.TokenRefused -> stringResource(R.string.signin_session_ended)
+            SessionRefusal.SectionMissing -> stringResource(R.string.signin_session_new_section)
+        }
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(

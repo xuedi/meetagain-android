@@ -30,21 +30,31 @@ private fun destinationOfPath(segments: List<String>): NavKey? = when {
     segments.isEmpty() -> Home
     segments[0] == EVENT -> segments.getOrNull(1)?.toIntOrNull()?.let(::EventDetail)
     segments[0] == EVENTS || segments[0] == GROUPS -> Explore
-    segments[0] == PROFILE -> profileDestination(segments.getOrNull(1))
+    segments[0] == PROFILE -> profileDestination(segments.drop(1))
     else -> null
 }
 
 /**
- * The website's profile pages, as far as the app has them. The ones it does not have - the review queue, blocked
- * members, messages - answer null so they open where they actually work.
+ * The website's profile pages, as far as the app has them. The ones it does not have - the review queue, the
+ * access tokens - answer null so they open where they actually work.
  */
-private fun profileDestination(section: String?): NavKey? = when (section) {
+private fun profileDestination(rest: List<String>): NavKey? = when (rest.firstOrNull()) {
     null -> MyProfile
     MY_GROUPS_PATH -> MyGroups
     NOTIFICATIONS_PATH -> Notifications
     CONFIG_PATH -> NotificationSettings
+    BLOCKED_PATH -> Blocked
+    MESSAGES_PATH -> messagesDestination(rest.drop(1))
     else -> null
 }
+
+/**
+ * `/profile/messages` is the inbox and `/profile/messages/{id}` that member's thread, which is what makes the
+ * bell's unread-messages item and the message push open the app rather than the browser. Anything else under it -
+ * a partner that is not a number - is not a screen here.
+ */
+private fun messagesDestination(rest: List<String>): NavKey? =
+    if (rest.isEmpty()) Messages else rest.singleOrNull()?.toIntOrNull()?.let(::Thread)
 
 private const val EVENT = "event"
 private const val EVENTS = "events"
@@ -53,3 +63,5 @@ private const val PROFILE = "profile"
 private const val MY_GROUPS_PATH = "my-groups"
 private const val NOTIFICATIONS_PATH = "notifications"
 private const val CONFIG_PATH = "config"
+private const val BLOCKED_PATH = "blocked"
+private const val MESSAGES_PATH = "messages"

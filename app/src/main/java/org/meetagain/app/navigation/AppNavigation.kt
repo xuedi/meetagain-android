@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -13,6 +14,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import java.time.Clock
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.core.auth.SessionState
@@ -24,6 +26,11 @@ import org.meetagain.app.feature.explore.ExploreRoute
 import org.meetagain.app.feature.group.GroupRoute
 import org.meetagain.app.feature.home.HomeRoute
 import org.meetagain.app.feature.me.MeRoute
+import org.meetagain.app.feature.members.BlockedRoute
+import org.meetagain.app.feature.members.GroupMembersRoute
+import org.meetagain.app.feature.members.MemberRoute
+import org.meetagain.app.feature.messages.MessagesRoute
+import org.meetagain.app.feature.messages.ThreadRoute
 import org.meetagain.app.feature.mygroups.MyGroupsRoute
 import org.meetagain.app.feature.notifications.NotificationsRoute
 import org.meetagain.app.feature.notificationsettings.NotificationSettingsRoute
@@ -41,7 +48,7 @@ fun AppNavigation(container: AppContainer, clock: Clock = Clock.systemUTC(), ope
         // Nothing yet: reading the stored session takes a moment, and a spinner that flashes past says nothing.
         SessionState.Unknown -> Unit
 
-        SessionState.SignedOut -> key(false) { Destinations(container, false, clock, opening) }
+        is SessionState.SignedOut -> key(false) { Destinations(container, false, clock, opening) }
 
         is SessionState.SignedIn -> key(true) { Destinations(container, true, clock, opening) }
     }
@@ -59,6 +66,17 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
     val scope = rememberCoroutineScope()
     LaunchedEffect(opening) {
         if (opening != null && signedIn && backStack.lastOrNull() != opening) backStack.add(opening)
+    }
+    // Switching roots drops whatever was above the one being left, and leaves Meetings underneath the other two,
+    // so system back from Messages or Groups lands there before it leaves the app.
+    val selectRoot: (Root) -> Unit = { root ->
+        backStack.clear()
+        backStack.add(Home)
+        rootKey(root)?.let(backStack::add)
+    }
+    val unread = unreadMessages(container, signedIn)
+    val bar: (Root) -> @Composable () -> Unit = { root ->
+        { AppNavigationBar(root, unread, selectRoot) }
     }
     NavDisplay(
         backStack = backStack,
@@ -80,19 +98,29 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                     container,
                     onOpenEvent = { backStack.add(EventDetail(it.id)) },
                     onOpenMe = { backStack.add(Me) },
-                    onOpenMyGroups = { backStack.add(MyGroups) },
+                    onOpenMyGroups = { selectRoot(Root.Groups) },
                     onLookAround = { backStack.add(Explore) },
-                    clock = clock
+                    clock = clock,
+                    bottomBar = bar(Root.Meetings)
+                )
+            }
+            entry<Messages> {
+                MessagesRoute(
+                    container,
+                    onOpenThread = { backStack.add(Thread(it.partner.id)) },
+                    onOpenMe = { backStack.add(Me) },
+                    bottomBar = bar(Root.Messages)
                 )
             }
             entry<Me> {
                 MeRoute(
                     container,
                     onBack = back,
-                    onOpenMyGroups = { backStack.add(MyGroups) },
+                    onOpenMyGroups = { selectRoot(Root.Groups) },
                     onOpenProfile = { backStack.add(MyProfile) },
                     onOpenNotifications = { backStack.add(Notifications) },
                     onOpenNotificationSettings = { backStack.add(NotificationSettings) },
+                    onOpenBlocked = { backStack.add(Blocked) },
                     onOpenAbout = { backStack.add(About) },
                     onSignOut = { scope.launch { container.auth.signOut() } }
                 )
@@ -111,7 +139,12 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
             }
             entry<NotificationSettings> { NotificationSettingsRoute(container, onBack = back) }
             entry<MyGroups> {
-                MyGroupsRoute(container, onBack = back, onOpenGroup = { backStack.add(GroupPage(it)) })
+                MyGroupsRoute(
+                    container,
+                    onOpenGroup = { backStack.add(GroupPage(it)) },
+                    onOpenMe = { backStack.add(Me) },
+                    bottomBar = bar(Root.Groups)
+                )
             }
             entry<MyProfile> { ProfileRoute(container, onBack = back) }
             entry<About> { AboutRoute(container, onBack = back) }
@@ -134,16 +167,62 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                     clock = clock
                 )
             }
-            entry<Attendees> { key -> AttendeesRoute(container, key.id, onBack = back) }
+            entry<Attendees> { key ->
+                AttendeesRoute(container, key.id, onBack = back, onOpenMember = { backStack.add(MemberPage(it)) })
+            }
+            entry<Thread> { key ->
+                ThreadRoute(
+                    container,
+                    key.partnerId,
+                    onBack = back,
+                    onOpenMember = { backStack.add(MemberPage(it)) }
+                )
+            }
+            entry<MemberPage> { key ->
+                MemberRoute(
+                    container,
+                    key.id,
+                    onBack = back,
+                    onOpenThread = { backStack.add(Thread(it)) }
+                )
+            }
+            entry<GroupMembers> { key ->
+                GroupMembersRoute(container, key.slug, onBack = back, onOpenMember = { backStack.add(MemberPage(it)) })
+            }
+            entry<Blocked> {
+                BlockedRoute(container, onBack = back, onOpenMember = { backStack.add(MemberPage(it)) })
+            }
             entry<Conversation> { key -> ConversationRoute(container, key.id, onBack = back) }
             entry<GroupPage> { key ->
                 GroupRoute(
                     container,
                     key.slug,
                     onBack = back,
-                    onOpenEvent = { backStack.add(EventDetail(it.id)) }
+                    onOpenEvent = { backStack.add(EventDetail(it.id)) },
+                    onOpenMembers = { backStack.add(GroupMembers(key.slug)) }
                 )
             }
         }
     )
+}
+
+private fun rootKey(root: Root): NavKey? = when (root) {
+    Root.Meetings -> null
+    Root.Messages -> Messages
+    Root.Groups -> MyGroups
+}
+
+/**
+ * A plain dot on the Messages destination, from the stored inbox alone: the bar never fetches, so opening the app
+ * costs no call it would not have made.
+ */
+@Composable
+private fun unreadMessages(container: AppContainer, signedIn: Boolean): Boolean {
+    if (!signedIn) return false
+    val unread = remember(container) {
+        container.memberRepository.inbox().map { cached ->
+            cached?.value?.entries.orEmpty().any { it.unread > 0 }
+        }
+    }
+    return unread.collectAsStateWithLifecycle(false).value
 }

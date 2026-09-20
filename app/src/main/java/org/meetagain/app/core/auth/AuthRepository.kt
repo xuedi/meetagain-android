@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.meetagain.app.core.network.ApiClient
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.network.ApiResult
+import org.meetagain.app.core.network.SessionRefusal
 
 /**
  * Who the app is signed in as. The session is read from disk once at start, kept in memory for the rest of the run,
@@ -41,7 +42,7 @@ class AuthRepository(
     val token: String? get() = pending ?: current.value.member?.token
 
     init {
-        scope.launch { current.value = store.read()?.let(SessionState::SignedIn) ?: SessionState.SignedOut }
+        scope.launch { current.value = store.read()?.let(SessionState::SignedIn) ?: SessionState.SignedOut() }
     }
 
     /**
@@ -87,10 +88,13 @@ class AuthRepository(
         }.await()
     }
 
-    /** The server refused the token: it is gone, and so is the session. */
-    fun onInvalidToken() {
+    /**
+     * The server would not take the token. Either it is gone, or it predates a section the app now calls; both end
+     * the session, and [refusal] is what the sign-in screen then says.
+     */
+    fun onRefusedToken(refusal: SessionRefusal) {
         val member = current.value.member ?: return
-        scope.launch { wipe(member.memberId) }
+        scope.launch { wipe(member.memberId, refusal) }
     }
 
     /** The member's own name, as the profile screen saved it. */
@@ -101,11 +105,11 @@ class AuthRepository(
     }
 
     /** Everything goes before the session does, so a screen that leaves cannot leave the member's content behind. */
-    private suspend fun wipe(memberId: Int?) {
+    private suspend fun wipe(memberId: Int?, refusal: SessionRefusal? = null) {
         pending = null
         store.clear()
         if (memberId != null) forget(memberId)
-        current.value = SessionState.SignedOut
+        current.value = SessionState.SignedOut(refusal)
     }
 }
 

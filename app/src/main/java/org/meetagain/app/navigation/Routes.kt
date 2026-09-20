@@ -16,6 +16,21 @@ data object Me : NavKey
 data object MyGroups : NavKey
 
 @Serializable
+data object Messages : NavKey
+
+@Serializable
+data class Thread(val partnerId: Int) : NavKey
+
+@Serializable
+data class MemberPage(val id: Int) : NavKey
+
+@Serializable
+data class GroupMembers(val slug: String) : NavKey
+
+@Serializable
+data object Blocked : NavKey
+
+@Serializable
 data object MyProfile : NavKey
 
 @Serializable

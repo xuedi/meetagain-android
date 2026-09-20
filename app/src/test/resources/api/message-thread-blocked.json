@@ -1,0 +1,23 @@
+{
+  "partner": {
+    "id": 12,
+    "name": "Ali Mahdi",
+    "avatarUrl": null
+  },
+  "items": [
+    {
+      "id": 40,
+      "content": "See you around.",
+      "createdAt": "2026-09-10T12:00:00+02:00",
+      "mine": true,
+      "wasRead": true,
+      "editable": false,
+      "editedAt": null,
+      "systemNote": false
+    }
+  ],
+  "total": 1,
+  "limit": 100,
+  "offset": 0,
+  "blocked": true
+}

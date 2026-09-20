@@ -57,7 +57,8 @@ fun HomeRoute(
     onOpenMe: () -> Unit,
     onOpenMyGroups: () -> Unit,
     onLookAround: () -> Unit,
-    clock: Clock = Clock.systemUTC()
+    clock: Clock = Clock.systemUTC(),
+    bottomBar: @Composable () -> Unit = {}
 ) {
     val viewModel = viewModel { HomeViewModel(container.memberRepository, clock) }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,7 +76,8 @@ fun HomeRoute(
         onOpenMyGroups = onOpenMyGroups,
         onLookAround = onLookAround,
         onAnswer = { event, going, guests -> viewModel.rsvp.answer(event, going, guests) },
-        clock = clock
+        clock = clock,
+        bottomBar = bottomBar
     )
 }
 
@@ -118,7 +120,8 @@ fun HomeScreen(
     onOpenMyGroups: () -> Unit,
     onLookAround: () -> Unit,
     onAnswer: (Event, Boolean, Int) -> Unit,
-    clock: Clock = Clock.systemUTC()
+    clock: Clock = Clock.systemUTC(),
+    bottomBar: @Composable () -> Unit = {}
 ) {
     val time = rememberEventTime()
     Scaffold(
@@ -132,7 +135,8 @@ fun HomeScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = bottomBar
     ) { padding ->
         when (state) {
             Loadable.Loading -> LoadingState(Modifier.padding(padding))

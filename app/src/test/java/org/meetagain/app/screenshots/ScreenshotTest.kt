@@ -3,6 +3,7 @@ package org.meetagain.app.screenshots
 import android.app.Application
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -12,6 +13,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.meetagain.app.AppInfo
+import org.meetagain.app.R
+import org.meetagain.app.core.data.MemberProfile
 import org.meetagain.app.core.data.Notification
 import org.meetagain.app.core.data.NotificationSettings
 import org.meetagain.app.core.network.ApiError
@@ -32,6 +35,14 @@ import org.meetagain.app.feature.group.GroupScreen
 import org.meetagain.app.feature.home.Home
 import org.meetagain.app.feature.home.HomeScreen
 import org.meetagain.app.feature.me.MeScreen
+import org.meetagain.app.feature.members.MemberList
+import org.meetagain.app.feature.members.MemberScreen
+import org.meetagain.app.feature.members.MembersScreen
+import org.meetagain.app.feature.messages.Conversations
+import org.meetagain.app.feature.messages.Draft
+import org.meetagain.app.feature.messages.MessagesScreen
+import org.meetagain.app.feature.messages.Thread as ThreadPage
+import org.meetagain.app.feature.messages.ThreadScreen
 import org.meetagain.app.feature.mygroups.MyGroupsScreen
 import org.meetagain.app.feature.notifications.NotificationsScreen
 import org.meetagain.app.feature.notificationsettings.NotificationSettingsScreen
@@ -40,6 +51,8 @@ import org.meetagain.app.feature.profile.ProfileScreen
 import org.meetagain.app.feature.signin.SignInProblem
 import org.meetagain.app.feature.signin.SignInScreen
 import org.meetagain.app.feature.signin.SignInState
+import org.meetagain.app.navigation.AppNavigationBar
+import org.meetagain.app.navigation.Root
 import org.meetagain.app.testing.DeviceSettings
 import org.meetagain.app.testing.Samples
 import org.meetagain.app.testing.testClock
@@ -98,6 +111,7 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
             onOpenProfile = {},
             onOpenNotifications = {},
             onOpenNotificationSettings = {},
+            onOpenBlocked = {},
             onOpenAbout = {},
             onSignOut = {},
             onDeleteAccount = {}
@@ -106,7 +120,7 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
 
     @Test
     fun attendees() = capture("attendees") {
-        AttendeesScreen(Loadable.Loaded(Samples.attendees), onBack = {}, onRetry = {})
+        AttendeesScreen(Loadable.Loaded(Samples.attendees), onBack = {}, onRetry = {}, onOpenMember = {})
     }
 
     @Test
@@ -136,13 +150,128 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
         MyGroupsScreen(
             state = Loadable.Loaded(Samples.myGroups),
             snackbarHostState = SnackbarHostState(),
-            onBack = {},
             onRetry = {},
             onOpenGroup = {},
+            onOpenMe = {},
             onAccept = {},
-            onDecline = {}
+            onDecline = {},
+            bottomBar = { AppNavigationBar(Root.Groups, unreadMessages = true, onSelect = {}) }
         )
     }
+
+    // The community
+
+    @Test
+    fun messages() = capture("messages") { Messages(Loadable.Loaded(Samples.inbox)) }
+
+    @Test
+    fun messagesEmpty() = capture("messages_empty") {
+        Messages(Loadable.Loaded(Conversations(entries = emptyList(), total = 0)))
+    }
+
+    @Test
+    fun messagesStale() = capture("messages_stale") {
+        Messages(Loadable.Loaded(Samples.inbox, stale = Samples.offlineSince))
+    }
+
+    @Test
+    fun messagesOffline() = capture("messages_offline") { Messages(Loadable.Failed(ApiError.Offline)) }
+
+    @Test
+    fun thread() = capture("thread") { Thread(Loadable.Loaded(Samples.thread)) }
+
+    @Test
+    fun threadEditing() = capture("thread_editing") {
+        Thread(Loadable.Loaded(Samples.thread), Draft("Yes, I will be there.", editing = 33))
+    }
+
+    /** A block in either direction: the thread reads, and a sentence stands where the composer was. */
+    @Test
+    fun threadBlocked() = capture("thread_blocked") { Thread(Loadable.Loaded(Samples.blockedThread)) }
+
+    @Test
+    fun member() = capture("member") { Member(Loadable.Loaded(Samples.member)) }
+
+    @Test
+    fun memberBlockedByMe() = capture("member_blocked_by_me") { Member(Loadable.Loaded(Samples.blockedMember)) }
+
+    /** The other member has blocked the caller: one sentence, and nothing to do. */
+    @Test
+    fun memberRefused() = capture("member_refused") {
+        Member(Loadable.Failed(ApiError.Http(403, code = "forbidden")))
+    }
+
+    @Test
+    fun groupMembers() = capture("group_members") {
+        Members(
+            Loadable.Loaded(Samples.groupMembers),
+            R.string.group_members_title,
+            R.string.group_members_empty,
+            R.string.group_members_end
+        )
+    }
+
+    @Test
+    fun blockedMembers() = capture("blocked_members") {
+        Members(
+            Loadable.Loaded(Samples.blockedMembers),
+            R.string.me_blocked,
+            R.string.blocked_empty,
+            R.string.blocked_end
+        )
+    }
+
+    @Composable
+    private fun Members(state: Loadable<MemberList>, title: Int, empty: Int, end: Int) = MembersScreen(
+        state = state,
+        title = stringResource(title),
+        empty = stringResource(empty),
+        end = stringResource(end),
+        onBack = {},
+        onRetry = {},
+        onOpenMember = {},
+        onLoadMore = {}
+    )
+
+    @Composable
+    private fun Messages(state: Loadable<Conversations>) = MessagesScreen(
+        state = state,
+        snackbarHostState = SnackbarHostState(),
+        onRetry = {},
+        onOpenThread = {},
+        onOpenMe = {},
+        onLoadMore = {},
+        bottomBar = { AppNavigationBar(Root.Messages, unreadMessages = true, onSelect = {}) }
+    )
+
+    @Composable
+    private fun Thread(state: Loadable<ThreadPage>, draft: Draft = Draft()) = ThreadScreen(
+        state = state,
+        draft = draft,
+        busy = false,
+        snackbarHostState = SnackbarHostState(),
+        onBack = {},
+        onRetry = {},
+        onDraft = {},
+        onSend = {},
+        onEdit = {},
+        onCancelEdit = {},
+        onLoadEarlier = {},
+        onBlock = {},
+        onOpenMember = {}
+    )
+
+    @Composable
+    private fun Member(state: Loadable<MemberProfile>) = MemberScreen(
+        state = state,
+        busy = false,
+        snackbarHostState = SnackbarHostState(),
+        onBack = {},
+        onRetry = {},
+        onOpenThread = {},
+        onToggleFollow = {},
+        onToggleBlock = {}
+    )
 
     @Test
     fun notifications() = capture("notifications") {
@@ -231,7 +360,8 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
         onOpenMyGroups = {},
         onLookAround = {},
         onAnswer = { _, _, _ -> },
-        clock = testClock
+        clock = testClock,
+        bottomBar = { AppNavigationBar(Root.Meetings, unreadMessages = true, onSelect = {}) }
     )
 
     @Test

@@ -37,6 +37,7 @@ fun MeRoute(
     onOpenProfile: () -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenNotificationSettings: () -> Unit,
+    onOpenBlocked: () -> Unit,
     onOpenAbout: () -> Unit,
     onSignOut: () -> Unit
 ) {
@@ -49,6 +50,7 @@ fun MeRoute(
         onOpenProfile = onOpenProfile,
         onOpenNotifications = onOpenNotifications,
         onOpenNotificationSettings = onOpenNotificationSettings,
+        onOpenBlocked = onOpenBlocked,
         onOpenAbout = onOpenAbout,
         onSignOut = onSignOut,
         onDeleteAccount = { openUrl(websiteUrl(container.appInfo.baseUrl, PROFILE)) }
@@ -64,6 +66,7 @@ fun MeScreen(
     onOpenProfile: () -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenNotificationSettings: () -> Unit,
+    onOpenBlocked: () -> Unit,
     onOpenAbout: () -> Unit,
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit
@@ -97,6 +100,7 @@ fun MeScreen(
             Entry(stringResource(R.string.me_my_groups), onOpenMyGroups)
             Entry(stringResource(R.string.me_profile), onOpenProfile)
             Entry(stringResource(R.string.notification_settings_title), onOpenNotificationSettings)
+            Entry(stringResource(R.string.me_blocked), onOpenBlocked)
             Entry(stringResource(R.string.about_title), onOpenAbout)
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Entry(stringResource(R.string.me_sign_out), onSignOut)

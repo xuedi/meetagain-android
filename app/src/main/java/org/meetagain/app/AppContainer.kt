@@ -38,7 +38,11 @@ class AppContainer(
     val http: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .callTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(SessionInterceptor(token = { auth.token }, onInvalidToken = { auth.onInvalidToken() }))
+        .addInterceptor(
+            SessionInterceptor(token = {
+                auth.token
+            }, json = json, onRefused = { auth.onRefusedToken(it) })
+        )
         .build()
 
     val api = ApiClient(appInfo.baseUrl, http, json, languageTag = { AppLocale.current() })

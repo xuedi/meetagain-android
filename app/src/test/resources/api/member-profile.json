@@ -1,0 +1,12 @@
+{
+  "id": 6,
+  "name": "Adem Lane",
+  "bio": "Berlin. Board games, long walks and bad puns.",
+  "avatarUrl": "https://meetagain.org/images/thumbnails/adem_400x400.webp",
+  "public": true,
+  "memberSince": "2024-03-11T14:22:00+01:00",
+  "following": false,
+  "followsMe": true,
+  "blockedByMe": false,
+  "canMessage": true
+}

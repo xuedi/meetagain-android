@@ -67,6 +67,8 @@
     <string name="signin_error_pending">Your account is waiting to be approved. You will hear from MeetAgain by email.</string>
     <string name="signin_error_restricted">MeetAgain wants to check that you are a person, which the app cannot show. Sign in on the website once, then try again here.</string>
     <string name="signin_error_device">This phone could not be named. Try again.</string>
+    <string name="signin_session_ended">MeetAgain ended this session. Sign in again to carry on.</string>
+    <string name="signin_session_new_section">MeetAgain has something new the app can show you. Sign in once more and it is there.</string>
 
     <!-- Me -->
     <string name="me_title">Me</string>
@@ -74,6 +76,10 @@
     <string name="me_profile">Profile</string>
     <string name="me_sign_out">Sign out</string>
     <string name="me_delete_account">Delete my account (on the website)</string>
+    <string name="nav_meetings">Meetings</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_groups">Groups</string>
+    <string name="me_blocked">Members you blocked</string>
 
     <!-- Home -->
     <string name="home_title">My meetings</string>
@@ -124,6 +130,48 @@
     <string name="conversation_empty_comment">Write something first.</string>
     <string name="conversation_photo_rejected">That photo was not accepted. It may be too large or of a kind the server does not take.</string>
     <string name="conversation_failed">That did not work. Try again.</string>
+    <string name="messages_title">Messages</string>
+    <string name="messages_unread_dot">Unread messages</string>
+    <string name="messages_empty">No conversations yet. One starts from a member\'s page, which you reach from a group\'s members or from who is coming to a meeting.</string>
+    <string name="messages_end">That is every conversation.</string>
+    <string name="messages_more">Show more</string>
+    <string name="thread_write">Write a message</string>
+    <string name="thread_earlier">Earlier messages</string>
+    <string name="thread_empty">Nothing has been said yet. Write the first message.</string>
+    <string name="thread_edit">Change this message</string>
+    <string name="thread_editing">Changing a message</string>
+    <string name="thread_edited">changed</string>
+    <string name="thread_edit_window_expired">A message can only be changed within ten minutes of sending it.</string>
+    <string name="thread_from_you">From you</string>
+    <string name="thread_from_them">Received</string>
+    <string name="thread_system_note">Through MeetAgain support</string>
+    <string name="thread_blocked">You cannot write here: one of you has blocked the other. What was said stays readable.</string>
+    <string name="thread_blocked_refusal">That message could not go: one of you has blocked the other.</string>
+    <string name="member_message">Message</string>
+    <string name="member_follow">Follow</string>
+    <string name="member_unfollow">Unfollow</string>
+    <string name="member_block">Block</string>
+    <string name="member_unblock">Unblock</string>
+    <string name="member_block_heading">Block %1$s?</string>
+    <string name="member_block_explained">Neither of you can write to the other any more, and your conversation leaves both inboxes. What was said stays readable for both of you. You can undo this under Members you blocked.</string>
+    <string name="member_since">With MeetAgain since %1$s</string>
+    <string name="member_follows_you">Follows you</string>
+    <string name="member_refused">This member\'s page cannot be opened.</string>
+    <string name="member_blocked_refusal">That did not work: one of you has blocked the other.</string>
+    <string name="group_members_title">Members</string>
+    <string name="group_members_empty">No members to show here.</string>
+    <string name="group_members_end">That is everyone in this group.</string>
+    <string name="blocked_empty">You have not blocked anyone.</string>
+    <string name="blocked_end">Open a member to unblock them.</string>
+    <string name="messages_failed">That did not work. Try again.</string>
+    <plurals name="messages_count">
+        <item quantity="one">%d message</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
+    <plurals name="messages_unread">
+        <item quantity="one">%d unread</item>
+        <item quantity="other">%d unread</item>
+    </plurals>
 
     <!-- Groups -->
     <string name="mygroups_invitations">Invitations</string>

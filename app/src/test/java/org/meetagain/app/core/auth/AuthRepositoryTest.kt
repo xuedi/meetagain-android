@@ -26,6 +26,7 @@ import org.meetagain.app.core.network.ApiClient
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.network.ApiResult
 import org.meetagain.app.core.network.SessionInterceptor
+import org.meetagain.app.core.network.SessionRefusal
 import org.meetagain.app.testing.fixture
 import org.meetagain.app.testing.json
 import org.meetagain.app.testing.noContent
@@ -46,7 +47,11 @@ class AuthRepositoryTest {
     private lateinit var auth: AuthRepository
 
     private val http = OkHttpClient.Builder()
-        .addInterceptor(SessionInterceptor({ auth.token }, { auth.onInvalidToken() }))
+        .addInterceptor(
+            SessionInterceptor({
+                auth.token
+            }, Json { ignoreUnknownKeys = true }) { auth.onRefusedToken(it) }
+        )
         .build()
 
     @Before
@@ -71,7 +76,7 @@ class AuthRepositoryTest {
     fun `a start without a stored session ends signed out`() = runTest {
         repository(this).state.test {
             assertEquals(SessionState.Unknown, awaitItem())
-            assertEquals(SessionState.SignedOut, awaitItem())
+            assertEquals(SessionState.SignedOut(), awaitItem())
         }
     }
 
@@ -148,7 +153,7 @@ class AuthRepositoryTest {
         auth.state.test {
             assertTrue(awaitItem() is SessionState.SignedIn)
             api().me()
-            assertEquals(SessionState.SignedOut, awaitItem())
+            assertEquals(SessionState.SignedOut(SessionRefusal.TokenRefused), awaitItem())
         }
         assertNull(store.read())
         assertEquals(4, forgotten)
@@ -160,7 +165,7 @@ class AuthRepositoryTest {
         val auth = repository(this)
         auth.signIn("crystal.liu@example.org", "1234")
         auth.signOut()
-        assertEquals(SessionState.SignedOut, auth.state.value)
+        assertEquals(SessionState.SignedOut(), auth.state.value)
         assertNull(auth.token)
         assertNull(store.read())
         assertEquals(4, forgotten)
@@ -189,7 +194,7 @@ class AuthRepositoryTest {
         auth.signIn("crystal.liu@example.org", "1234")
         server.close()
         auth.signOut()
-        assertEquals(SessionState.SignedOut, auth.state.value)
+        assertEquals(SessionState.SignedOut(), auth.state.value)
         assertNull(store.read())
     }
 
@@ -203,7 +208,7 @@ class AuthRepositoryTest {
         asking.cancel()
         auth.state.test {
             assertEquals(SessionState.Unknown, awaitItem())
-            assertEquals(SessionState.SignedOut, awaitItem())
+            assertEquals(SessionState.SignedOut(), awaitItem())
             assertTrue(awaitItem() is SessionState.SignedIn)
         }
         assertEquals(4, checkNotNull(store.read()).memberId)
