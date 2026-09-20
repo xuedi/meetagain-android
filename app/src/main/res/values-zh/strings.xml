@@ -150,7 +150,6 @@
     <string name="group_leave">退出群组</string>
     <string name="group_leave_confirm">退出 %1$s 吗？再次加入可能需要该群组的审核。</string>
     <string name="group_invited">你被邀请加入该群组。</string>
-    <string name="group_join_on_website">该群组有自己的网站，加入要在那里进行。</string>
     <string name="crossing_title">加入该群组</string>
     <string name="crossing_body">该群组是 MeetAgain 的一部分，你的账号在这里同样有效。</string>
     <string name="crossing_mail_consent">MeetAgain 可以向我发送公告和活动邮件。</string>

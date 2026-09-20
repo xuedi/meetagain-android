@@ -1,6 +1,7 @@
 package org.meetagain.app.core.auth
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,49 +26,62 @@ class AuthRepository(
 ) {
     private val current = MutableStateFlow<SessionState>(SessionState.Unknown)
 
+    /** The token of a sign-in still in flight: the call that asks who it belongs to already needs it. */
+    @Volatile
+    private var pending: String? = null
+
     val state: StateFlow<SessionState> = current.asStateFlow()
 
     /** The token for the request interceptor, which cannot wait for a coroutine. */
-    val token: String? get() = current.value.member?.token
+    val token: String? get() = pending ?: current.value.member?.token
 
     init {
         scope.launch { current.value = store.read()?.let(SessionState::SignedIn) ?: SessionState.SignedOut }
     }
 
-    suspend fun signIn(email: String, password: String): ApiResult<Unit> {
-        val result = api.login(email.trim(), password, deviceName())
-        val answer = when (result) {
+    /**
+     * Signing in runs in the app's own scope, not the screen's: the session becomes true only once it is stored, and
+     * by then the sign-in screen is on its way out, which would otherwise cancel the work halfway.
+     */
+    suspend fun signIn(email: String, password: String): ApiResult<Unit> =
+        scope.async { signIn(email.trim(), password, deviceName()) }.await()
+
+    private suspend fun signIn(email: String, password: String, deviceName: String): ApiResult<Unit> {
+        val answer = when (val result = api.login(email, password, deviceName)) {
             is ApiResult.Failure -> return ApiResult.Failure(result.error)
             is ApiResult.Success -> result.value
         }
-        // The token is needed for the call that says who it belongs to, so it is held before it is stored.
         val session = Session(memberId = 0, name = "", token = answer.token, scopes = answer.scopes.toSet())
-        current.value = SessionState.SignedIn(session)
-        val me = api.me()
-        val member = when (me) {
-            is ApiResult.Failure -> {
-                current.value = SessionState.SignedOut
-                return ApiResult.Failure(me.error)
+        pending = session.token
+        try {
+            val me = when (val result = api.me()) {
+                is ApiResult.Failure -> return ApiResult.Failure(result.error)
+                is ApiResult.Success -> result.value
             }
-
-            is ApiResult.Success -> session.copy(memberId = me.value.id, name = me.value.name)
+            val member = session.copy(memberId = me.id, name = me.name)
+            store.write(member)
+            current.value = SessionState.SignedIn(member)
+            return ApiResult.Success(Unit)
+        } finally {
+            pending = null
         }
-        store.write(member)
-        current.value = SessionState.SignedIn(member)
-        return ApiResult.Success(Unit)
     }
 
-    /** Best effort: the server is told when it can be reached, and the session goes either way. */
+    /**
+     * Best effort: the server is told when it can be reached, and the session goes either way. Like signing in, this
+     * runs in the app's own scope, because the screen that asked for it is gone as soon as the session is.
+     */
     suspend fun signOut() {
-        val member = current.value.member
-        if (member != null) api.logout()
-        wipe(member?.memberId)
+        scope.async {
+            val member = current.value.member
+            if (member != null) api.logout()
+            wipe(member?.memberId)
+        }.await()
     }
 
     /** The server refused the token: it is gone, and so is the session. */
     fun onInvalidToken() {
         val member = current.value.member ?: return
-        current.value = SessionState.SignedOut
         scope.launch { wipe(member.memberId) }
     }
 
@@ -78,10 +92,12 @@ class AuthRepository(
         current.value = SessionState.SignedIn(member.copy(name = name))
     }
 
+    /** Everything goes before the session does, so a screen that leaves cannot leave the member's content behind. */
     private suspend fun wipe(memberId: Int?) {
-        current.value = SessionState.SignedOut
+        pending = null
         store.clear()
         if (memberId != null) forget(memberId)
+        current.value = SessionState.SignedOut
     }
 }
 

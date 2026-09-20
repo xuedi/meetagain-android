@@ -10,6 +10,7 @@ import org.meetagain.app.core.network.AttendeeListDto
 import org.meetagain.app.core.network.CommentListDto
 import org.meetagain.app.core.network.EventDetailDto
 import org.meetagain.app.core.network.EventListDto
+import org.meetagain.app.core.network.GroupDetailDto
 import org.meetagain.app.core.network.ImageListDto
 import org.meetagain.app.core.network.InvitationListDto
 import org.meetagain.app.core.network.MeDto
@@ -94,12 +95,12 @@ class MemberRepository(
 
     suspend fun addPhoto(id: Int, upload: Upload): ApiResult<Unit> = after(api.addImage(id, upload)) {
         refreshPhotos(id)
-        cache.forget(Keys.event(id))
+        refreshEvent(id)
     }
 
     suspend fun deletePhoto(id: Int, imageId: Int): ApiResult<Unit> = after(api.deleteImage(id, imageId)) {
         refreshPhotos(id)
-        cache.forget(Keys.event(id))
+        refreshEvent(id)
     }
 
     // Groups and invitations
@@ -173,18 +174,26 @@ class MemberRepository(
 
     /** The member's own answer shows on the event, on their home list and in who is coming. */
     private suspend fun refreshAround(id: Int) {
-        cache.refresh(Keys.event(id), EventDetailDto.serializer()) { api.event(id) }
+        refreshEvent(id)
         refreshMyEvents()
         refreshAttendees(id)
     }
 
-    /** Joining or leaving changes which events and groups the server shows this member. */
+    /**
+     * Joining or leaving changes what the server shows this member of that group, so those answers are fetched
+     * again rather than forgotten: the page the member is looking at would otherwise go empty.
+     */
     private suspend fun refreshAfterMembershipChange(slug: String) {
         refreshMyGroups()
         refreshMyEvents()
-        cache.forget(Keys.group(slug))
-        cache.forget(Keys.events(slug))
+        cache.refresh(Keys.group(slug), GroupDetailDto.serializer()) { api.group(slug) }
+        cache.refresh(Keys.events(slug), EventListDto.serializer()) {
+            api.events(OffsetDateTime.now(clock), EVENT_WINDOW, group = slug)
+        }
     }
+
+    private suspend fun refreshEvent(id: Int) =
+        cache.refresh(Keys.event(id), EventDetailDto.serializer()) { api.event(id) }
 
     private suspend fun <T> after(result: ApiResult<T>, refresh: suspend () -> Unit): ApiResult<Unit> = when (result) {
         is ApiResult.Failure -> ApiResult.Failure(result.error)

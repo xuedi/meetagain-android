@@ -66,9 +66,6 @@ class AnswerCache(
         return ApiResult.Failure(error)
     }
 
-    /** Throws away what is stored for one read, so the next refresh cannot show an answer the app knows is old. */
-    suspend fun forget(key: String) = answers.delete(owner() + key, language())
-
     /** Forgets what has not been shown for [unused], so the cache holds only what the member still looks at. */
     suspend fun forgetUnused(unused: Duration = CACHE_RETENTION) = answers.deleteUnusedSince(clock.instant() - unused)
 

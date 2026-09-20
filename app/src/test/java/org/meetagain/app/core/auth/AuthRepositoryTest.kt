@@ -6,7 +6,9 @@ import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import java.io.File
 import javax.crypto.KeyGenerator
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import mockwebserver3.MockResponse
@@ -165,6 +167,22 @@ class AuthRepositoryTest {
     }
 
     @Test
+    fun `signing out that the screen walks away from still wipes everything`() = runTest {
+        server.serve(signedIn() + ("/api/v1/auth/logout" to listOf(noContent())))
+        val auth = repository(this)
+        auth.signIn("crystal.liu@example.org", "1234")
+        val asking = launch { auth.signOut() }
+        advanceUntilIdle()
+        asking.cancel()
+        auth.state.test {
+            var state = awaitItem()
+            while (state !is SessionState.SignedOut) state = awaitItem()
+        }
+        assertNull(store.read())
+        assertEquals(4, forgotten)
+    }
+
+    @Test
     fun `signing out without a connection still wipes the session`() = runTest {
         server.serve(signedIn())
         val auth = repository(this)
@@ -173,6 +191,22 @@ class AuthRepositoryTest {
         auth.signOut()
         assertEquals(SessionState.SignedOut, auth.state.value)
         assertNull(store.read())
+    }
+
+    @Test
+    fun `a sign-in the screen walks away from is still stored`() = runTest {
+        server.serve(signedIn())
+        val auth = repository(this)
+        // The screen that asked is gone the moment the session becomes true; the work must not go with it.
+        val asking = launch { auth.signIn("crystal.liu@example.org", "1234") }
+        advanceUntilIdle()
+        asking.cancel()
+        auth.state.test {
+            assertEquals(SessionState.Unknown, awaitItem())
+            assertEquals(SessionState.SignedOut, awaitItem())
+            assertTrue(awaitItem() is SessionState.SignedIn)
+        }
+        assertEquals(4, checkNotNull(store.read()).memberId)
     }
 
     @Test

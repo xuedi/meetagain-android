@@ -150,7 +150,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    fun `leaving a group forgets what the server will now answer differently`() = runTest {
+    fun `leaving a group reads again what the server now answers differently`() = runTest {
         server.serve(
             mapOf(
                 "/api/v1/memberships/groups/weiqi-club" to listOf(noContent()),
@@ -160,13 +160,12 @@ class MemberRepositoryTest {
                 "/api/v1/events" to listOf(json(fixture("events.json")))
             )
         )
-        val public = publicRepository(server, answers, memberId = 4)
-        public.refreshGroup("weiqi-club")
-        public.refreshUpcomingEvents(group = "weiqi-club")
-        assertTrue(storedKeys().any { it.endsWith("group/weiqi-club") })
-
         assertEquals(ApiResult.Success(Unit), repository().leave("weiqi-club"))
-        assertEquals(setOf("m4/me/groups", "m4/me/events"), storedKeys())
+        // The page the member is looking at must not go empty, so its answer is fetched again, not dropped.
+        assertEquals(
+            setOf("m4/me/groups", "m4/me/events", "m4/group/weiqi-club", "m4/events?group=weiqi-club"),
+            storedKeys()
+        )
     }
 
     @Test

@@ -150,7 +150,6 @@
     <string name="group_leave">Quitter le groupe</string>
     <string name="group_leave_confirm">Quitter %1$s ? Pour revenir, le groupe devra peut-être t\'approuver.</string>
     <string name="group_invited">Tu as été invité dans ce groupe.</string>
-    <string name="group_join_on_website">Ce groupe a son propre site, et c\'est là qu\'on le rejoint.</string>
     <string name="crossing_title">Rejoindre ce groupe</string>
     <string name="crossing_body">Ce groupe fait partie de MeetAgain, ton compte fonctionne donc ici aussi.</string>
     <string name="crossing_mail_consent">MeetAgain peut m\'envoyer des annonces et des e-mails sur les événements.</string>

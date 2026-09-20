@@ -391,14 +391,8 @@ private fun MembershipSection(
                 }
             }
 
-            details.websiteUrl != null -> {
-                // A group on its own domain is joined there, where its own rules are shown.
-                Text(stringResource(R.string.group_join_on_website))
-                OutlinedButton(onClick = { onOpenWebsite(details.websiteUrl) }) {
-                    Text(stringResource(R.string.group_website))
-                }
-            }
-
+            // Every group the app can show is one the server lets a member ask to join; where it does not, it
+            // refuses with its own reason, and the page says so then.
             else -> Button(onClick = onJoin, enabled = !busy) { Text(stringResource(R.string.group_join)) }
         }
     }
