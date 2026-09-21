@@ -78,6 +78,7 @@
     <string name="nav_meetings">Rencontres</string>
     <string name="nav_messages">Messages</string>
     <string name="nav_groups">Groupes</string>
+    <string name="nav_town_hall">Town Hall</string>
     <string name="me_blocked">Membres que tu as bloqués</string>
 
     <!-- Accueil -->
@@ -319,4 +320,38 @@
     <string name="unlock_sign_in_again">Me connecter avec mon mot de passe</string>
     <string name="push_channel_updates">Nouveautés</string>
     <string name="push_something_new">Du nouveau sur MeetAgain. Ouvre l\'app pour le voir.</string>
+
+    <!-- Town Hall -->
+    <string name="town_hall_forum">Forum</string>
+    <string name="town_hall_gallery">Galerie</string>
+    <string name="town_hall_groups_end">Seuls tes groupes qui utilisent Town Hall figurent ici.</string>
+    <string name="town_hall_new_topic">Nouveau sujet</string>
+    <string name="town_hall_new_subtopic">Nouveau sous-sujet</string>
+    <string name="town_hall_rename">Renommer</string>
+    <string name="town_hall_delete_topic">Supprimer le sujet</string>
+    <string name="town_hall_delete_topic_confirm">Supprimer ce sujet ? C\'est irréversible.</string>
+    <string name="town_hall_topic_title">Titre</string>
+    <string name="town_hall_start">Lancer</string>
+    <string name="town_hall_save">Enregistrer</string>
+    <string name="town_hall_forum_empty">Aucun sujet pour l\'instant. Lance le premier.</string>
+    <string name="town_hall_forum_end">Ce sont tous les sujets.</string>
+    <string name="town_hall_subtopics">Sous-sujets</string>
+    <string name="town_hall_replies_title">Réponses</string>
+    <string name="town_hall_reply_removed">Réponse supprimée</string>
+    <string name="town_hall_gallery_empty">Pas encore de photos. Les photos ajoutées aux rencontres du groupe apparaissent ici.</string>
+    <string name="town_hall_gallery_end">Ce sont toutes les photos.</string>
+    <string name="town_hall_gallery_more">Afficher plus</string>
+    <string name="town_hall_photo_from">Photo de %1$s</string>
+    <string name="town_hall_open_event">Ouvrir la rencontre</string>
+    <string name="town_hall_close">Fermer</string>
+    <string name="town_hall_empty_title">Donne un titre au sujet.</string>
+    <string name="town_hall_title_too_long">Ce titre est trop long. Raccourcis-le un peu.</string>
+    <string name="town_hall_too_deep">Ce sujet ne peut plus avoir de sous-sujets.</string>
+    <string name="town_hall_not_allowed">Tu ne peux pas modifier ceci.</string>
+    <string name="town_hall_gone">Ce Town Hall ne t\'est plus ouvert, ou le sujet n\'existe plus.</string>
+    <plurals name="town_hall_replies">
+        <item quantity="one">%d réponse</item>
+        <item quantity="many">%d réponses</item>
+        <item quantity="other">%d réponses</item>
+    </plurals>
 </resources>

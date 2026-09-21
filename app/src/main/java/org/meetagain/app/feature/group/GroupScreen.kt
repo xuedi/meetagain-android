@@ -55,7 +55,9 @@ import org.meetagain.app.AppContainer
 import org.meetagain.app.R
 import org.meetagain.app.core.auth.SessionState
 import org.meetagain.app.core.data.Event
+import org.meetagain.app.core.data.Group
 import org.meetagain.app.core.data.GroupDetails
+import org.meetagain.app.core.data.GroupFeature
 import org.meetagain.app.core.data.MembershipStatus
 import org.meetagain.app.core.data.calendarFeedUrl
 import org.meetagain.app.core.format.rememberEventTime
@@ -77,7 +79,8 @@ fun GroupRoute(
     slug: String,
     onBack: () -> Unit,
     onOpenEvent: (Event) -> Unit,
-    onOpenMembers: () -> Unit = {}
+    onOpenMembers: () -> Unit = {},
+    onOpenTownHall: (Group) -> Unit = {}
 ) {
     val session by container.auth.state.collectAsStateWithLifecycle()
     val signedIn = session is SessionState.SignedIn
@@ -117,6 +120,7 @@ fun GroupRoute(
         onRetry = viewModel::load,
         onOpenEvent = onOpenEvent,
         onOpenMembers = onOpenMembers,
+        onOpenTownHall = onOpenTownHall,
         onOpenWebsite = rememberOpenUrl(),
         onSubscribe = { url -> if (!openIntent(subscribeIntent(url))) manualFeedUrl = url },
         manualFeedUrl = manualFeedUrl,
@@ -171,6 +175,7 @@ fun GroupScreen(
     onRetry: () -> Unit,
     onOpenEvent: (Event) -> Unit,
     onOpenMembers: () -> Unit = {},
+    onOpenTownHall: (Group) -> Unit = {},
     onOpenWebsite: (String) -> Unit,
     onSubscribe: (String) -> Unit,
     manualFeedUrl: String? = null,
@@ -208,6 +213,7 @@ fun GroupScreen(
                     busy = busy,
                     onOpenEvent = onOpenEvent,
                     onOpenMembers = onOpenMembers,
+                    onOpenTownHall = onOpenTownHall,
                     onOpenWebsite = onOpenWebsite,
                     onSubscribe = onSubscribe,
                     onJoin = onJoin,
@@ -230,6 +236,7 @@ private fun GroupContent(
     busy: Boolean,
     onOpenEvent: (Event) -> Unit,
     onOpenMembers: () -> Unit,
+    onOpenTownHall: (Group) -> Unit,
     onOpenWebsite: (String) -> Unit,
     onSubscribe: (String) -> Unit,
     onJoin: () -> Unit,
@@ -245,8 +252,14 @@ private fun GroupContent(
         item(key = "header") { Header(page.details, feedUrl, onOpenWebsite, onSubscribe) }
         if (signedIn) {
             item(key = "members") {
-                TextButton(onClick = onOpenMembers, modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(stringResource(R.string.group_members_title))
+                Row(Modifier.padding(horizontal = 16.dp)) {
+                    TextButton(onClick = onOpenMembers) { Text(stringResource(R.string.group_members_title)) }
+                    // Only where the group opens its Town Hall to this member; nowhere else does it exist.
+                    if (GroupFeature.TownHall in standing.membership?.features.orEmpty()) {
+                        TextButton(onClick = { onOpenTownHall(page.details.group) }) {
+                            Text(stringResource(R.string.nav_town_hall))
+                        }
+                    }
                 }
             }
             item(key = "membership") {

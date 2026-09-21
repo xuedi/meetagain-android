@@ -76,6 +76,8 @@ data class Attendees(val people: List<Attendee>, val externalCount: Int, val tot
 data class Comment(
     val id: Int,
     val authorName: String,
+    /** Null once the author's account is gone. */
+    val authorId: Int? = null,
     val authorAvatarUrl: String?,
     val writtenAt: Instant?,
     val text: String,
@@ -91,13 +93,20 @@ data class Photo(val id: Int, val url: String, val thumbnailUrl: String, val min
 /** Where a member stands with a group. */
 enum class MembershipStatus { Pending, Approved, Rejected }
 
+/**
+ * A part of a group that not every group has. The server says per membership whether it is open to the member, and
+ * the app offers a feature only there: in the bar, and on that group's page.
+ */
+enum class GroupFeature { TownHall }
+
 data class Membership(
     val group: Group,
     /** `owner`, `organizer` or `member`, as the server names it. */
     val role: String?,
     val status: MembershipStatus,
     val blocked: Boolean,
-    val joinedAt: Instant?
+    val joinedAt: Instant?,
+    val features: Set<GroupFeature> = emptySet()
 )
 
 data class Invitation(val id: Int, val group: Group, val role: String?, val invitedBy: String?, val expiresAt: Instant?)

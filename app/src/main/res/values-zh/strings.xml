@@ -78,6 +78,7 @@
     <string name="nav_meetings">聚会</string>
     <string name="nav_messages">消息</string>
     <string name="nav_groups">群组</string>
+    <string name="nav_town_hall">市政厅</string>
     <string name="me_blocked">你屏蔽的成员</string>
 
     <!-- Home -->
@@ -301,4 +302,36 @@
     <string name="unlock_sign_in_again">改用密码登录</string>
     <string name="push_channel_updates">新内容</string>
     <string name="push_something_new">MeetAgain 有新内容，打开应用即可查看。</string>
+
+    <!-- Town Hall -->
+    <string name="town_hall_forum">论坛</string>
+    <string name="town_hall_gallery">相册</string>
+    <string name="town_hall_groups_end">这里只列出使用市政厅的群组。</string>
+    <string name="town_hall_new_topic">新话题</string>
+    <string name="town_hall_new_subtopic">新子话题</string>
+    <string name="town_hall_rename">重命名</string>
+    <string name="town_hall_delete_topic">删除话题</string>
+    <string name="town_hall_delete_topic_confirm">删除这个话题？此操作无法撤销。</string>
+    <string name="town_hall_topic_title">标题</string>
+    <string name="town_hall_start">发起</string>
+    <string name="town_hall_save">保存</string>
+    <string name="town_hall_forum_empty">还没有话题。发起第一个吧。</string>
+    <string name="town_hall_forum_end">以上是全部话题。</string>
+    <string name="town_hall_subtopics">子话题</string>
+    <string name="town_hall_replies_title">回复</string>
+    <string name="town_hall_reply_removed">回复已删除</string>
+    <string name="town_hall_gallery_empty">还没有照片。群组聚会中添加的照片会显示在这里。</string>
+    <string name="town_hall_gallery_end">以上是全部照片。</string>
+    <string name="town_hall_gallery_more">显示更多</string>
+    <string name="town_hall_photo_from">来自%1$s的照片</string>
+    <string name="town_hall_open_event">打开聚会</string>
+    <string name="town_hall_close">关闭</string>
+    <string name="town_hall_empty_title">请给话题起一个标题。</string>
+    <string name="town_hall_title_too_long">标题太长了，请缩短一些。</string>
+    <string name="town_hall_too_deep">这个话题不能再添加子话题。</string>
+    <string name="town_hall_not_allowed">你无法更改此内容。</string>
+    <string name="town_hall_gone">这个市政厅已不再向你开放，或该话题已不存在。</string>
+    <plurals name="town_hall_replies">
+        <item quantity="other">%d 条回复</item>
+    </plurals>
 </resources>

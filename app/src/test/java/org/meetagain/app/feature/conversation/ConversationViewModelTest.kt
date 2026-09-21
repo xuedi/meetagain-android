@@ -16,6 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.meetagain.app.core.network.Upload
 import org.meetagain.app.core.ui.Loadable
+import org.meetagain.app.core.ui.UNDO_WINDOW
 import org.meetagain.app.testing.MainDispatcherRule
 import org.meetagain.app.testing.MemoryAnswers
 import org.meetagain.app.testing.fixture

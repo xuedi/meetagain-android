@@ -125,4 +125,12 @@ object Keys {
     fun member(id: Int) = "community/member/$id"
 
     fun groupMembers(slug: String) = "community/group/$slug/members"
+
+    fun topics(slug: String) = "community/group/$slug/town-hall/topics"
+
+    /** The newest page of a topic's replies, like an event's comments. */
+    fun replies(slug: String, id: Int) = "community/group/$slug/town-hall/topic/$id/replies"
+
+    /** The first page of the gallery; the ones after it are read but never stored. */
+    fun gallery(slug: String) = "community/group/$slug/town-hall/gallery"
 }

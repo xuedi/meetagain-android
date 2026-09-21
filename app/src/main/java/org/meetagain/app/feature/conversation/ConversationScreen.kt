@@ -6,27 +6,19 @@ import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -57,9 +49,10 @@ import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.R
-import org.meetagain.app.core.data.Comment
 import org.meetagain.app.core.data.Photo
-import org.meetagain.app.core.format.rememberEventTime
+import org.meetagain.app.core.ui.CommentComposer
+import org.meetagain.app.core.ui.CommentRow
+import org.meetagain.app.core.ui.Comments
 import org.meetagain.app.core.ui.ErrorState
 import org.meetagain.app.core.ui.ListEnd
 import org.meetagain.app.core.ui.Loadable
@@ -202,7 +195,7 @@ fun ConversationScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            Composer(draft, busy, onDraft, onSend)
+            CommentComposer(draft, busy, onDraft, onSend)
         }
     ) { padding ->
         val modifier = Modifier
@@ -252,68 +245,6 @@ fun ConversationScreen(
             }
         }
     }
-}
-
-@Composable
-private fun Composer(draft: String, busy: Boolean, onDraft: (String) -> Unit, onSend: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            // The field sits at the very bottom, where the keyboard and the navigation bar are.
-            .imePadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedTextField(
-            value = draft,
-            onValueChange = onDraft,
-            label = { Text(stringResource(R.string.conversation_write)) },
-            enabled = !busy,
-            modifier = Modifier.weight(1f)
-        )
-        if (busy) {
-            CircularProgressIndicator(Modifier.size(24.dp))
-        } else {
-            IconButton(onClick = onSend, enabled = draft.isNotBlank()) {
-                Icon(painterResource(R.drawable.ic_send), stringResource(R.string.conversation_send))
-            }
-        }
-    }
-}
-
-@Composable
-private fun CommentRow(comment: Comment, onDelete: () -> Unit) {
-    val time = rememberEventTime()
-    ListItem(
-        leadingContent = {
-            AsyncImage(
-                model = comment.authorAvatarUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.ic_person),
-                error = painterResource(R.drawable.ic_person),
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-        },
-        overlineContent = {
-            Text(
-                listOfNotNull(comment.authorName, comment.writtenAt?.let { time.relativeDay(it) })
-                    .joinToString(" · ")
-            )
-        },
-        headlineContent = { Text(comment.text) },
-        trailingContent = {
-            if (comment.canDelete) {
-                IconButton(onClick = onDelete) {
-                    Icon(painterResource(R.drawable.ic_delete), stringResource(R.string.conversation_delete))
-                }
-            }
-        }
-    )
 }
 
 @Composable

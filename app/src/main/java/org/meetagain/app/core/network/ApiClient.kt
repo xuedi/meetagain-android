@@ -240,6 +240,51 @@ class ApiClient(
     suspend fun groupMembers(slug: String, limit: Int = COMMUNITY_PAGE, offset: Int = 0): ApiResult<MemberListDto> =
         get(paged(communityUrl("groups", slug, "members"), limit, offset), MemberListDto.serializer())
 
+    // Town Hall of one group
+
+    /** The whole forum tree in one answer, depth first. */
+    suspend fun topics(slug: String): ApiResult<TopicListDto> =
+        get(townHallUrl(slug, "topics"), TopicListDto.serializer())
+
+    suspend fun createTopic(slug: String, title: String, parentId: Int?): ApiResult<TopicDto> = send(
+        request(townHallUrl(slug, "topics")).post(body(TopicRequestDto(title, parentId))),
+        TopicDto.serializer()
+    )
+
+    suspend fun renameTopic(slug: String, id: Int, title: String): ApiResult<TopicDto> = send(
+        request(townHallUrl(slug, "topics", id.toString())).patch(body(TopicRenameDto(title))),
+        TopicDto.serializer()
+    )
+
+    suspend fun deleteTopic(slug: String, id: Int): ApiResult<Unit> =
+        noContent(request(townHallUrl(slug, "topics", id.toString())).delete())
+
+    /** Newest first, paged backwards like an event's comments. */
+    suspend fun replies(
+        slug: String,
+        id: Int,
+        before: Int? = null,
+        limit: Int = COMMENT_PAGE
+    ): ApiResult<CommentListDto> {
+        val url = townHallUrl(slug, "topics", id.toString(), "replies").newBuilder()
+            .addQueryParameter("limit", limit.toString())
+            .apply { if (before != null) addQueryParameter("before", before.toString()) }
+            .build()
+        return get(url, CommentListDto.serializer())
+    }
+
+    suspend fun addReply(slug: String, id: Int, content: String): ApiResult<CommentCreatedDto> = send(
+        request(townHallUrl(slug, "topics", id.toString(), "replies")).post(body(CommentRequestDto(content))),
+        CommentCreatedDto.serializer()
+    )
+
+    suspend fun deleteReply(slug: String, id: Int, replyId: Int): ApiResult<Unit> = noContent(
+        request(townHallUrl(slug, "topics", id.toString(), "replies", replyId.toString())).delete()
+    )
+
+    suspend fun gallery(slug: String, limit: Int = GALLERY_PAGE, offset: Int = 0): ApiResult<GalleryListDto> =
+        get(paged(townHallUrl(slug, "gallery"), limit, offset), GalleryListDto.serializer())
+
     private fun url(path: String): HttpUrl = base.newBuilder().addPathSegments(path).build()
 
     private fun eventUrl(id: Int, action: String): HttpUrl = base.newBuilder()
@@ -260,6 +305,9 @@ class ApiClient(
         .build()
 
     private fun conversationUrl(userId: Int): HttpUrl = communityUrl("conversations", userId.toString())
+
+    private fun townHallUrl(slug: String, vararg segments: String): HttpUrl =
+        communityUrl("groups", slug, "town-hall", *segments)
 
     private fun paged(url: HttpUrl, limit: Int, offset: Int): HttpUrl = url.newBuilder()
         .addQueryParameter("limit", limit.toString())

@@ -1,0 +1,80 @@
+{
+  "items": [
+    {
+      "group": {
+        "slug": "berlin-cinephile-club",
+        "name": "Berlin Cinephile Club",
+        "visibility": "public",
+        "domain": "cinema.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/cb951a327688ce6c9821f1a7ce552e5c5f7a255e_h120.webp",
+        "detailUrl": "https://meetagain.org/api/v1/groups/berlin-cinephile-club"
+      },
+      "role": "member",
+      "status": "approved",
+      "blocked": false,
+      "joinedAt": "2024-06-01T00:00:00+02:00",
+      "townHall": false
+    },
+    {
+      "group": {
+        "slug": "berlin-supper-club",
+        "name": "Berlin Supper Club",
+        "visibility": "public",
+        "domain": "supper.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/84b747966d39924acfc290cb056719d95c292b28_h120.webp",
+        "detailUrl": "https://meetagain.org/api/v1/groups/berlin-supper-club"
+      },
+      "role": "member",
+      "status": "approved",
+      "blocked": false,
+      "joinedAt": "2024-07-15T00:00:00+02:00",
+      "townHall": false
+    },
+    {
+      "group": {
+        "slug": "dragon-descendants",
+        "name": "Dragon Descendants",
+        "visibility": "public",
+        "domain": "dragon.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/e1e0db56f64760f209bab36c57bd7cfe4482ad50_h120.webp",
+        "detailUrl": "https://meetagain.org/api/v1/groups/dragon-descendants"
+      },
+      "role": "owner",
+      "status": "approved",
+      "blocked": false,
+      "joinedAt": "2024-09-01T00:00:00+02:00",
+      "townHall": true
+    },
+    {
+      "group": {
+        "slug": "platform",
+        "name": "Platform",
+        "visibility": "public",
+        "domain": "meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/d5495404b716f0e58d6d3a726ffa241c3edda231_h120.webp",
+        "detailUrl": "https://meetagain.org/api/v1/groups/platform"
+      },
+      "role": "organizer",
+      "status": "approved",
+      "blocked": false,
+      "joinedAt": "2024-01-01T00:00:00+01:00",
+      "townHall": false
+    },
+    {
+      "group": {
+        "slug": "weiqi-club",
+        "name": "Weiqi Club",
+        "visibility": "public",
+        "domain": "weiqi.meetagain.local",
+        "logoUrl": "https://meetagain.org/images/thumbnails/192348baa79673e708c8d06068ed69c03be79189_h120.webp",
+        "detailUrl": "https://meetagain.org/api/v1/groups/weiqi-club"
+      },
+      "role": "owner",
+      "status": "approved",
+      "blocked": false,
+      "joinedAt": "2024-01-15T00:00:00+01:00",
+      "townHall": true
+    }
+  ],
+  "total": 5
+}

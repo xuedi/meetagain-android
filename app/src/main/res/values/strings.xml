@@ -79,6 +79,7 @@
     <string name="nav_meetings">Meetings</string>
     <string name="nav_messages">Messages</string>
     <string name="nav_groups">Groups</string>
+    <string name="nav_town_hall">Town Hall</string>
     <string name="me_blocked">Members you blocked</string>
 
     <!-- Home -->
@@ -316,4 +317,37 @@
     <string name="unlock_sign_in_again">Sign in with your password instead</string>
     <string name="push_channel_updates">Updates</string>
     <string name="push_something_new">Something new in MeetAgain. Open the app to see it.</string>
+
+    <!-- Town Hall -->
+    <string name="town_hall_forum">Forum</string>
+    <string name="town_hall_gallery">Gallery</string>
+    <string name="town_hall_groups_end">Only your groups that use Town Hall are listed here.</string>
+    <string name="town_hall_new_topic">New topic</string>
+    <string name="town_hall_new_subtopic">New subtopic</string>
+    <string name="town_hall_rename">Rename</string>
+    <string name="town_hall_delete_topic">Delete topic</string>
+    <string name="town_hall_delete_topic_confirm">Delete this topic? This cannot be undone.</string>
+    <string name="town_hall_topic_title">Title</string>
+    <string name="town_hall_start">Start</string>
+    <string name="town_hall_save">Save</string>
+    <string name="town_hall_forum_empty">No topics yet. Start the first one.</string>
+    <string name="town_hall_forum_end">Those are all the topics.</string>
+    <string name="town_hall_subtopics">Subtopics</string>
+    <string name="town_hall_replies_title">Replies</string>
+    <string name="town_hall_reply_removed">Reply removed</string>
+    <string name="town_hall_gallery_empty">No photos yet. Photos added to the group\'s meetings show up here.</string>
+    <string name="town_hall_gallery_end">Those are all the photos.</string>
+    <string name="town_hall_gallery_more">Show more</string>
+    <string name="town_hall_photo_from">Photo from %1$s</string>
+    <string name="town_hall_open_event">Open meeting</string>
+    <string name="town_hall_close">Close</string>
+    <string name="town_hall_empty_title">Give the topic a title.</string>
+    <string name="town_hall_title_too_long">That title is too long. Shorten it a little.</string>
+    <string name="town_hall_too_deep">This topic cannot take any more subtopics.</string>
+    <string name="town_hall_not_allowed">You cannot change this.</string>
+    <string name="town_hall_gone">This Town Hall is no longer open to you, or the topic is gone.</string>
+    <plurals name="town_hall_replies">
+        <item quantity="one">%d reply</item>
+        <item quantity="other">%d replies</item>
+    </plurals>
 </resources>

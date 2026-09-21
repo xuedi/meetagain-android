@@ -101,6 +101,7 @@ fun CommentListDto.toConversation(images: ImageHost) = Conversation(
         Comment(
             id = it.id,
             authorName = it.author.name,
+            authorId = it.author.id,
             authorAvatarUrl = images.own(it.author.avatarUrl),
             writtenAt = it.createdAt?.let(::instant),
             text = it.content,
@@ -130,7 +131,8 @@ fun MembershipDto.toMembership(images: ImageHost) = Membership(
         else -> MembershipStatus.Pending
     },
     blocked = blocked,
-    joinedAt = joinedAt?.let(::instant)
+    joinedAt = joinedAt?.let(::instant),
+    features = if (townHall) setOf(GroupFeature.TownHall) else emptySet()
 )
 
 fun InvitationListDto.toInvitations(images: ImageHost) = items.map {
@@ -204,7 +206,7 @@ internal fun instant(value: String): Instant? = try {
 
 internal fun String?.orNull() = this?.trim()?.takeIf { it.isNotEmpty() }
 
-private const val GRID_SIZE = "350x263"
+internal const val GRID_SIZE = "350x263"
 private const val OUTDOOR = 3
 private const val DINNER = 4
 

@@ -25,14 +25,19 @@ import org.meetagain.app.core.data.QuietHours
 import org.meetagain.app.core.data.Rsvp
 import org.meetagain.app.core.data.Upcoming
 import org.meetagain.app.core.network.ApiError
+import org.meetagain.app.core.ui.Comments
 import org.meetagain.app.core.ui.Stale
-import org.meetagain.app.feature.conversation.Comments
 import org.meetagain.app.feature.home.Home
 import org.meetagain.app.feature.members.MemberList
 import org.meetagain.app.feature.messages.Conversations
 import org.meetagain.app.feature.messages.Thread
 import org.meetagain.app.feature.mygroups.MyGroups
 import org.meetagain.app.feature.profile.ProfileEdit
+import org.meetagain.app.feature.townhall.Forum
+import org.meetagain.app.feature.townhall.GalleryPage
+import org.meetagain.app.feature.townhall.GalleryPhoto
+import org.meetagain.app.feature.townhall.Topic
+import org.meetagain.app.feature.townhall.TopicHeader
 
 /** Content for screenshots and UI tests, in the shape the server sends it, around 22 September 2026. */
 object Samples {
@@ -307,5 +312,50 @@ object Samples {
                 "announcements" to false
             )
         )
+    )
+
+    // Town Hall, in the Weiqi Club
+
+    val weiqi = Group("weiqi-club", "Weiqi Club", null)
+
+    val townHalls = listOf(dragons, weiqi)
+
+    private fun topic(id: Int, parent: Int?, depth: Int, title: String, author: String, replies: Int, mine: Boolean) =
+        Topic(
+            id = id,
+            parentId = parent,
+            depth = depth,
+            title = title,
+            authorName = author,
+            startedAt = Instant.parse("2026-09-12T07:30:00Z"),
+            replies = replies,
+            mine = mine,
+            canRename = mine,
+            canDelete = mine && replies == 0
+        )
+
+    val forum = Forum(
+        listOf(
+            topic(1, null, 1, "Game nights", "Adem Lane", replies = 3, mine = false),
+            topic(4, 1, 2, "Openings for beginners", "Ali Mahdi", replies = 1, mine = false),
+            topic(7, 4, 3, "The Chinese opening", "Crystal Liu", replies = 0, mine = true),
+            topic(2, null, 1, "Tournament in October", "Crystal Liu", replies = 0, mine = true)
+        )
+    )
+
+    val topicHeader = TopicHeader(forum.topics[0], forum.subtopicsOf(1))
+
+    val gallery = GalleryPage(
+        photos = listOf(52, 51, 44, 43, 40).map { id ->
+            GalleryPhoto(
+                id = id,
+                url = "https://meetagain.org/images/thumbnails/p${id}_1024x768.webp",
+                thumbnailUrl = "https://meetagain.org/images/thumbnails/p${id}_350x263.webp",
+                uploadedAt = Instant.parse("2026-09-16T19:10:00Z"),
+                eventId = 131,
+                eventTitle = "Weekly Go Study Group"
+            )
+        },
+        hasMore = false
     )
 }

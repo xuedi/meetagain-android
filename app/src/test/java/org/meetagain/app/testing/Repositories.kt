@@ -33,6 +33,7 @@ import org.meetagain.app.core.data.MemberRepository
 import org.meetagain.app.core.data.PublicRepository
 import org.meetagain.app.core.network.ApiClient
 import org.meetagain.app.core.push.SignalStore
+import org.meetagain.app.feature.townhall.TownHallRepository
 
 /** 19 September 2026, 08:00 UTC: before every event in the fixtures, so none of them has ended. */
 val testClock: Clock = Clock.fixed(Instant.parse("2026-09-19T08:00:00Z"), ZoneOffset.UTC)
@@ -68,6 +69,20 @@ fun memberRepository(
     val api = ApiClient(server.url("/").toString(), OkHttpClient(), json, language)
     val cache = AnswerCache(answers, json, language, owner = { AnswerCache.ownerOf(memberId) }, clock = clock)
     return MemberRepository(api, baseUrl, cache, clock)
+}
+
+/** The Town Hall repository on [server], asking [memberRepository]'s memberships again when a Town Hall answers 404. */
+fun townHallRepository(
+    server: MockWebServer,
+    answers: CachedAnswerDao = MemoryAnswers(),
+    memberId: Int = 4,
+    baseUrl: String = "https://meetagain.org"
+): TownHallRepository {
+    val json = Json { ignoreUnknownKeys = true }
+    val language = { "en" }
+    val api = ApiClient(server.url("/").toString(), OkHttpClient(), json, language)
+    val cache = AnswerCache(answers, json, language, owner = { AnswerCache.ownerOf(memberId) }, clock = testClock)
+    return TownHallRepository(api, baseUrl, cache, memberRepository(server, answers, memberId))
 }
 
 /** The app's container on [server], with an empty cache in memory and nobody signed in. */

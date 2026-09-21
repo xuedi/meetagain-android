@@ -1,0 +1,16 @@
+{
+  "id": 8,
+  "parentId": null,
+  "depth": 1,
+  "title": "Where to buy stones",
+  "author": {
+    "id": 4,
+    "name": "Crystal Liu",
+    "avatarUrl": null
+  },
+  "createdAt": "2026-09-19T10:00:00+02:00",
+  "replyCount": 0,
+  "mine": true,
+  "canRename": true,
+  "canDelete": true
+}

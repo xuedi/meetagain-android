@@ -111,7 +111,9 @@ data class MembershipDto(
     val role: String? = null,
     val status: String,
     val blocked: Boolean,
-    val joinedAt: String? = null
+    val joinedAt: String? = null,
+    /** Whether the group's Town Hall is open to this member; false on a server that does not say. */
+    val townHall: Boolean = false
 )
 
 /** `InvitationList` in the API description. */

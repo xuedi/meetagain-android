@@ -14,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.meetagain.app.AppInfo
 import org.meetagain.app.R
+import org.meetagain.app.core.data.GroupFeature
 import org.meetagain.app.core.data.MemberProfile
 import org.meetagain.app.core.data.Notification
 import org.meetagain.app.core.data.NotificationSettings
@@ -35,6 +36,7 @@ import org.meetagain.app.feature.explore.ExploreTab
 import org.meetagain.app.feature.explore.ExploreUiState
 import org.meetagain.app.feature.group.GroupPage
 import org.meetagain.app.feature.group.GroupScreen
+import org.meetagain.app.feature.group.GroupStanding
 import org.meetagain.app.feature.home.Home
 import org.meetagain.app.feature.home.HomeScreen
 import org.meetagain.app.feature.me.MeScreen
@@ -54,7 +56,14 @@ import org.meetagain.app.feature.profile.ProfileScreen
 import org.meetagain.app.feature.signin.SignInProblem
 import org.meetagain.app.feature.signin.SignInScreen
 import org.meetagain.app.feature.signin.SignInState
+import org.meetagain.app.feature.townhall.Forum
+import org.meetagain.app.feature.townhall.GalleryPhotoViewer
+import org.meetagain.app.feature.townhall.GroupTownHallScreen
+import org.meetagain.app.feature.townhall.TopicScreen
+import org.meetagain.app.feature.townhall.TownHallGroupsScreen
+import org.meetagain.app.feature.townhall.TownHallTab
 import org.meetagain.app.navigation.AppNavigationBar
+import org.meetagain.app.navigation.FIXED_ROOTS
 import org.meetagain.app.navigation.Root
 import org.meetagain.app.testing.DeviceSettings
 import org.meetagain.app.testing.Samples
@@ -497,6 +506,99 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
             onOpenLanguageSettings = {},
             onOpenLegalPage = {}
         )
+    }
+
+    // Town Hall
+
+    private val townHallBar: @Composable () -> Unit = {
+        AppNavigationBar(Root.TownHall, unreadMessages = false, onSelect = {}, roots = FIXED_ROOTS + Root.TownHall)
+    }
+
+    @Test
+    fun townHallGroups() = capture("town_hall_groups") {
+        TownHallGroupsScreen(Samples.townHalls, onOpenGroup = {}, onOpenMe = {}, bottomBar = townHallBar)
+    }
+
+    @Test
+    fun townHallForum() = capture("town_hall_forum") { TownHall(TownHallTab.Forum) }
+
+    @Test
+    fun townHallGallery() = capture("town_hall_gallery") { TownHall(TownHallTab.Gallery) }
+
+    @Test
+    fun townHallGone() = capture("town_hall_gone") {
+        TownHall(TownHallTab.Forum, forum = Loadable.Failed(ApiError.Http(404, "not_found")))
+    }
+
+    @Composable
+    private fun TownHall(tab: TownHallTab, forum: Loadable<Forum> = Loadable.Loaded(Samples.forum)) =
+        GroupTownHallScreen(
+            name = Samples.weiqi.name,
+            tab = tab,
+            forum = forum,
+            gallery = Loadable.Loaded(Samples.gallery),
+            onTab = {},
+            onBack = null,
+            onOpenMe = {},
+            onNewTopic = {},
+            onOpenTopic = {},
+            onRetryForum = {},
+            onRetryGallery = {},
+            onLoadMore = {},
+            onOpenPhoto = {},
+            bottomBar = townHallBar
+        )
+
+    @Test
+    fun townHallTopic() = capture("town_hall_topic") {
+        TopicScreen(
+            header = Samples.topicHeader,
+            replies = Loadable.Loaded(Samples.conversation),
+            draft = "",
+            busy = false,
+            snackbarHostState = SnackbarHostState(),
+            onBack = {},
+            onRetry = {},
+            onNewSubtopic = {},
+            onRename = {},
+            onDelete = {},
+            onOpenTopic = {},
+            onOpenMember = {},
+            onDraft = {},
+            onSend = {},
+            onLoadOlder = {},
+            onDeleteReply = {},
+            onUndoDeleteReply = {}
+        )
+    }
+
+    /** The viewer is a window of its own, so this captures the whole screen rather than the root. */
+    @Test
+    fun townHallPhoto() = captureScreen("town_hall_photo") {
+        GalleryPhotoViewer(Samples.gallery.photos.first(), onOpenEvent = {}, onDismiss = {})
+    }
+
+    @Test
+    fun groupTownHall() = capture("group_town_hall") {
+        GroupScreen(
+            Loadable.Loaded(GroupPage(Samples.groupDetails, Samples.upcoming)),
+            standing = GroupStanding(
+                Samples.myGroups.memberships[0].copy(features = setOf(GroupFeature.TownHall)),
+                null
+            ),
+            signedIn = true,
+            onBack = {},
+            onRetry = {},
+            onOpenEvent = {},
+            onOpenWebsite = {},
+            onSubscribe = {}
+        )
+    }
+
+    private fun captureScreen(screen: String, content: @Composable () -> Unit) {
+        compose.setContent { DeviceSettings(Locale.forLanguageTag(language), dark, fontScale, content) }
+        val theme = if (dark) "dark" else "light"
+        captureScreenRoboImage("src/test/screenshots/${screen}_${language}_${theme}_$fontScale.png")
     }
 
     companion object {

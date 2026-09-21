@@ -28,6 +28,7 @@ import org.meetagain.app.core.push.PushTimer
 import org.meetagain.app.core.push.PushWork
 import org.meetagain.app.core.push.RaisedNotifications
 import org.meetagain.app.core.push.SignalStore
+import org.meetagain.app.feature.townhall.TownHallRepository
 
 /** The app's object graph, built once in [MeetAgainApp] and handed to ViewModels by their factories. */
 class AppContainer(
@@ -76,6 +77,8 @@ class AppContainer(
     val publicRepository = PublicRepository(api, appInfo.baseUrl, answers, clock)
 
     val memberRepository = MemberRepository(api, appInfo.baseUrl, answers, clock)
+
+    val townHallRepository = TownHallRepository(api, appInfo.baseUrl, answers, memberRepository)
 
     val auth: AuthRepository = AuthRepository(
         api,

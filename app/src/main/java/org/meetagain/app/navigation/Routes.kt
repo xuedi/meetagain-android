@@ -59,3 +59,13 @@ data object Notifications : NavKey
 
 @Serializable
 data object NotificationSettings : NavKey
+
+/** The bar's Town Hall destination: the member's one Town Hall, or the list of them. */
+@Serializable
+data object TownHall : NavKey
+
+@Serializable
+data class GroupTownHall(val slug: String, val name: String) : NavKey
+
+@Serializable
+data class TownHallTopic(val slug: String, val id: Int) : NavKey

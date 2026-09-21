@@ -12,29 +12,19 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.meetagain.app.core.data.Comment
-import org.meetagain.app.core.data.Conversation
 import org.meetagain.app.core.data.MemberRepository
 import org.meetagain.app.core.data.Photo
 import org.meetagain.app.core.network.ApiError
 import org.meetagain.app.core.network.ApiResult
 import org.meetagain.app.core.network.Upload
+import org.meetagain.app.core.ui.CommentPages
+import org.meetagain.app.core.ui.Comments
 import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.core.ui.StoredContent
+import org.meetagain.app.core.ui.UNDO_WINDOW
 
 /** What the member is told after something they did; each one is one sentence in the screen's language. */
 enum class ConversationProblem { NotAMember, TooLong, Empty, PhotoRejected, Offline, Failed }
-
-/** The page as the member sees it: the comments they have loaded, minus the ones on their way out. */
-data class Comments(
-    val visible: List<Comment>,
-    val total: Int,
-    val hasOlder: Boolean,
-    val loadingOlder: Boolean = false
-)
-
-/** How long a delete waits, so the member can take it back before the server hears about it. */
-val UNDO_WINDOW: Duration = Duration.ofSeconds(5)
 
 private const val MAX_COMMENT_LENGTH = 5000
 
@@ -43,39 +33,25 @@ class ConversationViewModel(
     private val id: Int,
     private val undoWindow: Duration = UNDO_WINDOW
 ) : ViewModel() {
-    private val newest = StoredContent(viewModelScope, repository.conversation(id)) {
-        repository.refreshConversation(id)
-    }
+    private val currentProblem = MutableStateFlow<ConversationProblem?>(null)
+    val problem: StateFlow<ConversationProblem?> = currentProblem
+
+    private val pages = CommentPages(
+        viewModelScope,
+        repository.conversation(id),
+        refresh = { repository.refreshConversation(id) },
+        fetchOlder = { before -> repository.olderComments(id, before) },
+        sendDelete = { commentId -> repository.deleteComment(id, commentId) },
+        onProblem = { currentProblem.value = problemOf(it) },
+        undoWindow = undoWindow
+    )
 
     private val photoContent = StoredContent(viewModelScope, repository.photos(id)) { repository.refreshPhotos(id) }
 
-    private val older = MutableStateFlow<List<Comment>>(emptyList())
-    private val cursor = MutableStateFlow<Int?>(null)
-    private val loadingOlder = MutableStateFlow(false)
-    private val leaving = MutableStateFlow<Set<Int>>(emptySet())
     private val leavingPhotos = MutableStateFlow<Set<Int>>(emptySet())
-    private val undoJobs = mutableMapOf<Int, Job>()
     private val photoUndoJobs = mutableMapOf<Int, Job>()
 
-    val state: StateFlow<Loadable<Comments>> =
-        combine(newest.state, older, leaving, loadingOlder) { loadable, older, leaving, loadingOlder ->
-            when (loadable) {
-                Loadable.Loading -> Loadable.Loading
-
-                is Loadable.Failed -> loadable
-
-                is Loadable.Loaded -> {
-                    val conversation: Conversation = loadable.value
-                    cursor.value = conversation.olderBefore
-                    val all = (conversation.comments + older).filterNot { it.id in leaving }
-                    Loadable.Loaded(
-                        Comments(all, conversation.total, conversation.olderBefore != null, loadingOlder),
-                        loadable.refreshing,
-                        loadable.stale
-                    )
-                }
-            }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, Loadable.Loading)
+    val state: StateFlow<Loadable<Comments>> = pages.state
 
     val photos: StateFlow<List<Photo>> = combine(photoContent.state, leavingPhotos) { loadable, leaving ->
         (loadable as? Loadable.Loaded)?.value?.filterNot { it.id in leaving }.orEmpty()
@@ -87,12 +63,8 @@ class ConversationViewModel(
     private val currentBusy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = currentBusy
 
-    private val currentProblem = MutableStateFlow<ConversationProblem?>(null)
-    val problem: StateFlow<ConversationProblem?> = currentProblem
-
     fun load() {
-        older.value = emptyList()
-        newest.reload()
+        pages.reload()
         photoContent.reload()
     }
 
@@ -112,7 +84,7 @@ class ConversationViewModel(
             when (val result = repository.addComment(id, text)) {
                 is ApiResult.Success -> {
                     currentDraft.value = ""
-                    older.value = emptyList()
+                    pages.forgetOlder()
                 }
 
                 is ApiResult.Failure -> currentProblem.value = problemOf(result.error)
@@ -121,44 +93,12 @@ class ConversationViewModel(
         }
     }
 
-    fun loadOlder() {
-        val before = cursor.value ?: return
-        if (loadingOlder.value) return
-        loadingOlder.value = true
-        viewModelScope.launch {
-            when (val result = repository.olderComments(id, before)) {
-                is ApiResult.Success -> {
-                    older.update { it + result.value.comments }
-                    cursor.value = result.value.olderBefore
-                }
-
-                is ApiResult.Failure -> currentProblem.value = problemOf(result.error)
-            }
-            loadingOlder.value = false
-        }
-    }
+    fun loadOlder() = pages.loadOlder()
 
     /** The comment goes at once, the request only after the member's chance to take it back has passed. */
-    fun deleteComment(commentId: Int) {
-        leaving.update { it + commentId }
-        undoJobs[commentId] = viewModelScope.launch {
-            delay(undoWindow.toMillis())
-            undoJobs.remove(commentId)
-            when (val result = repository.deleteComment(id, commentId)) {
-                is ApiResult.Success -> older.update { comments -> comments.filterNot { it.id == commentId } }
+    fun deleteComment(commentId: Int) = pages.delete(commentId)
 
-                is ApiResult.Failure -> {
-                    leaving.update { it - commentId }
-                    currentProblem.value = problemOf(result.error)
-                }
-            }
-        }
-    }
-
-    fun undoDeleteComment(commentId: Int) {
-        undoJobs.remove(commentId)?.cancel()
-        leaving.update { it - commentId }
-    }
+    fun undoDeleteComment(commentId: Int) = pages.undoDelete(commentId)
 
     fun deletePhoto(photoId: Int) {
         leavingPhotos.update { it + photoId }

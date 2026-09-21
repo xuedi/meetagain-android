@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.core.auth.SessionState
+import org.meetagain.app.core.data.Group
 import org.meetagain.app.feature.about.AboutRoute
 import org.meetagain.app.feature.applock.AppLockRoute
 import org.meetagain.app.feature.applock.UnlockRoute
@@ -38,6 +39,9 @@ import org.meetagain.app.feature.notifications.NotificationsRoute
 import org.meetagain.app.feature.notificationsettings.NotificationSettingsRoute
 import org.meetagain.app.feature.profile.ProfileRoute
 import org.meetagain.app.feature.signin.SignInRoute
+import org.meetagain.app.feature.townhall.GroupTownHallRoute
+import org.meetagain.app.feature.townhall.TopicRoute
+import org.meetagain.app.feature.townhall.TownHallRoute
 
 /**
  * Where the app starts is decided by whoever is signed in: their next meetings, or the sign-in screen. Signing in or
@@ -72,16 +76,22 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
     LaunchedEffect(opening) {
         if (opening != null && signedIn && backStack.lastOrNull() != opening) backStack.add(opening)
     }
-    // Switching roots drops whatever was above the one being left, and leaves Meetings underneath the other two,
-    // so system back from Messages or Groups lands there before it leaves the app.
+    // Switching roots drops whatever was above the one being left, and leaves Meetings underneath the others, so
+    // system back from any of them lands there before it leaves the app.
     val selectRoot: (Root) -> Unit = { root ->
         backStack.clear()
         backStack.add(Home)
         rootKey(root)?.let(backStack::add)
     }
     val unread = unreadMessages(container, signedIn)
+    val townHalls = townHallGroups(container, signedIn)
+    val roots = if (townHalls.isNullOrEmpty()) FIXED_ROOTS else FIXED_ROOTS + Root.TownHall
+    // The destination goes when the last Town Hall closes to the member, and so does the member if they are on it.
+    LaunchedEffect(townHalls?.isEmpty()) {
+        if (townHalls?.isEmpty() == true && TownHall in backStack) selectRoot(Root.Meetings)
+    }
     val bar: (Root) -> @Composable () -> Unit = { root ->
-        { AppNavigationBar(root, unread, selectRoot) }
+        { AppNavigationBar(root, unread, selectRoot, roots) }
     }
     NavDisplay(
         backStack = backStack,
@@ -115,6 +125,37 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                     onOpenThread = { backStack.add(Thread(it.partner.id)) },
                     onOpenMe = { backStack.add(Me) },
                     bottomBar = bar(Root.Messages)
+                )
+            }
+            entry<TownHall> {
+                TownHallRoute(
+                    container,
+                    onOpenGroup = { backStack.add(GroupTownHall(it.slug, it.name)) },
+                    onOpenTopic = { slug, id -> backStack.add(TownHallTopic(slug, id)) },
+                    onOpenEvent = { backStack.add(EventDetail(it)) },
+                    onOpenMe = { backStack.add(Me) },
+                    bottomBar = bar(Root.TownHall)
+                )
+            }
+            entry<GroupTownHall> { key ->
+                GroupTownHallRoute(
+                    container,
+                    key.slug,
+                    key.name,
+                    onBack = back,
+                    onOpenMe = null,
+                    onOpenTopic = { backStack.add(TownHallTopic(key.slug, it)) },
+                    onOpenEvent = { backStack.add(EventDetail(it)) }
+                )
+            }
+            entry<TownHallTopic> { key ->
+                TopicRoute(
+                    container,
+                    key.slug,
+                    key.id,
+                    onBack = back,
+                    onOpenTopic = { backStack.add(TownHallTopic(key.slug, it)) },
+                    onOpenMember = { backStack.add(MemberPage(it)) }
                 )
             }
             entry<Me> {
@@ -206,7 +247,8 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                     key.slug,
                     onBack = back,
                     onOpenEvent = { backStack.add(EventDetail(it.id)) },
-                    onOpenMembers = { backStack.add(GroupMembers(key.slug)) }
+                    onOpenMembers = { backStack.add(GroupMembers(key.slug)) },
+                    onOpenTownHall = { backStack.add(GroupTownHall(it.slug, it.name)) }
                 )
             }
         }
@@ -217,6 +259,7 @@ private fun rootKey(root: Root): NavKey? = when (root) {
     Root.Meetings -> null
     Root.Messages -> Messages
     Root.Groups -> MyGroups
+    Root.TownHall -> TownHall
 }
 
 /**
@@ -232,4 +275,15 @@ private fun unreadMessages(container: AppContainer, signedIn: Boolean): Boolean 
         }
     }
     return unread.collectAsStateWithLifecycle(false).value
+}
+
+/**
+ * The member's groups whose Town Hall is open to them, from the stored memberships alone, like the unread dot: the
+ * home screen keeps them fresh. Null until they are read, so an unread store never takes the destination away.
+ */
+@Composable
+private fun townHallGroups(container: AppContainer, signedIn: Boolean): List<Group>? {
+    if (!signedIn) return emptyList()
+    val groups = remember(container) { container.townHallRepository.groups() }
+    return groups.collectAsStateWithLifecycle(null).value
 }
