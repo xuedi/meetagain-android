@@ -93,8 +93,9 @@ class NavigationBarTest {
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists(text(R.string.me_sign_out)) }
 
         back()
-        compose.waitForIdle()
         // The title and the bar's own label read the same, so the inbox is recognised by its list end.
-        compose.onNodeWithText(text(R.string.messages_end), useUnmergedTree = true).assertExists()
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithTextExists(text(R.string.messages_end), useUnmergedTree = true)
+        }
     }
 }

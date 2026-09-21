@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import java.io.File
 import javax.crypto.KeyGenerator
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -202,15 +203,14 @@ class AuthRepositoryTest {
     fun `a sign-in the screen walks away from is still stored`() = runTest {
         server.serve(signedIn())
         val auth = repository(this)
+        // As in the app, the sign-in screen exists only once the stored session was read and found empty. That read
+        // runs on DataStore's own thread, so the order of the states is not fixed until it is done.
+        auth.state.first { it is SessionState.SignedOut }
         // The screen that asked is gone the moment the session becomes true; the work must not go with it.
         val asking = launch { auth.signIn("crystal.liu@example.org", "1234") }
         advanceUntilIdle()
         asking.cancel()
-        auth.state.test {
-            assertEquals(SessionState.Unknown, awaitItem())
-            assertEquals(SessionState.SignedOut(), awaitItem())
-            assertTrue(awaitItem() is SessionState.SignedIn)
-        }
+        assertTrue(auth.state.first { it !is SessionState.SignedOut } is SessionState.SignedIn)
         assertEquals(4, (store.read() as StoredSession.Open).session.memberId)
     }
 

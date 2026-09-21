@@ -24,8 +24,8 @@ import org.meetagain.app.core.format.LocalTimeContext
 import org.meetagain.app.core.format.TimeContext
 import org.meetagain.app.core.ui.theme.MeetAgainTheme
 
-fun ComposeContentTestRule.onAllNodesWithTextExists(text: String): Boolean =
-    onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+fun ComposeContentTestRule.onAllNodesWithTextExists(text: String, useUnmergedTree: Boolean = false): Boolean =
+    onAllNodesWithText(text, useUnmergedTree = useUnmergedTree).fetchSemanticsNodes().isNotEmpty()
 
 /**
  * Renders [content] in the app theme as a device set to [locale], dark mode and [fontScale] would, in Berlin on
