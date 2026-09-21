@@ -1,4 +1,4 @@
-# meetagain-app - the daily loop. `just` lists the recipes.
+# meetagain-android - the daily loop. `just` lists the recipes.
 
 export ANDROID_HOME := env("ANDROID_HOME", home_directory() / "Android/Sdk")
 

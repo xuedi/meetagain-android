@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "meetagain-app"
+rootProject.name = "meetagain-android"
 include(":app")

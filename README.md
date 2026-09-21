@@ -1,7 +1,7 @@
 # MeetAgain App
 
-[![CI](https://github.com/xuedi/meetagain-app/actions/workflows/ci.yml/badge.svg)](https://github.com/xuedi/meetagain-app/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/Version-0.1.0-31c754.svg)](https://github.com/xuedi/meetagain-app/releases)
+[![CI](https://github.com/xuedi/meetagain-android/actions/workflows/ci.yml/badge.svg)](https://github.com/xuedi/meetagain-android/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/Version-0.1.0-31c754.svg)](https://github.com/xuedi/meetagain-android/releases)
 [![License](https://img.shields.io/badge/License-EUPL_v1.2-31c754.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-8.0+-31c754.svg)](https://developer.android.com/about/versions/oreo)
 
@@ -14,9 +14,21 @@ promise as the website: no tracking, no ads, no algorithmic feed, no lock-in.
 
 ## Status
 
-Early development. The skeleton is in place: the build, the API client, the theme, all five
-languages (English, German, Chinese, French, Spanish), CI, and a start and an About screen. The
-member features come next.
+In development, not yet released to the public. The member features are in place:
+
+- **Meetings:** the member's next meetings, yes or no with guests, the event conversation with
+  photos, who is coming, and adding a meeting to the phone's calendar.
+- **Groups:** browsing public groups and events, the member's own groups, invitations, joining and
+  leaving.
+- **People:** direct messages, member pages, following and blocking.
+- **Notifications:** the website's notification list and settings, push through UnifiedPush or a
+  regular check for phones without a push app, and meetagain.org links that open in the app.
+- **Privacy and security:** sign-in with a device token stored encrypted on the phone, an optional
+  app lock with fingerprint or screen PIN, and read-only access to the last synced content when
+  offline.
+- **Languages:** English, German, Chinese, French and Spanish.
+
+Still to come: the Town Hall (forum and gallery), a closed beta, store listings and F-Droid.
 
 ## Stack
 
@@ -43,7 +55,7 @@ debugging. The toolchain runs on the host.
 ## Releases
 
 Each `vX.Y.Z` tag builds a signed APK and attaches it, with its SHA-256 checksum, to the matching
-[release](https://github.com/xuedi/meetagain-app/releases). `just version X.Y.Z` sets the app version
+[release](https://github.com/xuedi/meetagain-android/releases). `just version X.Y.Z` sets the app version
 and the badge above together; `just check` fails when they disagree.
 
 ## License
