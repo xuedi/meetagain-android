@@ -52,6 +52,18 @@ class NotificationsTest {
         assertEquals(1, items.count { it.key == "review_pending" })
     }
 
+    /** The server leaves the key out when an item has neither a key nor a route; one such item must not sink the bell. */
+    @Test
+    fun `an item without a key is still shown`() = runTest {
+        val body = """{"items":[{"key":null,"label":"Something new","icon":null,"webUrl":null}],"total":1}"""
+        server.serve(mapOf("/api/v1/me/notifications" to listOf(json(body))))
+        val repository = repository()
+        assertTrue(repository.refreshNotifications() is ApiResult.Success)
+        val item = checkNotNull(repository.notifications().first()).value.single()
+        assertNull(item.key)
+        assertEquals("Something new", item.text)
+    }
+
     @Test
     fun `a member with nothing waiting has an empty bell`() = runTest {
         server.serve(mapOf("/api/v1/me/notifications" to listOf(json(fixture("notifications-empty.json")))))

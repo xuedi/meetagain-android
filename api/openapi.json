@@ -1345,6 +1345,767 @@
         }
       }
     },
+    "/api/v1/community/conversations": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the calling member conversations",
+        "description": "One entry per partner, newest first. Partners blocked in either direction are left out.",
+        "operationId": "6158a41d3e69cb0f04cf7e050b54a8ab",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the community:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/conversations/{userId}": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Read one thread",
+        "description": "Oldest first. This read is pure: it does not mark the thread read, unlike opening the page on the website. Call POST /api/v1/community/conversations/{userId}/read for that.",
+        "operationId": "29d24310006338ea131a5853bb7e19be",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The thread",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageThread"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Send a direct message",
+        "operationId": "86e35285950635c7bb6476604636e8f0",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "content"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "maxLength": 5000
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreadMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A block in either direction (blocked)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "content_required, content_too_long or self_target",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/messages/{id}": {
+      "patch": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Edit a message inside the edit window",
+        "description": "A message can be edited for ten minutes after it was sent. The website answers 403 here; this surface answers 409, because the window is a state conflict rather than an authorisation failure.",
+        "operationId": "f44ce7800cc6fc5859106f9fb1db0a2e",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "content"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "maxLength": 5000
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The stored message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreadMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such message, or it was sent by someone else (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The ten-minute window has passed (edit_window_expired)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "content_required or content_too_long",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/conversations/{userId}/read": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Mark a thread read",
+        "operationId": "133c91c59fcefb42d597f1aa255deb28",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Marked read"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/members": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List platform members",
+        "description": "Members the calling member may see, blocked ones excluded. A member who opted out of the directory is left out here too, exactly as on the website; their profile stays reachable by id.",
+        "operationId": "b1a0659f056f14a4e7e99e0763a911cb",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/members": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the members of one group",
+        "description": "The same list scoped to one group. A group the caller cannot reach answers the same 404 as an unknown slug; reaching a Private or Hidden group needs a token that also carries me:read, because membership is resolved through that scope.",
+        "operationId": "9f1e0ac3398f984b51c0ad002087de27",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members of that group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group not found or not reachable (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/members/{id}": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Read one member profile",
+        "operationId": "663fb9c6205cb329064e2cf442dd3dfb",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The member profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "The member has blocked the caller (forbidden)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/members/{id}/follow": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Follow a member",
+        "description": "Repeating the call is safe: it states the wanted end state rather than toggling.",
+        "operationId": "0da4066d85c783c3f1bdff7bd0f1f335",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Following"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A block in either direction (blocked)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Following yourself (self_target)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Stop following a member",
+        "description": "Repeating the call is safe.",
+        "operationId": "6d72becb520630c7b1498ebcf3f8fce0",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Not following"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/blocks": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the members the caller has blocked",
+        "operationId": "a435b1a640cf03105a404d3e9a44cede",
+        "responses": {
+          "200": {
+            "description": "Blocked members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/blocks/{id}": {
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Block a member",
+        "description": "Blocking drops any follow in either direction and hides the conversation from both inboxes. Repeating the call is safe.",
+        "operationId": "1f76d83bdb0a50c97bb0bb8a6c03eae6",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Blocked"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Blocking yourself (self_target)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Unblock a member",
+        "description": "Repeating the call is safe. Unblocking does not restore a follow that blocking removed.",
+        "operationId": "b415c8443efc262887f52f6ec1474505",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Not blocked"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "No such member (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
     "/api/v1/events/{id}/rsvp": {
       "put": {
         "tags": [
@@ -2723,6 +3484,383 @@
         ]
       }
     },
+    "/api/v1/me/push-subscriptions": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "List the registered push devices",
+        "description": "Also carries the VAPID public key a client needs before it can subscribe, and whether push is configured on this platform at all.",
+        "operationId": "cb6638d3a22c05b9e7ffcc8632bb9bdd",
+        "responses": {
+          "200": {
+            "description": "The registered devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushSubscriptionList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Register a push device",
+        "description": "Registers a Web Push endpoint against the calling token, so revoking the device at /profile/access-tokens stops its pings. Re-posting a known endpoint moves it to the calling device and answers 200.",
+        "operationId": "b79b547844e47ef29c40c40d30d9d9c8",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "endpoint": {
+                    "type": "string"
+                  },
+                  "p256dh": {
+                    "type": "string"
+                  },
+                  "auth": {
+                    "type": "string"
+                  },
+                  "transport": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A known endpoint was updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushSubscriptionEntry"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "The endpoint was registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushSubscriptionEntry"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "validation_failed, endpoint_rejected or too_many_subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "No VAPID key is configured on this platform (push_unavailable)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/push-subscriptions/{id}": {
+      "delete": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Remove a push device",
+        "description": "Removes one registered device. Another member row answers 404 rather than 403, so the endpoint does not confirm that an id exists.",
+        "operationId": "b772b1c3c95cf320683ce051f624b2e4",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The subscription id from the list endpoint",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Removed"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such device for this member"
+          },
+          "503": {
+            "description": "No VAPID key is configured on this platform (push_unavailable)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/signal-token": {
+      "post": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Issue the notification signal token for this device",
+        "description": "Issues a second token for the calling app device that can only read GET /api/v1/signal, valid for 90 days. Asking again replaces it, and revoking the device app token revokes it too.",
+        "operationId": "9216c48307c9bc722befdbf32233e2f9",
+        "responses": {
+          "201": {
+            "description": "The signal token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalTokenResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The calling token was not issued by the API login (not_an_app_token)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/notifications": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "List the authenticated member notifications",
+        "description": "The website navbar bell, as data. Every item is computed live from the same providers the website uses; nothing is stored, so there is no read state, no history and no cursor. Labels come back in the request locale.",
+        "operationId": "23f9b228eb7006fe02ddbd553f78a3ec",
+        "responses": {
+          "200": {
+            "description": "The bell",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/notification-settings": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Read the authenticated member notification preferences",
+        "description": "The same master switch and six toggles the member edits at /profile/config.",
+        "operationId": "1ddfd7f62fd1bd7d9c208a2eda8af0ba",
+        "responses": {
+          "200": {
+            "description": "The stored preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeNotificationSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Edit the authenticated member notification preferences",
+        "description": "Only the keys present in the body change. Writes through the same service as the website, so a change here shows up at /profile/config.",
+        "operationId": "050c460028447130d587d5212361c4cd",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeNotificationSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The saved preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeNotificationSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the me:write scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "A field was rejected (validation_failed); errors names the offending keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
     "/api/v1/memberships/invitations": {
       "get": {
         "tags": [
@@ -2992,6 +4130,645 @@
           },
           "409": {
             "description": "last_owner, blocked_in_group or may_not_leave_platform",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/signal": {
+      "get": {
+        "tags": [
+          "signal"
+        ],
+        "summary": "Whether anything changed for the member",
+        "description": "An opaque value that changes when the bell changes, when an event the member said yes to is cancelled, moved in time or to another place, and when its reminder falls due. It reveals nothing else, so a token that can only read this section is safe to keep where the app cannot protect it.",
+        "operationId": "dfcd4a8f64e6af05475603172506fd90",
+        "responses": {
+          "200": {
+            "description": "The current value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalState"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Token without the signal:read scope (insufficient_scope)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/town-hall/topics": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the Town Hall topics of one group",
+        "description": "The whole forum tree of the group, depth first, as the website loads it. Not paged. A group without Town Hall, or one whose Town Hall is closed to the caller, answers 404 - the same answer as an unknown slug.",
+        "operationId": "fcdbefbc588a90d1471b444a22ecab9d",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The topic tree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group not found, not reachable, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Start a topic or a subtopic",
+        "operationId": "0d25cc10c648431e750d9d1232e2969a",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "parentId": {
+                    "description": "Start a subtopic of this topic.",
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Topic created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Topic"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group or parent topic not found, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "empty_title, title_too_long or too_deep",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/town-hall/topics/{id}": {
+      "delete": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Delete a topic",
+        "description": "The author may delete a topic while it has no subtopics and no replies; an admin deletes it with its whole subtree.",
+        "operationId": "868a325787013e9fd8523e496e65a378",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Topic deleted"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not allowed to delete it (forbidden)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or topic not found, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Rename a topic (author or admin)",
+        "operationId": "609138320e6f424ce32b03e7324e5800",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 120
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Topic renamed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Topic"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not the author and not admin (forbidden)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or topic not found, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "empty_title or title_too_long",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/town-hall/topics/{id}/replies": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the replies to a topic",
+        "description": "Newest first, paged backwards like event comments: pass the previous page's nextBefore.",
+        "operationId": "f0f950affeb204658c29f06a5e5c6262",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Only replies older than this reply id",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of replies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group or topic not found, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Reply to a topic",
+        "operationId": "4288a28606141312eee8f145b2b77245",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "content"
+                ],
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "maxLength": 5000
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reply created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentCreated"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group or topic not found, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "content_required or content_too_long",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/town-hall/topics/{id}/replies/{replyId}": {
+      "delete": {
+        "tags": [
+          "community"
+        ],
+        "summary": "Delete a reply (own or admin)",
+        "operationId": "82426d566815dbcd7f2a96fc609d37f5",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "replyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Reply deleted"
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Not your reply and not admin (forbidden)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group, topic or reply not found, a reply to another topic, or Town Hall closed to the caller (not_found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "pat": []
+          }
+        ]
+      }
+    },
+    "/api/v1/community/groups/{slug}/town-hall/gallery": {
+      "get": {
+        "tags": [
+          "community"
+        ],
+        "summary": "List the Town Hall gallery of one group",
+        "description": "The photos uploaded to the group's events, newest first, each with its event. Photos reported by a member are left out, as on the event page.",
+        "operationId": "1d5a7726dcfe3785ade789ac65680c21",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Language of the event titles",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of photos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GalleryList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Bearer token"
+          },
+          "404": {
+            "description": "Group not found, not reachable, or Town Hall closed to the caller (not_found)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4166,7 +5943,7 @@
             }
           },
           "total": {
-            "description": "All comments on the event, not just this page.",
+            "description": "All comments on the target, not just this page.",
             "type": "integer"
           },
           "nextBefore": {
@@ -4175,6 +5952,60 @@
               "integer",
               "null"
             ]
+          }
+        },
+        "type": "object"
+      },
+      "ConversationList": {
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ConversationSummary": {
+        "required": [
+          "partner",
+          "messages",
+          "unread"
+        ],
+        "properties": {
+          "partner": {
+            "$ref": "#/components/schemas/MemberSummary"
+          },
+          "messages": {
+            "description": "Messages exchanged with this partner.",
+            "type": "integer"
+          },
+          "unread": {
+            "description": "Messages from this partner the caller has not read.",
+            "type": "integer"
+          },
+          "lastMessageAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
           }
         },
         "type": "object"
@@ -4191,6 +6022,7 @@
         "type": "object"
       },
       "EventComment": {
+        "description": "A comment on an event or a reply to a Town Hall topic.",
         "required": [
           "id",
           "author",
@@ -4565,6 +6397,87 @@
         },
         "type": "object"
       },
+      "GalleryImage": {
+        "required": [
+          "id",
+          "url",
+          "urls",
+          "mine",
+          "event"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "description": "The largest generated size, for a full-screen view.",
+            "type": "string",
+            "format": "uri"
+          },
+          "urls": {
+            "description": "Every generated size, keyed by its dimensions.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "mine": {
+            "description": "Whether the calling member uploaded it.",
+            "type": "boolean"
+          },
+          "uploadedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "event": {
+            "description": "The event the photo was uploaded to.",
+            "required": [
+              "id",
+              "title"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "GalleryList": {
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GalleryImage"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "GroupDetail": {
         "required": [
           "slug",
@@ -4822,6 +6735,54 @@
         },
         "type": "object"
       },
+      "MeNotificationSettings": {
+        "required": [
+          "enabled",
+          "announcements",
+          "followingUpdates",
+          "receivedMessage",
+          "eventReminder",
+          "upcomingEvents",
+          "attendedEventUpdate",
+          "push",
+          "quietHours"
+        ],
+        "properties": {
+          "enabled": {
+            "description": "The master switch. Off means the member hears nothing, whatever the individual toggles say.",
+            "type": "boolean"
+          },
+          "announcements": {
+            "type": "boolean"
+          },
+          "followingUpdates": {
+            "type": "boolean"
+          },
+          "receivedMessage": {
+            "type": "boolean"
+          },
+          "eventReminder": {
+            "type": "boolean"
+          },
+          "upcomingEvents": {
+            "type": "boolean"
+          },
+          "attendedEventUpdate": {
+            "type": "boolean"
+          },
+          "push": {
+            "description": "Push categories, each defaulting to off. Keys: event-changes, reminders, messages, announcements.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "quietHours": {
+            "$ref": "#/components/schemas/QuietHours"
+          }
+        },
+        "type": "object"
+      },
       "MeProfile": {
         "required": [
           "id",
@@ -4897,12 +6858,121 @@
         },
         "type": "object"
       },
+      "MemberList": {
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MemberSummary"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "MemberProfile": {
+        "required": [
+          "id",
+          "name",
+          "public",
+          "following",
+          "followsMe",
+          "blockedByMe",
+          "canMessage"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "bio": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "public": {
+            "description": "Whether the member chose to appear in the list shown to anonymous visitors.",
+            "type": "boolean"
+          },
+          "memberSince": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "following": {
+            "description": "Whether the calling member follows this one.",
+            "type": "boolean"
+          },
+          "followsMe": {
+            "description": "Whether this member follows the calling one.",
+            "type": "boolean"
+          },
+          "blockedByMe": {
+            "description": "Whether the calling member has blocked this one.",
+            "type": "boolean"
+          },
+          "canMessage": {
+            "description": "Whether a direct message would be accepted.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "MemberSummary": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          }
+        },
+        "type": "object"
+      },
       "Membership": {
         "required": [
           "group",
           "role",
           "status",
-          "blocked"
+          "blocked",
+          "townHall"
         ],
         "properties": {
           "group": {
@@ -4929,6 +6999,10 @@
               "null"
             ],
             "format": "date-time"
+          },
+          "townHall": {
+            "description": "Whether Town Hall is open to this member in this group: switched on for the platform and the group, and the membership approved and not blocked. The Town Hall routes under community/groups/{slug}/town-hall answer 404 where this is false.",
+            "type": "boolean"
           }
         },
         "type": "object"
@@ -4947,6 +7021,185 @@
           },
           "total": {
             "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "MessageThread": {
+        "required": [
+          "partner",
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "properties": {
+          "partner": {
+            "$ref": "#/components/schemas/MemberSummary"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ThreadMessage"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "blocked": {
+            "description": "Whether a block in either direction stops the caller from sending.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "NotificationItem": {
+        "required": [
+          "key",
+          "label",
+          "icon",
+          "webUrl"
+        ],
+        "properties": {
+          "key": {
+            "description": "Stable machine identifier for the kind of item, so a client can open its own screen. Null when the item has neither an explicit key nor a route.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "label": {
+            "description": "Pre-translated sentence in the request locale, exactly as the website navbar shows it. Display it, do not parse it.",
+            "type": "string"
+          },
+          "icon": {
+            "description": "Font Awesome class name, as the website uses.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "webUrl": {
+            "description": "Absolute link to the page this item points at; null when the item has no route.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "NotificationList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationItem"
+            }
+          },
+          "total": {
+            "description": "The bell count the website shows. Always equal to the number of items.",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "PushSubscriptionEntry": {
+        "required": [
+          "id",
+          "transport",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "transport": {
+            "description": "Delivery transport; unifiedpush today.",
+            "type": "string"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "lastSuccessAt": {
+            "description": "When a ping last reached this device.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "PushSubscriptionList": {
+        "required": [
+          "available",
+          "vapidPublicKey",
+          "subscriptions"
+        ],
+        "properties": {
+          "available": {
+            "description": "False when this platform has no VAPID key configured; registering will answer 503.",
+            "type": "boolean"
+          },
+          "vapidPublicKey": {
+            "description": "The key a client needs before it can subscribe. Empty when push is unavailable.",
+            "type": "string"
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PushSubscriptionEntry"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "QuietHours": {
+        "required": [
+          "enabled",
+          "start",
+          "end",
+          "timeZone",
+          "allowUrgent"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "start": {
+            "description": "Wall-clock HH:MM in timeZone. A window that wraps midnight is normal.",
+            "type": "string",
+            "example": "22:00"
+          },
+          "end": {
+            "description": "Wall-clock HH:MM in timeZone.",
+            "type": "string",
+            "example": "07:00"
+          },
+          "timeZone": {
+            "description": "IANA identifier. The client sends it; the platform has no per-member zone of its own.",
+            "type": "string",
+            "example": "Europe/Berlin"
+          },
+          "allowUrgent": {
+            "description": "Let an urgent ping through the window, such as a meeting cancelled before it ends.",
+            "type": "boolean"
           }
         },
         "type": "object"
@@ -4971,6 +7224,174 @@
           },
           "attendeeCount": {
             "description": "RSVPs plus their guests plus the external count.",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SignalState": {
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "description": "Opaque. Equal to the last value means nothing changed; different means something did.",
+            "type": "string",
+            "example": "k3JX9fQ2mP0aL7cV"
+          }
+        },
+        "type": "object"
+      },
+      "SignalTokenResult": {
+        "required": [
+          "token",
+          "scopes",
+          "expiresAt"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "mapat_..."
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "signal:read"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "type": "object"
+      },
+      "ThreadMessage": {
+        "required": [
+          "id",
+          "content",
+          "createdAt",
+          "mine",
+          "wasRead",
+          "editable",
+          "systemNote"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "content": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "mine": {
+            "description": "Whether the calling member sent this message.",
+            "type": "boolean"
+          },
+          "wasRead": {
+            "type": "boolean"
+          },
+          "editable": {
+            "description": "Whether the calling member may still edit it.",
+            "type": "boolean"
+          },
+          "editedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "systemNote": {
+            "description": "A support question carried into the thread, to render as a system note rather than typed text.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "Topic": {
+        "required": [
+          "id",
+          "parentId",
+          "depth",
+          "title",
+          "author",
+          "replyCount",
+          "mine",
+          "canRename",
+          "canDelete"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "parentId": {
+            "description": "Null for a top-level topic.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "depth": {
+            "description": "1 for a top-level topic; a topic at the maximum depth takes no subtopics.",
+            "type": "integer",
+            "maximum": 3,
+            "minimum": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "author": {
+            "$ref": "#/components/schemas/CommentAuthor"
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "replyCount": {
+            "type": "integer"
+          },
+          "mine": {
+            "description": "Whether the calling member started it.",
+            "type": "boolean"
+          },
+          "canRename": {
+            "description": "Whether the calling member may rename it.",
+            "type": "boolean"
+          },
+          "canDelete": {
+            "description": "Whether the calling member may delete it: an admin always, the author while it has no subtopics and no replies.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "TopicList": {
+        "required": [
+          "items",
+          "total"
+        ],
+        "properties": {
+          "items": {
+            "description": "The whole tree, depth first: each topic comes before its subtopics.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Topic"
+            }
+          },
+          "total": {
             "type": "integer"
           }
         },
@@ -5030,6 +7451,9 @@
       "description": "Sign in with email and password to obtain a personal access token"
     },
     {
+      "name": "community"
+    },
+    {
       "name": "event-actions",
       "description": "Authenticated user actions on events: RSVP, comments, image upload"
     },
@@ -5052,6 +7476,10 @@
     {
       "name": "memberships",
       "description": "The calling member's group memberships: invitations, joining and leaving"
+    },
+    {
+      "name": "signal",
+      "description": "Whether anything changed for the member, without saying what"
     },
     {
       "name": "status",

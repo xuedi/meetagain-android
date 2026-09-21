@@ -16,7 +16,12 @@ data class NotificationListDto(val items: List<NotificationItemDto>, val total: 
  * has already translated into the request's language, which the app shows and never parses.
  */
 @Serializable
-data class NotificationItemDto(val key: String, val label: String, val icon: String? = null, val webUrl: String? = null)
+data class NotificationItemDto(
+    val key: String? = null,
+    val label: String,
+    val icon: String? = null,
+    val webUrl: String? = null
+)
 
 /**
  * `MeNotificationSettings` in the API description. [push] and [quietHours] belong to push delivery; this app reads

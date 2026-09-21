@@ -124,11 +124,12 @@ data class Profile(
 )
 
 /**
- * One entry of the bell. [key] says what kind of thing it is, so the app can open its own screen for it; [text] is
+ * One entry of the bell. [key] says what kind of thing it is, so the app can open its own screen for it, and is null
+ * for an entry the server has no name for; [text] is
  * the sentence the server already wrote in the member's language, shown as it is. [webUrl] is where the website
  * shows it, used when the app has no screen of its own.
  */
-data class Notification(val key: String, val text: String, val webUrl: String?)
+data class Notification(val key: String?, val text: String, val webUrl: String?)
 
 /**
  * What the member hears about, the same switches as the website's profile settings. [master] off means they hear

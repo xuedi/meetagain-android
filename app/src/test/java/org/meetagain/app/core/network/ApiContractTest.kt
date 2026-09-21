@@ -47,16 +47,27 @@ class ApiContractTest {
         "MembershipList" to MembershipListDto.serializer().descriptor,
         "Membership" to MembershipDto.serializer().descriptor,
         "InvitationList" to InvitationListDto.serializer().descriptor,
-        "Invitation" to InvitationDto.serializer().descriptor
+        "Invitation" to InvitationDto.serializer().descriptor,
+        "ConversationList" to ConversationListDto.serializer().descriptor,
+        "ConversationSummary" to ConversationSummaryDto.serializer().descriptor,
+        "MemberSummary" to MemberSummaryDto.serializer().descriptor,
+        "MessageThread" to MessageThreadDto.serializer().descriptor,
+        "ThreadMessage" to ThreadMessageDto.serializer().descriptor,
+        "MemberList" to MemberListDto.serializer().descriptor,
+        "MemberProfile" to MemberProfileDto.serializer().descriptor,
+        "TopicList" to TopicListDto.serializer().descriptor,
+        "Topic" to TopicDto.serializer().descriptor,
+        "GalleryList" to GalleryListDto.serializer().descriptor,
+        "GalleryImage" to GalleryImageDto.serializer().descriptor,
+        "NotificationList" to NotificationListDto.serializer().descriptor,
+        "NotificationItem" to NotificationItemDto.serializer().descriptor,
+        "MeNotificationSettings" to NotificationSettingsDto.serializer().descriptor,
+        "QuietHours" to QuietHoursDto.serializer().descriptor,
+        "PushSubscriptionList" to PushSubscriptionListDto.serializer().descriptor,
+        "PushSubscriptionEntry" to PushSubscriptionDto.serializer().descriptor,
+        "SignalTokenResult" to SignalTokenDto.serializer().descriptor,
+        "SignalState" to SignalStateDto.serializer().descriptor
     )
-
-    // The community DTOs (ConversationList, ConversationSummary, MemberSummary, MessageThread, ThreadMessage,
-    // MemberList, MemberProfile, and Town Hall's TopicList, Topic, GalleryList, GalleryImage) are not here yet: the
-    // section is implemented upstream but not deployed, so the committed spec has no schema for them. They go in
-    // with the next `just api-refresh`, and [undeployed] empties then.
-
-    /** Fields of a checked DTO that the server has upstream but not yet deployed. */
-    private val undeployed = setOf("Membership.townHall")
 
     // ErrorBody is deliberately not here: it reads ErrorResponse and ValidationErrorResponse through one lenient
     // shape, so it has fields neither schema alone declares.
@@ -79,7 +90,6 @@ class ApiContractTest {
         val required = schema["required"]?.jsonArray?.map { it.jsonPrimitive.content }.orEmpty().toSet()
         return (0 until descriptor.elementsCount).mapNotNull { index ->
             val field = descriptor.getElementName(index)
-            if ("$name.$field" in undeployed) return@mapNotNull null
             val element = descriptor.getElementDescriptor(index)
             val declared = properties[field]?.jsonObject ?: return@mapNotNull "$name.$field: not in the schema"
             val (property, nullable) = resolve(declared)
