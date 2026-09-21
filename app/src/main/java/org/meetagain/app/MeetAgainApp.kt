@@ -13,6 +13,7 @@ import org.meetagain.app.core.auth.SessionStore
 import org.meetagain.app.core.auth.deviceName
 import org.meetagain.app.core.cache.CacheDatabase
 import org.meetagain.app.core.push.Channels
+import org.meetagain.app.core.push.SignalStore
 
 class MeetAgainApp :
     Application(),
@@ -29,6 +30,7 @@ class MeetAgainApp :
             AppInfo(BuildConfig.VERSION_NAME, BuildConfig.DEBUG, BuildConfig.BASE_URL),
             CacheDatabase.open(this),
             SessionStore.open(this),
+            SignalStore.open(this),
             deviceName = { deviceName(this) },
             scope = housekeeping
         )

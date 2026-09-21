@@ -294,4 +294,26 @@
     <string name="push_event_canceled">%1$s was called off</string>
     <string name="push_event_moved">%1$s now starts %2$s</string>
     <string name="push_reminder">%1$s starts %2$s</string>
+    <string name="signin_session_lock_reset">The fingerprints or the screen lock on this phone changed, so the app lock had to start over. Sign in again to carry on.</string>
+    <string name="me_app_lock">App lock</string>
+    <string name="app_lock_title">App lock</string>
+    <string name="app_lock_switch">Lock the app</string>
+    <string name="app_lock_explained_pin">MeetAgain then opens only after your fingerprint or screen PIN, and your sign-in stays sealed on this phone until then.</string>
+    <string name="app_lock_explained_fingerprint">MeetAgain then opens only after your fingerprint, and your sign-in stays sealed on this phone until then.</string>
+    <string name="app_lock_notifications">While the lock is on, notifications only say that something is new. Open the app to see what it is.</string>
+    <string name="app_lock_optional">The lock is up to you. Without it, MeetAgain works as before.</string>
+    <string name="app_lock_no_screen_lock">Set up a screen lock on this phone first. The app lock uses it.</string>
+    <string name="app_lock_no_fingerprint">Add a fingerprint in this phone\'s settings first. On this version of Android the app lock works with a fingerprint only.</string>
+    <string name="app_lock_unsupported">This phone cannot lock the app.</string>
+    <string name="app_lock_no_timer">The regular check for news without a push app is not available right now, so while the lock is on only push notifications arrive.</string>
+    <string name="app_lock_failed">That did not work. The app lock is as it was.</string>
+    <string name="app_lock_prompt_on">Turn on the app lock</string>
+    <string name="app_lock_prompt_off">Turn off the app lock</string>
+    <string name="unlock_prompt_title">Unlock MeetAgain</string>
+    <string name="unlock_signed_in_as">Signed in as %1$s</string>
+    <string name="unlock_action">Unlock</string>
+    <string name="unlock_failed">The app is still locked. Try again when you are ready.</string>
+    <string name="unlock_sign_in_again">Sign in with your password instead</string>
+    <string name="push_channel_updates">Updates</string>
+    <string name="push_something_new">Something new in MeetAgain. Open the app to see it.</string>
 </resources>

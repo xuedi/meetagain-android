@@ -297,4 +297,26 @@
     <string name="push_event_canceled">%1$s se ha cancelado</string>
     <string name="push_event_moved">%1$s empieza ahora %2$s</string>
     <string name="push_reminder">%1$s empieza %2$s</string>
+    <string name="signin_session_lock_reset">Las huellas o el bloqueo de pantalla de este teléfono han cambiado, así que el bloqueo de la app ha tenido que empezar de nuevo. Vuelve a iniciar sesión para continuar.</string>
+    <string name="me_app_lock">Bloqueo de la app</string>
+    <string name="app_lock_title">Bloqueo de la app</string>
+    <string name="app_lock_switch">Bloquear la app</string>
+    <string name="app_lock_explained_pin">MeetAgain solo se abrirá con tu huella o el PIN de pantalla, y tu sesión queda sellada en este teléfono hasta entonces.</string>
+    <string name="app_lock_explained_fingerprint">MeetAgain solo se abrirá con tu huella, y tu sesión queda sellada en este teléfono hasta entonces.</string>
+    <string name="app_lock_notifications">Mientras el bloqueo esté activo, las notificaciones solo dicen que hay algo nuevo. Abre la app para ver qué es.</string>
+    <string name="app_lock_optional">El bloqueo es opcional. Sin él, MeetAgain funciona como siempre.</string>
+    <string name="app_lock_no_screen_lock">Primero configura un bloqueo de pantalla en este teléfono. El bloqueo de la app lo usa.</string>
+    <string name="app_lock_no_fingerprint">Primero añade una huella en los ajustes del teléfono. En esta versión de Android el bloqueo de la app solo funciona con huella.</string>
+    <string name="app_lock_unsupported">Este teléfono no puede bloquear la app.</string>
+    <string name="app_lock_no_timer">La comprobación periódica de novedades sin una app de push no está disponible ahora, así que mientras el bloqueo esté activo solo llegan notificaciones push.</string>
+    <string name="app_lock_failed">No ha funcionado. El bloqueo de la app sigue igual.</string>
+    <string name="app_lock_prompt_on">Activar el bloqueo de la app</string>
+    <string name="app_lock_prompt_off">Desactivar el bloqueo de la app</string>
+    <string name="unlock_prompt_title">Desbloquear MeetAgain</string>
+    <string name="unlock_signed_in_as">Sesión iniciada como %1$s</string>
+    <string name="unlock_action">Desbloquear</string>
+    <string name="unlock_failed">La app sigue bloqueada. Inténtalo de nuevo cuando quieras.</string>
+    <string name="unlock_sign_in_again">Iniciar sesión con tu contraseña</string>
+    <string name="push_channel_updates">Novedades</string>
+    <string name="push_something_new">Hay algo nuevo en MeetAgain. Abre la app para verlo.</string>
 </resources>

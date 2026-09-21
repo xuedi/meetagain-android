@@ -60,5 +60,11 @@ enum class SessionRefusal {
     TokenRefused,
 
     /** The token was issued before a part of the API the app now uses; a new one carries it. */
-    SectionMissing
+    SectionMissing,
+
+    /**
+     * Not the server: the app lock's key is gone, because a fingerprint was added or removed or the screen lock taken
+     * away, and the stored token can never be opened again.
+     */
+    LockReset
 }

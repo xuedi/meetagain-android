@@ -95,6 +95,8 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.unifiedpush.connector)
     implementation(libs.work.runtime)
+    implementation(libs.biometric)
+    implementation(libs.fragment)
     ksp(libs.room.compiler)
 
     debugImplementation(libs.compose.ui.tooling)

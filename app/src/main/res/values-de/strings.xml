@@ -288,4 +288,26 @@
     <string name="push_event_canceled">%1$s wurde abgesagt</string>
     <string name="push_event_moved">%1$s beginnt jetzt %2$s</string>
     <string name="push_reminder">%1$s beginnt %2$s</string>
+    <string name="signin_session_lock_reset">Die Fingerabdrücke oder die Displaysperre auf diesem Telefon haben sich geändert, deshalb musste die App-Sperre neu beginnen. Melde dich erneut an, um weiterzumachen.</string>
+    <string name="me_app_lock">App-Sperre</string>
+    <string name="app_lock_title">App-Sperre</string>
+    <string name="app_lock_switch">App sperren</string>
+    <string name="app_lock_explained_pin">MeetAgain öffnet sich dann nur nach deinem Fingerabdruck oder deiner Display-PIN, und deine Anmeldung bleibt bis dahin auf diesem Telefon versiegelt.</string>
+    <string name="app_lock_explained_fingerprint">MeetAgain öffnet sich dann nur nach deinem Fingerabdruck, und deine Anmeldung bleibt bis dahin auf diesem Telefon versiegelt.</string>
+    <string name="app_lock_notifications">Solange die Sperre an ist, sagen Benachrichtigungen nur, dass es etwas Neues gibt. Öffne die App, um zu sehen, was es ist.</string>
+    <string name="app_lock_optional">Die Sperre ist deine Wahl. Ohne sie funktioniert MeetAgain wie bisher.</string>
+    <string name="app_lock_no_screen_lock">Richte zuerst eine Displaysperre auf diesem Telefon ein. Die App-Sperre nutzt sie.</string>
+    <string name="app_lock_no_fingerprint">Füge zuerst in den Einstellungen des Telefons einen Fingerabdruck hinzu. Mit dieser Android-Version funktioniert die App-Sperre nur mit Fingerabdruck.</string>
+    <string name="app_lock_unsupported">Dieses Telefon kann die App nicht sperren.</string>
+    <string name="app_lock_no_timer">Die regelmäßige Suche nach Neuem ohne Push-App ist gerade nicht verfügbar. Solange die Sperre an ist, kommen deshalb nur Push-Benachrichtigungen an.</string>
+    <string name="app_lock_failed">Das hat nicht geklappt. Die App-Sperre ist unverändert.</string>
+    <string name="app_lock_prompt_on">App-Sperre einschalten</string>
+    <string name="app_lock_prompt_off">App-Sperre ausschalten</string>
+    <string name="unlock_prompt_title">MeetAgain entsperren</string>
+    <string name="unlock_signed_in_as">Angemeldet als %1$s</string>
+    <string name="unlock_action">Entsperren</string>
+    <string name="unlock_failed">Die App ist noch gesperrt. Versuch es erneut, wenn du so weit bist.</string>
+    <string name="unlock_sign_in_again">Stattdessen mit Passwort anmelden</string>
+    <string name="push_channel_updates">Neuigkeiten</string>
+    <string name="push_something_new">Etwas Neues bei MeetAgain. Öffne die App, um es zu sehen.</string>
 </resources>

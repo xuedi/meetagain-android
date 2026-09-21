@@ -279,4 +279,26 @@
     <string name="push_event_canceled">%1$s 已取消</string>
     <string name="push_event_moved">%1$s 改为 %2$s 开始</string>
     <string name="push_reminder">%1$s %2$s 开始</string>
+    <string name="signin_session_lock_reset">此手机上的指纹或屏幕锁已更改，应用锁需要重新设置。请重新登录以继续。</string>
+    <string name="me_app_lock">应用锁</string>
+    <string name="app_lock_title">应用锁</string>
+    <string name="app_lock_switch">锁定应用</string>
+    <string name="app_lock_explained_pin">开启后，只有通过指纹或屏幕 PIN 才能打开 MeetAgain，在此之前你的登录信息会被加密保存在这部手机上。</string>
+    <string name="app_lock_explained_fingerprint">开启后，只有通过指纹才能打开 MeetAgain，在此之前你的登录信息会被加密保存在这部手机上。</string>
+    <string name="app_lock_notifications">应用锁开启时，通知只会提示有新内容。打开应用即可查看具体内容。</string>
+    <string name="app_lock_optional">是否开启应用锁由你决定。不开启时，MeetAgain 照常使用。</string>
+    <string name="app_lock_no_screen_lock">请先为这部手机设置屏幕锁，应用锁需要用到它。</string>
+    <string name="app_lock_no_fingerprint">请先在手机设置中添加指纹。在此 Android 版本上，应用锁只能使用指纹。</string>
+    <string name="app_lock_unsupported">这部手机无法锁定应用。</string>
+    <string name="app_lock_no_timer">目前无法在没有推送应用的情况下定时检查新内容，因此应用锁开启时只会收到推送通知。</string>
+    <string name="app_lock_failed">操作未成功，应用锁设置未改变。</string>
+    <string name="app_lock_prompt_on">开启应用锁</string>
+    <string name="app_lock_prompt_off">关闭应用锁</string>
+    <string name="unlock_prompt_title">解锁 MeetAgain</string>
+    <string name="unlock_signed_in_as">已登录为 %1$s</string>
+    <string name="unlock_action">解锁</string>
+    <string name="unlock_failed">应用仍处于锁定状态。准备好后请再试一次。</string>
+    <string name="unlock_sign_in_again">改用密码登录</string>
+    <string name="push_channel_updates">新内容</string>
+    <string name="push_something_new">MeetAgain 有新内容，打开应用即可查看。</string>
 </resources>

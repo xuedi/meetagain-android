@@ -1,5 +1,9 @@
 package org.meetagain.app.core.auth
 
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
+import javax.crypto.Cipher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +32,19 @@ class AuthRepository(
      * Anything that needs the token while it still works - taking this phone off the push register, which is the
      * only way the deletion is confirmed rather than assumed.
      */
-    private val beforeSignOut: suspend () -> Unit = {}
+    private val beforeSignOut: suspend () -> Unit = {},
+    private val lockedCipher: LockedCipher = KeystoreLockedCipher(),
+    /** What else moves with the app lock: the signal token, and what push keeps for the locked phone. */
+    private val onLock: suspend (LockEvent) -> Unit = {},
+    private val clock: Clock = Clock.systemUTC()
 ) {
     private val current = MutableStateFlow<SessionState>(SessionState.Unknown)
+
+    private val lock = MutableStateFlow(false)
+
+    /** When the app last went into the background, while the lock is on. */
+    @Volatile
+    private var leftAt: Instant? = null
 
     /** The token of a sign-in still in flight: the call that asks who it belongs to already needs it. */
     @Volatile
@@ -38,11 +52,20 @@ class AuthRepository(
 
     val state: StateFlow<SessionState> = current.asStateFlow()
 
+    /** Whether the member turned the app lock on. */
+    val lockOn: StateFlow<Boolean> = lock.asStateFlow()
+
     /** The token for the request interceptor, which cannot wait for a coroutine. */
     val token: String? get() = pending ?: current.value.member?.token
 
     init {
-        scope.launch { current.value = store.read()?.let(SessionState::SignedIn) ?: SessionState.SignedOut() }
+        scope.launch {
+            current.value = when (val stored = store.read()) {
+                is StoredSession.Open -> SessionState.SignedIn(stored.session)
+                is StoredSession.Locked -> SessionState.Locked(stored.memberId, stored.name).also { lock.value = true }
+                null -> SessionState.SignedOut()
+            }
+        }
     }
 
     /**
@@ -97,6 +120,82 @@ class AuthRepository(
         scope.launch { wipe(member.memberId, refusal) }
     }
 
+    /**
+     * The cipher the unlock prompt opens the stored token with. Null when there is nothing to unlock, or when the key
+     * is gone for good - then the session ends here, and the sign-in screen says why.
+     */
+    suspend fun unlockCipher(): Cipher? {
+        val stored = store.read() as? StoredSession.Locked ?: return null
+        return lockedCipher.forDecryption(stored.sealed) ?: run {
+            scope.async { wipe(stored.memberId, SessionRefusal.LockReset) }.await()
+            null
+        }
+    }
+
+    /** [cipher] is the one the prompt handed back. Runs in the app's scope: the unlock screen leaves as it succeeds. */
+    suspend fun unlock(cipher: Cipher): Boolean = scope.async {
+        val stored = store.read() as? StoredSession.Locked ?: return@async false
+        val token = lockedCipher.open(cipher, stored.sealed) ?: return@async false
+        current.value = SessionState.SignedIn(Session(stored.memberId, stored.name, token, stored.scopes))
+        runCatching { onLock(LockEvent.Unlocked) }
+        true
+    }.await()
+
+    fun leftApp() {
+        if (lock.value) leftAt = clock.instant()
+    }
+
+    /** Back after [RELOCK_AFTER] or more: the token leaves memory, and the member unlocks again. */
+    fun cameBack() {
+        val left = leftAt ?: return
+        leftAt = null
+        if (Duration.between(left, clock.instant()) >= RELOCK_AFTER) relock()
+    }
+
+    private fun relock() {
+        val member = current.value.member ?: return
+        if (!lock.value) return
+        scope.launch {
+            runCatching { onLock(LockEvent.Locking) }
+            current.value = SessionState.Locked(member.memberId, member.name)
+        }
+    }
+
+    /** The cipher the prompt seals the token with when the lock is turned on. Null when this phone cannot lock. */
+    fun lockCipher(): Cipher? = runCatching { lockedCipher.forEncryption() }.getOrNull()
+
+    suspend fun turnLockOn(cipher: Cipher): Boolean = scope.async {
+        val member = current.value.member ?: return@async false
+        val sealed = runCatching { lockedCipher.seal(cipher, member.token) }.getOrNull() ?: return@async false
+        store.writeLocked(member, sealed)
+        lock.value = true
+        runCatching { onLock(LockEvent.TurnedOn) }
+        true
+    }.await()
+
+    /** Turning the lock off asks for the fingerprint or PIN too: whoever holds the open phone is not enough. */
+    suspend fun unlockCipherForTurningOff(): Cipher? {
+        val stored = store.read() as? StoredSession.Locked ?: return null
+        return lockedCipher.forDecryption(stored.sealed)
+    }
+
+    suspend fun turnLockOff(cipher: Cipher): Boolean = scope.async {
+        val member = current.value.member ?: return@async false
+        val stored = store.read() as? StoredSession.Locked ?: return@async false
+        if (lockedCipher.open(cipher, stored.sealed) != member.token) return@async false
+        store.write(member)
+        lockedCipher.delete()
+        lock.value = false
+        runCatching { onLock(LockEvent.TurnedOff) }
+        true
+    }.await()
+
+    /** From the unlock screen: this member signs in again with their password, and the sealed session goes. */
+    suspend fun leaveLocked() {
+        val locked = current.value as? SessionState.Locked ?: return
+        scope.async { wipe(locked.memberId) }.await()
+    }
+
     /** The member's own name, as the profile screen saved it. */
     suspend fun rename(name: String) {
         val member = current.value.member ?: return
@@ -108,9 +207,26 @@ class AuthRepository(
     private suspend fun wipe(memberId: Int?, refusal: SessionRefusal? = null) {
         pending = null
         store.clear()
+        if (lock.value) lockedCipher.delete()
+        lock.value = false
+        leftAt = null
         if (memberId != null) forget(memberId)
         current.value = SessionState.SignedOut(refusal)
     }
+
+    private companion object {
+        val RELOCK_AFTER: Duration = Duration.ofMinutes(5)
+    }
+}
+
+/** What the app lock just did, for the parts of the app that move with it. */
+enum class LockEvent {
+    TurnedOn,
+    TurnedOff,
+    Unlocked,
+
+    /** Before the token leaves memory, while the member's own cached answers can still be read. */
+    Locking
 }
 
 /** The codes `POST auth/login` answers with, each one a different sentence on the sign-in screen. */

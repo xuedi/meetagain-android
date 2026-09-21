@@ -179,6 +179,7 @@ private fun Problem(problem: SignInProblem, onOpenWebsite: (String) -> Unit) {
         is SignInProblem.SessionEnded -> when (problem.refusal) {
             SessionRefusal.TokenRefused -> stringResource(R.string.signin_session_ended)
             SessionRefusal.SectionMissing -> stringResource(R.string.signin_session_new_section)
+            SessionRefusal.LockReset -> stringResource(R.string.signin_session_lock_reset)
         }
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -297,4 +297,26 @@
     <string name="push_event_canceled">%1$s a été annulée</string>
     <string name="push_event_moved">%1$s commence maintenant %2$s</string>
     <string name="push_reminder">%1$s commence %2$s</string>
+    <string name="signin_session_lock_reset">Les empreintes ou le verrouillage de l\'écran de ce téléphone ont changé, le verrouillage de l\'app a donc dû recommencer. Reconnecte-toi pour continuer.</string>
+    <string name="me_app_lock">Verrouillage de l\'app</string>
+    <string name="app_lock_title">Verrouillage de l\'app</string>
+    <string name="app_lock_switch">Verrouiller l\'app</string>
+    <string name="app_lock_explained_pin">MeetAgain ne s\'ouvre alors qu\'avec ton empreinte ou le code de l\'écran, et ta connexion reste scellée sur ce téléphone jusque-là.</string>
+    <string name="app_lock_explained_fingerprint">MeetAgain ne s\'ouvre alors qu\'avec ton empreinte, et ta connexion reste scellée sur ce téléphone jusque-là.</string>
+    <string name="app_lock_notifications">Tant que le verrouillage est actif, les notifications disent seulement qu\'il y a du nouveau. Ouvre l\'app pour voir quoi.</string>
+    <string name="app_lock_optional">Le verrouillage est facultatif. Sans lui, MeetAgain fonctionne comme avant.</string>
+    <string name="app_lock_no_screen_lock">Configure d\'abord un verrouillage de l\'écran sur ce téléphone. Le verrouillage de l\'app l\'utilise.</string>
+    <string name="app_lock_no_fingerprint">Ajoute d\'abord une empreinte dans les réglages du téléphone. Sur cette version d\'Android, le verrouillage de l\'app ne fonctionne qu\'avec une empreinte.</string>
+    <string name="app_lock_unsupported">Ce téléphone ne peut pas verrouiller l\'app.</string>
+    <string name="app_lock_no_timer">La vérification régulière des nouveautés sans app de push n\'est pas disponible pour l\'instant : tant que le verrouillage est actif, seules les notifications push arrivent.</string>
+    <string name="app_lock_failed">Ça n\'a pas marché. Le verrouillage de l\'app n\'a pas changé.</string>
+    <string name="app_lock_prompt_on">Activer le verrouillage de l\'app</string>
+    <string name="app_lock_prompt_off">Désactiver le verrouillage de l\'app</string>
+    <string name="unlock_prompt_title">Déverrouiller MeetAgain</string>
+    <string name="unlock_signed_in_as">Connecté en tant que %1$s</string>
+    <string name="unlock_action">Déverrouiller</string>
+    <string name="unlock_failed">L\'app est toujours verrouillée. Réessaie quand tu es prêt.</string>
+    <string name="unlock_sign_in_again">Me connecter avec mon mot de passe</string>
+    <string name="push_channel_updates">Nouveautés</string>
+    <string name="push_something_new">Du nouveau sur MeetAgain. Ouvre l\'app pour le voir.</string>
 </resources>

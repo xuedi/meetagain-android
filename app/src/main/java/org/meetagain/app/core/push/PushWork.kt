@@ -29,8 +29,8 @@ class PushWork(
     private val raised: RaisedNotifications,
     private val notifier: Notifier,
     private val clock: Clock = Clock.systemUTC()
-) {
-    suspend fun run(fromTimer: Boolean) {
+) : PushRun {
+    override suspend fun run(fromTimer: Boolean) {
         if (!notifier.canPost()) return
         val settings = repository.notificationSettings().first()?.value ?: return
         if (!settings.master) return

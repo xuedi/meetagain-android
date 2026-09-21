@@ -26,6 +26,9 @@ sealed interface SessionState {
     data class SignedOut(val refusal: SessionRefusal? = null) : SessionState
 
     data class SignedIn(val session: Session) : SessionState
+
+    /** Signed in, but the app lock is on and the token stays sealed until the member's fingerprint or PIN opens it. */
+    data class Locked(val memberId: Int, val name: String) : SessionState
 }
 
 val SessionState.member: Session? get() = (this as? SessionState.SignedIn)?.session

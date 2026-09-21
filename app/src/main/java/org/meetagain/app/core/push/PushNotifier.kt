@@ -13,8 +13,11 @@ import org.meetagain.app.MainActivity
 import org.meetagain.app.R
 import org.meetagain.app.core.data.PushCategory
 
-/** One thing worth telling the member, already worded in their language. */
-data class Raised(val key: String, val category: PushCategory, val text: String, val webUrl: String?)
+/**
+ * One thing worth telling the member, already worded in their language. No [category] while the app lock is on:
+ * the phone then only knows that something is new, not what kind of thing.
+ */
+data class Raised(val key: String, val category: PushCategory?, val text: String, val webUrl: String?)
 
 /**
  * Puts what changed on the phone. Nothing here talks to the network: by the time a [Raised] arrives, the app has
@@ -38,7 +41,8 @@ class PushNotifier(private val context: Context) : Notifier {
         ) {
             return
         }
-        val notification = NotificationCompat.Builder(context, raised.category.channelId)
+        if (raised.category == null) Channels.ensureUpdates(context)
+        val notification = NotificationCompat.Builder(context, raised.category?.channelId ?: UPDATES_CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(raised.text)

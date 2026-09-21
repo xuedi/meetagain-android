@@ -89,5 +89,13 @@ data class PushSubscriptionDto(
 @Serializable
 data class PushRegistrationDto(val endpoint: String, val p256dh: String, val auth: String, val transport: String)
 
+/** `SignalTokenResult` in the API description: a token for this device that can only read the signal. */
+@Serializable
+data class SignalTokenDto(val token: String, val scopes: List<String>, val expiresAt: String)
+
+/** `SignalState` in the API description. Opaque: only whether it differs from the last one means anything. */
+@Serializable
+data class SignalStateDto(val state: String)
+
 /** The only transport the app registers for; FCM is out of this version by decision. */
 const val TRANSPORT_UNIFIEDPUSH = "unifiedpush"

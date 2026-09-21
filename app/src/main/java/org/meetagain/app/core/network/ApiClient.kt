@@ -46,7 +46,18 @@ class ApiClient(
         LoginResultDto.serializer()
     )
 
-    suspend fun logout(): ApiResult<Unit> = noContent(request(url("api/v1/auth/logout")).post(EMPTY))
+    /** Without [token], the call is signed like any other; with it, that token revokes itself. */
+    suspend fun logout(token: String? = null): ApiResult<Unit> =
+        noContent(request(url("api/v1/auth/logout")).bearer(token).post(EMPTY))
+
+    // The notification signal, for the phone while the app lock is on
+
+    suspend fun issueSignalToken(): ApiResult<SignalTokenDto> =
+        send(request(url("api/v1/me/signal-token")).post(EMPTY), SignalTokenDto.serializer())
+
+    /** Brings its own [token]: it goes out on a client that adds none, so the member's token can never ride along. */
+    suspend fun signal(token: String): ApiResult<SignalStateDto> =
+        send(request(url("api/v1/signal")).bearer(token), SignalStateDto.serializer())
 
     // Public reads, which answer with more when the call carries a member's token
 
@@ -264,6 +275,14 @@ class ApiClient(
         .url(url)
         .header("Accept", "application/json")
         .header("Accept-Language", languageTag())
+
+    private fun Request.Builder.bearer(token: String?) = apply {
+        if (token !=
+            null
+        ) {
+            header("Authorization", "Bearer $token")
+        }
+    }
 
     private inline fun <reified T> body(value: T): RequestBody = json.encodeToString(value).toRequestBody(JSON_TYPE)
 

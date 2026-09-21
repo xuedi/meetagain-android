@@ -23,7 +23,13 @@ enum class PushObstacle {
  * and that app talks to whichever server it is set up with. MeetAgain only ever learns the endpoint it should
  * encrypt to.
  */
-class PushRegistrar(private val context: Context, private val repository: MemberRepository) {
+class PushRegistrar(
+    private val context: Context,
+    private val repository: MemberRepository,
+    /** False while the app lock keeps the member's token sealed: then nothing can be registered yet. */
+    private val canRegister: () -> Boolean = { true },
+    private val preferences: PushPreferences? = null
+) {
     fun hasDistributor(): Boolean = UnifiedPush.getDistributors(context).isNotEmpty()
 
     /**
@@ -63,9 +69,23 @@ class PushRegistrar(private val context: Context, private val repository: Member
         devices.devices.forEach { repository.deletePushDevice(it.id) }
     }
 
+    /**
+     * While the app is locked the endpoint waits for the next unlock. Pings keep going to the old one until then, and
+     * the timer covers the gap.
+     */
     suspend fun onNewEndpoint(endpoint: String, p256dh: String, auth: String) {
-        val result = repository.registerPush(PushRegistration(endpoint, p256dh, auth))
+        val registration = PushRegistration(endpoint, p256dh, auth)
+        if (!canRegister()) {
+            preferences?.keepPendingEndpoint(registration)
+            return
+        }
+        val result = repository.registerPush(registration)
         if (result is ApiResult.Failure) Log.w(TAG, "the server would not take this endpoint")
+    }
+
+    suspend fun registerPending() {
+        val registration = preferences?.pendingEndpoint() ?: return
+        if (repository.registerPush(registration) is ApiResult.Success) preferences.clearPendingEndpoint()
     }
 
     companion object {

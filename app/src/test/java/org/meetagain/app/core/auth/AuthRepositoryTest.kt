@@ -99,7 +99,7 @@ class AuthRepositoryTest {
         assertEquals(4, session.memberId)
         assertEquals("Crystal Liu", session.name)
         assertTrue(session.may(Session.EVENTS_WRITE))
-        assertEquals(session, store.read())
+        assertEquals(StoredSession.Open(session), store.read())
     }
 
     @Test
@@ -211,7 +211,7 @@ class AuthRepositoryTest {
             assertEquals(SessionState.SignedOut(), awaitItem())
             assertTrue(awaitItem() is SessionState.SignedIn)
         }
-        assertEquals(4, checkNotNull(store.read()).memberId)
+        assertEquals(4, (store.read() as StoredSession.Open).session.memberId)
     }
 
     @Test

@@ -14,8 +14,10 @@ noise='schemas\.android\.com|w3\.org|xmlpull|apache\.org|ns\.adobe|json-schema'
 # Beyond INTERNET: POST_NOTIFICATIONS is asked for in context when a push category is turned on; WAKE_LOCK comes
 # from the UnifiedPush connector, which holds one while handing a push to the app; ACCESS_NETWORK_STATE and
 # RECEIVE_BOOT_COMPLETED come from WorkManager, which needs them for the "only on a connection" rule and to put the
-# timer back after a restart. FOREGROUND_SERVICE is removed in the manifest, so it must not appear here.
-allowed_permissions='^(android\.permission\.(INTERNET|POST_NOTIFICATIONS|WAKE_LOCK|ACCESS_NETWORK_STATE|RECEIVE_BOOT_COMPLETED)|org\.meetagain\.app\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)$'
+# timer back after a restart. USE_BIOMETRIC and USE_FINGERPRINT come from androidx.biometric for the optional app
+# lock; both are granted at install and never asked for. FOREGROUND_SERVICE is removed in the manifest, so it must
+# not appear here.
+allowed_permissions='^(android\.permission\.(INTERNET|POST_NOTIFICATIONS|WAKE_LOCK|ACCESS_NETWORK_STATE|RECEIVE_BOOT_COMPLETED|USE_BIOMETRIC|USE_FINGERPRINT)|org\.meetagain\.app\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION)$'
 failed=0
 
 [ -f "$apk" ] || { echo "No release APK; run ./gradlew :app:assembleRelease first."; exit 1; }

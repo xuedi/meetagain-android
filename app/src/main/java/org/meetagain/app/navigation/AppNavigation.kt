@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 import org.meetagain.app.AppContainer
 import org.meetagain.app.core.auth.SessionState
 import org.meetagain.app.feature.about.AboutRoute
+import org.meetagain.app.feature.applock.AppLockRoute
+import org.meetagain.app.feature.applock.UnlockRoute
 import org.meetagain.app.feature.attendees.AttendeesRoute
 import org.meetagain.app.feature.conversation.ConversationRoute
 import org.meetagain.app.feature.event.EventRoute
@@ -39,7 +41,8 @@ import org.meetagain.app.feature.signin.SignInRoute
 
 /**
  * Where the app starts is decided by whoever is signed in: their next meetings, or the sign-in screen. Signing in or
- * out builds a new back stack, so nothing of the one before is left behind it.
+ * out builds a new back stack, so nothing of the one before is left behind it. A locked app shows the unlock screen
+ * and nothing behind it.
  */
 @Composable
 fun AppNavigation(container: AppContainer, clock: Clock = Clock.systemUTC(), opening: NavKey? = null) {
@@ -51,6 +54,8 @@ fun AppNavigation(container: AppContainer, clock: Clock = Clock.systemUTC(), ope
         is SessionState.SignedOut -> key(false) { Destinations(container, false, clock, opening) }
 
         is SessionState.SignedIn -> key(true) { Destinations(container, true, clock, opening) }
+
+        is SessionState.Locked -> UnlockRoute(container)
     }
 }
 
@@ -120,6 +125,7 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                     onOpenProfile = { backStack.add(MyProfile) },
                     onOpenNotifications = { backStack.add(Notifications) },
                     onOpenNotificationSettings = { backStack.add(NotificationSettings) },
+                    onOpenAppLock = { backStack.add(AppLock) },
                     onOpenBlocked = { backStack.add(Blocked) },
                     onOpenAbout = { backStack.add(About) },
                     onSignOut = { scope.launch { container.auth.signOut() } }
@@ -138,6 +144,7 @@ private fun Destinations(container: AppContainer, signedIn: Boolean, clock: Cloc
                 )
             }
             entry<NotificationSettings> { NotificationSettingsRoute(container, onBack = back) }
+            entry<AppLock> { AppLockRoute(container, onBack = back) }
             entry<MyGroups> {
                 MyGroupsRoute(
                     container,

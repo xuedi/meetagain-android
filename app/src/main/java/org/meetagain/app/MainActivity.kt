@@ -2,19 +2,19 @@ package org.meetagain.app
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation3.runtime.NavKey
 import org.meetagain.app.core.ui.theme.MeetAgainTheme
 import org.meetagain.app.navigation.AppNavigation
 import org.meetagain.app.navigation.destinationOf
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     /** The screen a tapped meetagain.org link asks for, read from the intent that started or resumed the app. */
     private var opening by mutableStateOf<NavKey?>(null)
 
@@ -29,6 +29,17 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(container, opening = opening)
             }
         }
+    }
+
+    /** The lock counts the time away from the app, and asks again once it was long enough. */
+    override fun onStart() {
+        super.onStart()
+        (application as MeetAgainApp).container.auth.cameBack()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (application as MeetAgainApp).container.auth.leftApp()
     }
 
     /** The app is already open and a link arrives: the same handling, so the link does not land on yesterday's screen. */

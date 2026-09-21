@@ -24,6 +24,9 @@ import org.meetagain.app.core.ui.Loadable
 import org.meetagain.app.feature.about.AboutScreen
 import org.meetagain.app.feature.about.AboutUiState
 import org.meetagain.app.feature.about.ServerCheck
+import org.meetagain.app.feature.applock.AppLockScreen
+import org.meetagain.app.feature.applock.LockAvailability
+import org.meetagain.app.feature.applock.UnlockScreen
 import org.meetagain.app.feature.attendees.AttendeesScreen
 import org.meetagain.app.feature.conversation.ConversationScreen
 import org.meetagain.app.feature.event.EventScreen
@@ -111,10 +114,44 @@ class ScreenshotTest(private val language: String, private val dark: Boolean, pr
             onOpenProfile = {},
             onOpenNotifications = {},
             onOpenNotificationSettings = {},
+            onOpenAppLock = {},
             onOpenBlocked = {},
             onOpenAbout = {},
             onSignOut = {},
             onDeleteAccount = {}
+        )
+    }
+
+    @Test
+    fun unlock() = capture("unlock") {
+        UnlockScreen(name = "Crystal Liu", failed = false, busy = false, onUnlock = {}, onSignInAgain = {})
+    }
+
+    @Test
+    fun appLock() = capture("app-lock") {
+        AppLockScreen(
+            lockOn = true,
+            availability = LockAvailability.Available,
+            pinAllowed = true,
+            timerAvailable = false,
+            busy = false,
+            failed = false,
+            onChange = {},
+            onBack = {}
+        )
+    }
+
+    @Test
+    fun appLockUnavailable() = capture("app-lock-unavailable") {
+        AppLockScreen(
+            lockOn = false,
+            availability = LockAvailability.NoScreenLock,
+            pinAllowed = true,
+            timerAvailable = true,
+            busy = false,
+            failed = false,
+            onChange = {},
+            onBack = {}
         )
     }
 

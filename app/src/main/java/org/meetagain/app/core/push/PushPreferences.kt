@@ -12,7 +12,9 @@ import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.meetagain.app.core.data.PushRegistration
 
 /**
  * The parts of push that belong to this phone rather than to the member: how often it looks for news without a
@@ -37,11 +39,39 @@ class PushPreferences(private val store: DataStore<Preferences>) {
         store.edit { it[PERMISSION_ASKED] = true }
     }
 
+    /** An endpoint the distributor handed over while the app lock kept the member's token sealed. */
+    suspend fun pendingEndpoint(): PushRegistration? {
+        val stored = data().first()
+        val endpoint = stored[PENDING_ENDPOINT] ?: return null
+        val p256dh = stored[PENDING_P256DH] ?: return null
+        val auth = stored[PENDING_AUTH] ?: return null
+        return PushRegistration(endpoint, p256dh, auth)
+    }
+
+    suspend fun keepPendingEndpoint(registration: PushRegistration) {
+        store.edit {
+            it[PENDING_ENDPOINT] = registration.endpoint
+            it[PENDING_P256DH] = registration.p256dh
+            it[PENDING_AUTH] = registration.auth
+        }
+    }
+
+    suspend fun clearPendingEndpoint() {
+        store.edit {
+            it.remove(PENDING_ENDPOINT)
+            it.remove(PENDING_P256DH)
+            it.remove(PENDING_AUTH)
+        }
+    }
+
     private fun data() = store.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }
 
     companion object {
         private val INTERVAL = stringPreferencesKey("push_interval")
         private val PERMISSION_ASKED = booleanPreferencesKey("push_permission_asked")
+        private val PENDING_ENDPOINT = stringPreferencesKey("pending_endpoint")
+        private val PENDING_P256DH = stringPreferencesKey("pending_p256dh")
+        private val PENDING_AUTH = stringPreferencesKey("pending_auth")
 
         fun open(context: Context): PushPreferences = PushPreferences(
             PreferenceDataStoreFactory.create { File(context.filesDir, "push.preferences_pb") }

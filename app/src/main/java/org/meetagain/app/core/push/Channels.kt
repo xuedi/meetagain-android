@@ -22,7 +22,25 @@ object Channels {
             )
         }
     }
+
+    /**
+     * The channel for the app lock, made the first time it is needed, so a member who never locks the app does not
+     * find a channel in Android's settings that nothing uses.
+     */
+    fun ensureUpdates(context: Context) {
+        val manager = context.getSystemService<NotificationManager>() ?: return
+        manager.createNotificationChannel(
+            NotificationChannel(
+                UPDATES_CHANNEL,
+                context.getString(R.string.push_channel_updates),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+        )
+    }
 }
+
+/** The one channel while the app lock is on, when a notification cannot say which category it belongs to. */
+const val UPDATES_CHANNEL = "updates"
 
 val PushCategory.channelId: String get() = "category-$key"
 

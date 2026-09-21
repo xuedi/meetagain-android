@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -39,7 +40,7 @@ class SessionStoreTest {
     @Test
     fun `the session survives a restart`() = runTest {
         store.write(session)
-        assertEquals(session, store.read())
+        assertEquals(StoredSession.Open(session), store.read())
     }
 
     @Test
@@ -71,7 +72,7 @@ class SessionStoreTest {
     fun `the name changes while the token stays`() = runTest {
         store.write(session)
         store.writeName("Crystal L")
-        assertEquals(session.copy(name = "Crystal L"), store.read())
+        assertEquals(StoredSession.Open(session.copy(name = "Crystal L")), store.read())
     }
 
     @Test
@@ -80,6 +81,28 @@ class SessionStoreTest {
         store.clear()
         assertNull(store.read())
         assertFalse(file.readText(Charsets.ISO_8859_1).contains("Crystal"))
+    }
+
+    @Test
+    fun `a session from before the app lock reads as unlocked`() = runTest {
+        store.write(session)
+        assertFalse(store.lockOn())
+    }
+
+    @Test
+    fun `a locked session keeps the member and leaves the token sealed`() = runTest {
+        store.writeLocked(session, sealed = "c2VhbGVk:dG9rZW4=")
+        assertTrue(store.lockOn())
+        assertEquals(StoredSession.Locked(4, "Crystal Liu", session.scopes, "c2VhbGVk:dG9rZW4="), store.read())
+        assertFalse(file.readText(Charsets.ISO_8859_1).contains("mapat_secret-token"))
+    }
+
+    @Test
+    fun `turning the lock off writes the token back under the plain key`() = runTest {
+        store.writeLocked(session, sealed = "c2VhbGVk:dG9rZW4=")
+        store.write(session)
+        assertFalse(store.lockOn())
+        assertEquals(StoredSession.Open(session), store.read())
     }
 
     private object ReadsNothing : TokenCipher {

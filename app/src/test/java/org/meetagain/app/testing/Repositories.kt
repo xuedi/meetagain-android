@@ -1,12 +1,16 @@
 package org.meetagain.app.testing
 
 import android.content.Context
+import android.util.Base64
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.room.Room
 import java.io.File
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.spec.GCMParameterSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +22,7 @@ import mockwebserver3.MockWebServer
 import okhttp3.OkHttpClient
 import org.meetagain.app.AppContainer
 import org.meetagain.app.AppInfo
+import org.meetagain.app.core.auth.LockedCipher
 import org.meetagain.app.core.auth.SessionStore
 import org.meetagain.app.core.auth.TokenCipher
 import org.meetagain.app.core.cache.CacheDatabase
@@ -27,6 +32,7 @@ import org.meetagain.app.core.data.AnswerCache
 import org.meetagain.app.core.data.MemberRepository
 import org.meetagain.app.core.data.PublicRepository
 import org.meetagain.app.core.network.ApiClient
+import org.meetagain.app.core.push.SignalStore
 
 /** 19 September 2026, 08:00 UTC: before every event in the fixtures, so none of them has ended. */
 val testClock: Clock = Clock.fixed(Instant.parse("2026-09-19T08:00:00Z"), ZoneOffset.UTC)
@@ -69,12 +75,14 @@ fun testContainer(
     context: Context,
     server: MockWebServer,
     sessionStore: SessionStore = testSessionStore(context),
+    signalStore: SignalStore = testSignalStore(context),
     scope: CoroutineScope = CoroutineScope(UnconfinedTestDispatcher())
 ): AppContainer = AppContainer(
     context,
     AppInfo("0.1.0", testBuild = false, server.url("/").toString().trimEnd('/')),
     Room.inMemoryDatabaseBuilder(context, CacheDatabase::class.java).build(),
     sessionStore,
+    signalStore,
     deviceName = { "Test device (abcd)" },
     scope = scope,
     clock = testClock
@@ -83,6 +91,12 @@ fun testContainer(
 /** A session store in a fresh file, whose token is scrambled rather than encrypted: no Keystore in a unit test. */
 fun testSessionStore(context: Context, cipher: TokenCipher = ReversingCipher()): SessionStore = SessionStore(
     PreferenceDataStoreFactory.create { File.createTempFile("session", ".preferences_pb", context.cacheDir) },
+    cipher
+)
+
+/** The signal store in a fresh file, with the same stand-in for the Keystore. */
+fun testSignalStore(context: Context, cipher: TokenCipher = ReversingCipher()): SignalStore = SignalStore(
+    PreferenceDataStoreFactory.create { File.createTempFile("signal", ".preferences_pb", context.cacheDir) },
     cipher
 )
 
@@ -112,4 +126,47 @@ class MemoryAnswers : CachedAnswerDao {
 
     override suspend fun deleteWithPrefix(prefix: String) =
         rows.update { rows -> rows.filterKeys { !it.first.startsWith(prefix) } }
+}
+
+/**
+ * Stands in for the locked Keystore key: a software key with no prompt in front of it. [gone] plays the key Android
+ * throws away when a fingerprint is added.
+ */
+class SoftwareLockedCipher : LockedCipher {
+    private var key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
+    var gone = false
+    var deleted = false
+
+    override fun forEncryption(): Cipher = Cipher.getInstance("AES/GCM/NoPadding").apply {
+        init(Cipher.ENCRYPT_MODE, key)
+    }
+
+    override fun forDecryption(stored: String): Cipher? {
+        if (gone) return null
+        val iv = Base64.decode(stored.substringBefore(':'), Base64.NO_WRAP)
+        return Cipher.getInstance("AES/GCM/NoPadding").apply {
+            init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+        }
+    }
+
+    override fun seal(cipher: Cipher, value: String): String = Base64.encodeToString(cipher.iv, Base64.NO_WRAP) + ":" +
+        Base64.encodeToString(cipher.doFinal(value.toByteArray()), Base64.NO_WRAP)
+
+    override fun open(cipher: Cipher, stored: String): String? = runCatching {
+        String(cipher.doFinal(Base64.decode(stored.substringAfter(':'), Base64.NO_WRAP)))
+    }.getOrNull()
+
+    override fun delete() {
+        deleted = true
+        key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey()
+    }
+}
+
+/** A clock the test moves by hand. */
+class MovableClock(var now: Instant = Instant.parse("2026-09-21T10:00:00Z")) : Clock() {
+    override fun getZone(): ZoneOffset = ZoneOffset.UTC
+
+    override fun withZone(zone: java.time.ZoneId?): Clock = this
+
+    override fun instant(): Instant = now
 }

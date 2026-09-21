@@ -37,6 +37,9 @@ data object MyProfile : NavKey
 data object About : NavKey
 
 @Serializable
+data object AppLock : NavKey
+
+@Serializable
 data object Explore : NavKey
 
 @Serializable
