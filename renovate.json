@@ -1,15 +1,55 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "extends": ["config:best-practices"],
+  "dependencyDashboard": false,
+  "lockFileMaintenance": { "enabled": false },
+  "minimumReleaseAge": "3 days",
+  "osvVulnerabilityAlerts": true,
+  "timezone": "Europe/Berlin",
   "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "customManagers": [
+    {
+      "description": "The just version installed by the workflows",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
+      "matchStrings": ["JUST_VERSION: (?<currentValue>\\S+)"],
+      "depNameTemplate": "casey/just",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "The ktlint version Spotless runs, a catalog version no library points to",
+      "customType": "regex",
+      "managerFilePatterns": ["/^gradle/libs\\.versions\\.toml$/"],
+      "matchStrings": ["\\nktlint = \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "com.pinterest.ktlint:ktlint-cli",
+      "datasourceTemplate": "maven"
+    }
+  ],
   "packageRules": [
     {
+      "description": "The JDK moves with jvmToolchain in app/build.gradle.kts, by hand",
+      "matchDepNames": ["java-jdk"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "groupName": "AndroidX and Compose",
-      "matchPackageNames": ["androidx.**", "com.android.application"]
+      "matchPackageNames": ["androidx.**"]
+    },
+    {
+      "description": "AGP sets the minimum Gradle version",
+      "groupName": "Android Gradle Plugin and Gradle",
+      "matchPackageNames": ["com.android.application", "gradle"]
     },
     {
       "groupName": "Kotlin",
-      "matchPackageNames": ["org.jetbrains.kotlin**", "org.jetbrains.kotlinx**"]
+      "matchPackageNames": ["org.jetbrains.kotlin**", "org.jetbrains.kotlinx**", "com.google.devtools.ksp"]
+    },
+    {
+      "description": "okhttp and mockwebserver3 share one catalog version",
+      "groupName": "OkHttp",
+      "matchPackageNames": ["com.squareup.okhttp3:**"]
     },
     {
       "groupName": "Test and build tools",
@@ -19,12 +59,16 @@
         "org.robolectric:**",
         "io.github.takahirom.roborazzi**",
         "com.diffplug.spotless**",
-        "com.squareup.okhttp3:mockwebserver3"
+        "com.pinterest.ktlint:**"
       ]
     },
     {
       "groupName": "GitHub Actions",
       "matchManagers": ["github-actions"]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "matchDepNames": ["casey/just"]
     }
   ]
 }
