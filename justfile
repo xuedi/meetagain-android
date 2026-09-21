@@ -50,6 +50,7 @@ check:
     ./gradlew spotlessCheck :app:lintRelease :app:verifyRoborazziDebug :app:assembleRelease
     scripts/timed.sh "literals check" scripts/check-literals.sh
     scripts/timed.sh "dependency guard" scripts/check-dependencies.sh
+    scripts/timed.sh "version check" scripts/check-version.sh
     @cat build/check-times.log
 
 # Format the Kotlin sources
@@ -60,6 +61,12 @@ fix:
 release:
     ./gradlew :app:assembleRelease
     @ls -l app/build/outputs/apk/release/*.apk
+
+# Set the app version and the README badge together; then commit and push a vX.Y.Z tag to release it
+version new:
+    sed -i -E 's/^val appVersion = "[^"]+"$/val appVersion = "{{ new }}"/' app/build.gradle.kts
+    sed -i -E 's#(img\.shields\.io/badge/Version-)[0-9]+\.[0-9]+\.[0-9]+-#\1{{ new }}-#' README.md
+    scripts/check-version.sh
 
 # Fetch the server's API description, the copy the contract test checks against
 api-refresh:

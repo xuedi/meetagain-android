@@ -1,5 +1,10 @@
 # MeetAgain App
 
+[![CI](https://github.com/xuedi/meetagain-app/actions/workflows/ci.yml/badge.svg)](https://github.com/xuedi/meetagain-app/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/Version-0.1.0-31c754.svg)](https://github.com/xuedi/meetagain-app/releases)
+[![License](https://img.shields.io/badge/License-EUPL_v1.2-31c754.svg)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-8.0+-31c754.svg)](https://developer.android.com/about/versions/oreo)
+
 The Android companion app for [MeetAgain](https://meetagain.org), the European,
 privacy-first community platform for groups that meet in person.
 
@@ -35,6 +40,12 @@ debugging. The toolchain runs on the host.
 - `just api-refresh` updates `api/openapi.json`, the copy of the server's API description that
   the contract test checks the app against.
 
+## Releases
+
+Each `vX.Y.Z` tag builds a signed APK and attaches it, with its SHA-256 checksum, to the matching
+[release](https://github.com/xuedi/meetagain-app/releases). `just version X.Y.Z` sets the app version
+and the badge above together; `just check` fails when they disagree.
+
 ## License
 
-Not decided yet. Until a license file exists in this repository, all rights are reserved.
+[EUPL-1.2](LICENSE), like MeetAgain itself.
