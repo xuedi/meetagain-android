@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val appVersion = "0.1.0"
+val appVersion = "0.2.0"
 val openApiSpec = rootProject.file("api/openapi.json").path
 val debugBaseUrl = providers.gradleProperty("meetagain.baseUrl").getOrElse("http://localhost:8000")
 

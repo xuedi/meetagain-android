@@ -1,7 +1,7 @@
 # MeetAgain App
 
 [![CI](https://github.com/xuedi/meetagain-android/actions/workflows/ci.yml/badge.svg)](https://github.com/xuedi/meetagain-android/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/Version-0.1.0-31c754.svg)](https://github.com/xuedi/meetagain-android/releases)
+[![Version](https://img.shields.io/badge/Version-0.2.0-31c754.svg)](https://github.com/xuedi/meetagain-android/releases)
 [![License](https://img.shields.io/badge/License-EUPL_v1.2-31c754.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-8.0+-31c754.svg)](https://developer.android.com/about/versions/oreo)
 
